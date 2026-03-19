@@ -1,0 +1,65 @@
+# GitHub Actions Configuration for API Testing Framework
+# This file should be placed in .github/workflows/api-smoke-tests.yml
+
+name: API Smoke Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  api-smoke-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch all history for git diff
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Install Allure
+      run: |
+        sudo apt-get update
+        sudo apt-get install default-jre
+        wget https://github.com/allure-framework/allure2/releases/download/2.24.1/allure-2.24.1.tgz
+        tar -xzf allure-2.24.1.tgz
+        sudo mv allure-2.24.1 /opt/allure
+        sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+        
+    - name: Run API smoke tests
+      env:
+        API_BASE_URL: ${{ secrets.API_BASE_URL }}
+        WECHAT_WORK_KEY: ${{ secrets.WECHAT_WORK_KEY }}
+        CI_COMMIT_SHA: ${{ github.sha }}
+        CI_BUILD_NUMBER: ${{ github.run_number }}
+        CI_JOB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        python run_tests.py --commit-range "${{ github.event.before }}..${{ github.sha }}"
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: |
+          allure-report/
+          test-results.xml
+          test-report.html
+        retention-days: 30
+        
+    - name: Upload JUnit test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: junit-results
+        path: test-results.xml
