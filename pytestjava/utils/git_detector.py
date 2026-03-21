@@ -1,9 +1,12 @@
 import os
 import re
+import logging
 from typing import List, Dict, Set, Optional
 from git import Repo, Commit
 from git.diff import Diff
 from git.exc import InvalidGitRepositoryError
+
+logging.getLogger("git").setLevel(logging.WARNING)
 
 
 class GitChangeDetector:
@@ -12,6 +15,7 @@ class GitChangeDetector:
     def __init__(self, repo_path: str = "."):
         try:
             self.repo = Repo(repo_path)
+            self._repo_path = repo_path
         except InvalidGitRepositoryError:
             raise ValueError(
                 f"'{repo_path}' is not a valid Git repository. "
@@ -29,34 +33,51 @@ class GitChangeDetector:
             r"@RestControllerAdvice"
         ]
     
+    def __del__(self):
+        try:
+            if hasattr(self, 'repo') and self.repo:
+                self.repo.close()
+        except Exception:
+            pass
+    
     def get_changed_files(self, commit_range: str = "HEAD~1..HEAD") -> List[str]:
         """Get list of changed files in the specified commit range"""
         changed_files = []
         
         try:
-            # Parse commit range
             commits = list(self.repo.iter_commits(commit_range))
             
             if not commits:
-                # If no commits in range, check current changes
-                changed_files = [item.a_path for item in self.repo.index.diff(None)]
-                changed_files.extend([item.a_path for item in self.repo.index.diff("HEAD")])
+                try:
+                    all_commits = list(self.repo.iter_commits())
+                    if all_commits:
+                        first_commit = all_commits[-1]
+                        if first_commit.parents:
+                            diff = first_commit.parents[0].diff(first_commit)
+                            changed_files.extend([item.a_path for item in diff])
+                        else:
+                            changed_files.extend(list(first_commit.stats.files.keys()))
+                except Exception:
+                    pass
             else:
-                # Get changed files from commits
                 for commit in commits:
                     if commit.parents:
                         diff = commit.parents[0].diff(commit)
                         changed_files.extend([item.a_path for item in diff])
+                    else:
+                        changed_files.extend(list(commit.stats.files.keys()))
         
         except Exception as e:
-            print(f"Error getting changed files: {e}")
-            # Fallback to current changes
-            changed_files = [item.a_path for item in self.repo.index.diff(None)]
-            changed_files.extend([item.a_path for item in self.repo.index.diff("HEAD")])
+            try:
+                all_commits = list(self.repo.iter_commits())
+                if all_commits:
+                    first_commit = all_commits[-1]
+                    if not first_commit.parents:
+                        changed_files.extend(list(first_commit.stats.files.keys()))
+            except Exception:
+                pass
         
-        # Filter for Java files only
         java_files = [f for f in changed_files if f.endswith('.java')]
-        # Remove duplicates while maintaining order
         seen = set()
         unique_java_files = []
         for f in java_files:
@@ -70,10 +91,10 @@ class GitChangeDetector:
         endpoints = []
         
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            full_path = os.path.join(self._repo_path, file_path)
+            with open(full_path, 'r', encoding='utf-8') as f:
                 content = f.read()
                 
-                # Look for class-level annotations
                 class_pattern = r'@RestController.*?class\s+(\w+).*?@RequestMapping\("([^"]+)"\)'
                 class_matches = re.findall(class_pattern, content, re.DOTALL)
                 
@@ -81,7 +102,6 @@ class GitChangeDetector:
                 if class_matches:
                     base_path = class_matches[0][1]
                 
-                # Look for method-level mappings
                 method_patterns = [
                     (r'@GetMapping\("([^"]+)"\)', 'GET'),
                     (r'@PostMapping\("([^"]+)"\)', 'POST'),
@@ -103,12 +123,12 @@ class GitChangeDetector:
                         else:
                             path = match
                         
-                        full_path = f"{base_path}{path}".replace("//", "/")
+                        full_endpoint_path = f"{base_path}{path}".replace("//", "/")
                         endpoints.append({
                             'file': file_path,
                             'method': method,
-                            'path': full_path,
-                            'full_endpoint': f"{method} {full_path}"
+                            'path': full_endpoint_path,
+                            'full_endpoint': f"{method} {full_endpoint_path}"
                         })
         
         except Exception as e:
