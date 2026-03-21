@@ -3,13 +3,20 @@ import re
 from typing import List, Dict, Set, Optional
 from git import Repo, Commit
 from git.diff import Diff
+from git.exc import InvalidGitRepositoryError
 
 
 class GitChangeDetector:
     """Detect API changes by analyzing git commits"""
     
     def __init__(self, repo_path: str = "."):
-        self.repo = Repo(repo_path)
+        try:
+            self.repo = Repo(repo_path)
+        except InvalidGitRepositoryError:
+            raise ValueError(
+                f"'{repo_path}' is not a valid Git repository. "
+                f"Please initialize a Git repository first: cd {repo_path} && git init"
+            )
         self.api_patterns = [
             r"@RestController",
             r"@RequestMapping",

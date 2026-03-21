@@ -33,8 +33,9 @@ logger = logging.getLogger(__name__)
 class TestRunner:
     """Main test runner class"""
     
-    def __init__(self):
-        self.git_detector = GitChangeDetector(settings.git_repo_path)
+    def __init__(self, git_repo_path: str = None):
+        repo_path = git_repo_path or settings.git_repo_path
+        self.git_detector = GitChangeDetector(repo_path)
         self.test_generator = TestCaseGenerator()
         self.wechat_notifier = WeChatWorkNotifier()
         self.test_results = {}
@@ -267,6 +268,8 @@ def main():
                        help='Git commit range to analyze (default: HEAD~1..HEAD)')
     parser.add_argument('--config', default='.env', 
                        help='Configuration file path (default: .env)')
+    parser.add_argument('--git-repo-path', default=None,
+                       help='Git repository path to analyze (overrides .env setting)')
     
     args = parser.parse_args()
     
@@ -274,8 +277,12 @@ def main():
     if args.config and Path(args.config).exists():
         os.environ['ENV_FILE'] = args.config
     
+    # Override git repo path if specified via command line
+    if args.git_repo_path:
+        os.environ['GIT_REPO_PATH'] = args.git_repo_path
+    
     # Create and run test runner
-    runner = TestRunner()
+    runner = TestRunner(git_repo_path=args.git_repo_path)
     success = runner.run(args.commit_range)
     
     # Exit with appropriate code
