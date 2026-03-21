@@ -11,7 +11,6 @@ import com.oddfar.campus.framework.web.service.SysPasswordService;
 
 import reactor.util.Logger;
 
-import org.hibernate.validator.internal.util.logging.Log_.logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/monitor/logininfor")
 @Log(openLog = false)
-@ApiResource(name = "登录日志管理1", resBizType = ResBizTypeEnum.SYSTEM)
+@ApiResource(name = "登录日志管理", resBizType = ResBizTypeEnum.SYSTEM)
 public class SysLogininforController {
     @Autowired
     private SysLoginLogService logininforService;
@@ -52,7 +51,7 @@ public class SysLogininforController {
         logininforService.cleanLogininfor();
         return R.ok();
     }
-
+    
     @PreAuthorize("@ss.hasPermi('monitor:logininfor:unlock')")
     @GetMapping(value = "/unlock/{userName}",name = "登录日志-解锁")
     public R unlock(@PathVariable("userName") String userName) {

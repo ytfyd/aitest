@@ -103,11 +103,16 @@ class GitChangeDetector:
                     base_path = class_matches[0][1]
                 
                 method_patterns = [
-                    (r'@GetMapping\("([^"]+)"\)', 'GET'),
-                    (r'@PostMapping\("([^"]+)"\)', 'POST'),
-                    (r'@PutMapping\("([^"]+)"\)', 'PUT'),
-                    (r'@DeleteMapping\("([^"]+)"\)', 'DELETE'),
-                    (r'@PatchMapping\("([^"]+)"\)', 'PATCH'),
+                    (r'@GetMapping\s*\(\s*"([^"]+)"\s*\)', 'GET'),
+                    (r'@GetMapping\s*\(\s*value\s*=\s*"([^"]+)"', 'GET'),
+                    (r'@PostMapping\s*\(\s*"([^"]+)"\s*\)', 'POST'),
+                    (r'@PostMapping\s*\(\s*value\s*=\s*"([^"]+)"', 'POST'),
+                    (r'@PutMapping\s*\(\s*"([^"]+)"\s*\)', 'PUT'),
+                    (r'@PutMapping\s*\(\s*value\s*=\s*"([^"]+)"', 'PUT'),
+                    (r'@DeleteMapping\s*\(\s*"([^"]+)"\s*\)', 'DELETE'),
+                    (r'@DeleteMapping\s*\(\s*value\s*=\s*"([^"]+)"', 'DELETE'),
+                    (r'@PatchMapping\s*\(\s*"([^"]+)"\s*\)', 'PATCH'),
+                    (r'@PatchMapping\s*\(\s*value\s*=\s*"([^"]+)"', 'PATCH'),
                     (r'@RequestMapping\(.*?method\s*=\s*RequestMethod\.(GET|POST|PUT|DELETE|PATCH).*?value\s*=\s*"([^"]+)"\)', 'DYNAMIC')
                 ]
                 
