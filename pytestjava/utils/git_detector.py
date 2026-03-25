@@ -95,12 +95,10 @@ class GitChangeDetector:
             with open(full_path, 'r', encoding='utf-8') as f:
                 content = f.read()
                 
-                class_pattern = r'@RestController.*?class\s+(\w+).*?@RequestMapping\("([^"]+)"\)'
-                class_matches = re.findall(class_pattern, content, re.DOTALL)
-                
                 base_path = ""
-                if class_matches:
-                    base_path = class_matches[0][1]
+                request_mapping_match = re.search(r'@RequestMapping\s*\(\s*(?:value\s*=\s*)?"([^"]+)"', content)
+                if request_mapping_match:
+                    base_path = request_mapping_match.group(1)
                 
                 method_patterns = [
                     (r'@GetMapping\s*\(\s*"([^"]+)"\s*\)', 'GET'),

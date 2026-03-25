@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     api_version: str = "v1"
     
     # Test Configuration
-    test_timeout: int = 30
-    max_retries: int = 3
+    test_timeout: int = 5
+    max_retries: int = 1
     retry_delay: int = 1
     
     # Authentication

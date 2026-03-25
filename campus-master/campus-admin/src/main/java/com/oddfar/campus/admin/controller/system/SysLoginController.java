@@ -11,6 +11,10 @@ import com.oddfar.campus.common.utils.SecurityUtils;
 import com.oddfar.campus.framework.service.SysMenuService;
 import com.oddfar.campus.framework.web.service.SysLoginService;
 import com.oddfar.campus.framework.web.service.SysPermissionService;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,8 +42,9 @@ public class SysLoginController {
      * @param loginBody 登录信息
      * @return 结果
      */
+    @ApiOperation(value = "登录方法", notes = "用户登录接口，返回JWT令牌")
     @PostMapping(value = "/login", name = "登录方法")
-    public R login(@RequestBody LoginBody loginBody) {
+    public R login(@ApiParam(value = "登录信息", required = true) @RequestBody LoginBody loginBody) {
         R r = R.ok();
         // 生成令牌
         String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),

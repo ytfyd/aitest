@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.116" timestamp="2026-03-21T18:19:29.392926" hostname="DESKTOP-1OKLH8K"><testcase classname="" name="tests.generated.test_generated_20260321_181928" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\DELL\Desktop\aitest\tests\generated\test_generated_20260321_181928.py'.
-Hint: make sure your test modules/packages have valid Python names.
-Traceback:
-d:\program files\python39\lib\importlib\__init__.py:127: in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-tests\generated\test_generated_20260321_181928.py:2: in &lt;module&gt;
-    from utils.api_client import api_client
-E   ModuleNotFoundError: No module named 'utils'</error></testcase></testsuite></testsuites>

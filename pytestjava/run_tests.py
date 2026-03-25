@@ -13,16 +13,15 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-# Add project root to Python path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from utils.git_detector import GitChangeDetector
 from utils.test_generator import TestCaseGenerator
 from utils.wechat_notifier import WeChatWorkNotifier
+from utils.swagger_client import swagger_client
 from config.settings import settings
 
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
@@ -45,7 +44,6 @@ class TestRunner:
         logger.info("Starting API testing workflow")
         
         try:
-            # Step 1: Detect API changes
             logger.info("Step 1: Detecting API changes")
             changes = self.detect_changes(commit_range)
             
@@ -57,23 +55,18 @@ class TestRunner:
                 )
                 return True
             
-            # Step 2: Generate test cases
             logger.info("Step 2: Generating test cases")
             test_file = self.generate_tests(changes['affected_endpoints'])
             
-            # Step 3: Execute tests
             logger.info("Step 3: Executing tests")
             test_results = self.execute_tests(test_file)
             
-            # Step 4: Generate reports
             logger.info("Step 4: Generating reports")
-            self.generate_reports()
+            self.generate_html_report(test_results, changes)
             
-            # Step 5: Send notifications
             logger.info("Step 5: Sending notifications")
             self.send_notifications(test_results, changes)
             
-            # Return success based on test results
             return test_results.get('failed_tests', 0) == 0
             
         except Exception as e:
@@ -100,11 +93,9 @@ class TestRunner:
         """Generate test cases for affected endpoints"""
         test_cases = self.test_generator.generate_test_cases(endpoints)
         
-        # Create tests directory if it doesn't exist
-        tests_dir = Path("tests/generated")
+        tests_dir = Path(__file__).parent / "tests" / "generated"
         tests_dir.mkdir(parents=True, exist_ok=True)
         
-        # Generate test file name with timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         test_file = tests_dir / f"test_generated_{timestamp}.py"
         
@@ -114,31 +105,20 @@ class TestRunner:
     
     def execute_tests(self, test_file: str) -> dict:
         """Execute the generated tests using pytest"""
-        # Ensure Allure results directory exists
-        Path(settings.allure_results_dir).mkdir(parents=True, exist_ok=True)
-        
-        # Build pytest command
         cmd = [
             "pytest",
             test_file,
             "-v",
             "--tb=short",
-            f"--alluredir={settings.allure_results_dir}",
-            "--junit-xml=test-results.xml",
-            "--html=test-report.html",
-            "--self-contained-html"
+            "-q"
         ]
         
         logger.info(f"Executing: {' '.join(cmd)}")
         
         try:
-            # Run pytest
             result = subprocess.run(cmd, capture_output=True, text=True)
-            
-            # Parse test results
             test_results = self._parse_test_results(result)
             
-            # Log results
             logger.info(f"Test execution completed:")
             logger.info(f"  - Total: {test_results['total_tests']}")
             logger.info(f"  - Passed: {test_results['passed_tests']}")
@@ -154,28 +134,26 @@ class TestRunner:
                 'passed_tests': 0,
                 'failed_tests': 0,
                 'skipped_tests': 0,
-                'failed_details': [{'name': 'Execution Error', 'error': str(e)}]
+                'failed_details': [{'name': 'Execution Error', 'error': str(e)}],
+                'test_details': []
             }
     
     def _parse_test_results(self, result: subprocess.CompletedProcess) -> dict:
         """Parse pytest output to extract test results"""
         output = result.stdout + result.stderr
         
-        # Extract basic counts
         total_tests = 0
         passed_tests = 0
         failed_tests = 0
         skipped_tests = 0
+        test_details = []
         
         lines = output.split('\n')
         
-        # Try to parse pytest summary line
         for line in lines:
             if 'passed' in line.lower() or 'failed' in line.lower() or 'skipped' in line.lower():
-                # Parse various pytest summary formats
                 import re
                 
-                # Format: "3 passed, 1 failed, 2 skipped in 0.12s"
                 passed_match = re.search(r'(\d+)\s+passed', line)
                 failed_match = re.search(r'(\d+)\s+failed', line)
                 skipped_match = re.search(r'(\d+)\s+skipped', line)
@@ -191,7 +169,6 @@ class TestRunner:
                     total_tests = passed_tests + failed_tests + skipped_tests
                     break
         
-        # If parsing failed, check return code
         if total_tests == 0:
             if result.returncode == 0:
                 passed_tests = 1
@@ -200,18 +177,49 @@ class TestRunner:
                 failed_tests = 1
                 total_tests = 1
         
-        # Extract failed test details
         failed_details = []
-        if failed_tests > 0:
-            for line in lines:
-                if 'FAILED' in line:
-                    parts = line.split('::')
-                    if len(parts) >= 2:
-                        test_name = parts[-1].strip()
-                        failed_details.append({
-                            'name': test_name,
-                            'error': 'See test output for details'
-                        })
+        error_messages = {}
+        current_test = None
+        error_buffer = []
+        in_error = False
+        
+        for i, line in enumerate(lines):
+            if 'FAILED' in line:
+                parts = line.split('::')
+                if len(parts) >= 2:
+                    test_name = parts[-1].split()[0].strip()
+                    current_test = test_name
+                    failed_details.append({
+                        'name': test_name,
+                        'error': ''
+                    })
+                    in_error = True
+                    error_buffer = []
+            elif current_test and in_error:
+                if line.strip().startswith('===') or line.strip().startswith('---'):
+                    if error_buffer:
+                        error_messages[current_test] = '\n'.join(error_buffer[-10:])
+                    current_test = None
+                    in_error = False
+                    error_buffer = []
+                elif line.strip() and not line.strip().startswith('='):
+                    error_buffer.append(line.strip())
+            
+            if 'PASSED' in line or 'FAILED' in line:
+                parts = line.split('::')
+                if len(parts) >= 2:
+                    test_name = parts[-1].split()[0].strip()
+                    status = 'PASSED' if 'PASSED' in line else 'FAILED'
+                    test_details.append({
+                        'name': test_name,
+                        'status': status
+                    })
+        
+        for fail in failed_details:
+            if fail['name'] in error_messages:
+                fail['error'] = error_messages[fail['name']]
+            elif not fail['error']:
+                fail['error'] = '连接超时或服务器未响应'
         
         return {
             'total_tests': total_tests,
@@ -219,29 +227,432 @@ class TestRunner:
             'failed_tests': failed_tests,
             'skipped_tests': skipped_tests,
             'failed_details': failed_details,
+            'test_details': test_details,
             'return_code': result.returncode
         }
     
-    def generate_reports(self):
-        """Generate Allure and other test reports"""
-        # Generate Allure report
-        if Path(settings.allure_results_dir).exists():
-            cmd = [
-                "allure", "generate",
-                settings.allure_results_dir,
-                "-o", settings.allure_report_dir,
-                "--clean"
-            ]
-            
-            try:
-                subprocess.run(cmd, check=True)
-                logger.info(f"Allure report generated: {settings.allure_report_dir}")
-            except Exception as e:
-                logger.warning(f"Failed to generate Allure report: {e}")
+    def generate_html_report(self, test_results: dict, changes: dict):
+        """Generate a beautiful HTML test report"""
+        reports_dir = Path(__file__).parent / "test-reports"
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        report_path = reports_dir / "test-report.html"
+        
+        pass_rate = 0
+        if test_results['total_tests'] > 0:
+            pass_rate = (test_results['passed_tests'] / test_results['total_tests']) * 100
+        
+        status_color = "#10b981" if test_results['failed_tests'] == 0 else "#ef4444"
+        status_text = "✅ 全部通过" if test_results['failed_tests'] == 0 else "❌ 存在失败"
+        
+        test_details_rows = ""
+        for detail in test_results.get('test_details', []):
+            row_status = "passed" if detail['status'] == 'PASSED' else "failed"
+            row_icon = "✅" if detail['status'] == 'PASSED' else "❌"
+            test_details_rows += f"""
+                <tr class="{row_status}">
+                    <td>{row_icon}</td>
+                    <td>{detail['name']}</td>
+                    <td class="status-{row_status}">{detail['status']}</td>
+                </tr>
+            """
+        
+        if not test_details_rows:
+            test_details_rows = "<tr><td colspan='3' style='text-align:center;color:#888;'>暂无测试详情</td></tr>"
+        
+        failed_rows = ""
+        for idx, fail in enumerate(test_results.get('failed_details', [])):
+            error_msg = fail.get('error', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
+            failed_rows += f"""
+                <tr class="failed-detail">
+                    <td>❌</td>
+                    <td>{fail['name']}</td>
+                    <td>
+                        <button class="error-btn" onclick="toggleError({idx})">查看详情</button>
+                        <div id="error-{idx}" class="error-detail">{error_msg}</div>
+                    </td>
+                </tr>
+            """
+        
+        if not failed_rows:
+            failed_rows = "<tr><td colspan='3' style='text-align:center;color:#10b981;'>🎉 无失败用例</td></tr>"
+        
+        def get_real_path_from_swagger(path: str, method: str) -> str:
+            real_path = swagger_client.get_real_path(path, method)
+            if real_path and real_path != path:
+                import re
+                real_path = re.sub(r'\{[^}]+\}', '1', real_path)
+                return real_path
+            import re
+            return re.sub(r'\{[^}]+\}', '1', path)
+        
+        endpoint_rows = ""
+        for ep in changes.get('affected_endpoints', []):
+            real_path = get_real_path_from_swagger(ep['path'], ep['method'])
+            endpoint_rows += f"""
+                <tr>
+                    <td><span class="method-badge method-{ep['method'].lower()}">{ep['method']}</span></td>
+                    <td>{real_path}</td>
+                </tr>
+            """
+        
+        if not endpoint_rows:
+            endpoint_rows = "<tr><td colspan='2' style='text-align:center;color:#888;'>暂无变更接口</td></tr>"
+        
+        html_content = f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 测试报告</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        
+        body {{
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }}
+        
+        .container {{
+            max-width: 1200px;
+            margin: 0 auto;
+        }}
+        
+        .header {{
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }}
+        
+        .header h1 {{
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }}
+        
+        .header .status {{
+            font-size: 1.3em;
+            color: {status_color};
+            margin-top: 15px;
+        }}
+        
+        .header .timestamp {{
+            color: #888;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }}
+        
+        .stats-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }}
+        
+        .stat-card {{
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }}
+        
+        .stat-card:hover {{
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }}
+        
+        .stat-card .number {{
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }}
+        
+        .stat-card .label {{
+            color: #888;
+            font-size: 1em;
+        }}
+        
+        .stat-card.total .number {{ color: #00d9ff; }}
+        .stat-card.passed .number {{ color: #10b981; }}
+        .stat-card.failed .number {{ color: #ef4444; }}
+        .stat-card.skipped .number {{ color: #f59e0b; }}
+        .stat-card.rate .number {{ color: #8b5cf6; }}
+        
+        .progress-container {{
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 30px;
+            margin: 30px 0;
+            overflow: hidden;
+            position: relative;
+        }}
+        
+        .progress-bar {{
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #00ff88);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+        }}
+        
+        .section {{
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }}
+        
+        .section h2 {{
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }}
+        
+        .section h2::before {{
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, #00d9ff, #00ff88);
+            border-radius: 2px;
+        }}
+        
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+        }}
+        
+        th, td {{
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }}
+        
+        th {{
+            background: rgba(255,255,255,0.05);
+            font-weight: 600;
+            color: #00d9ff;
+        }}
+        
+        tr:hover {{
+            background: rgba(255,255,255,0.03);
+        }}
+        
+        .method-badge {{
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }}
+        
+        .method-get {{ background: #10b981; }}
+        .method-post {{ background: #3b82f6; }}
+        .method-put {{ background: #f59e0b; }}
+        .method-delete {{ background: #ef4444; }}
+        .method-patch {{ background: #8b5cf6; }}
+        
+        .status-PASSED {{ color: #10b981; font-weight: bold; }}
+        .status-FAILED {{ color: #ef4444; font-weight: bold; }}
+        
+        tr.passed {{ background: rgba(16, 185, 129, 0.1); }}
+        tr.failed {{ background: rgba(239, 68, 68, 0.1); }}
+        
+        .error-btn {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }}
+        
+        .error-btn:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }}
+        
+        .error-detail {{
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 300px;
+            overflow-y: auto;
+        }}
+        
+        .error-detail.show {{
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }}
+        
+        @keyframes fadeIn {{
+            from {{ opacity: 0; transform: translateY(-10px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
+        }}
+        
+        .footer {{
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }}
+        
+        @keyframes pulse {{
+            0%, 100% {{ opacity: 1; }}
+            50% {{ opacity: 0.5; }}
+        }}
+        
+        .animate-pulse {{
+            animation: pulse 2s infinite;
+        }}
+    </style>
+    <script>
+        function toggleError(idx) {{
+            var el = document.getElementById('error-' + idx);
+            var btn = el.previousElementSibling;
+            if (el.classList.contains('show')) {{
+                el.classList.remove('show');
+                btn.textContent = '查看详情';
+            }} else {{
+                el.classList.add('show');
+                btn.textContent = '收起详情';
+            }}
+        }}
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 API 测试报告</h1>
+            <div class="status">{status_text}</div>
+            <div class="timestamp">生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card total">
+                <div class="number">{test_results['total_tests']}</div>
+                <div class="label">📊 总用例数</div>
+            </div>
+            <div class="stat-card passed">
+                <div class="number">{test_results['passed_tests']}</div>
+                <div class="label">✅ 通过</div>
+            </div>
+            <div class="stat-card failed">
+                <div class="number">{test_results['failed_tests']}</div>
+                <div class="label">❌ 失败</div>
+            </div>
+            <div class="stat-card skipped">
+                <div class="number">{test_results['skipped_tests']}</div>
+                <div class="label">⏭️ 跳过</div>
+            </div>
+            <div class="stat-card rate">
+                <div class="number">{pass_rate:.1f}%</div>
+                <div class="label">📈 通过率</div>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" style="width: {pass_rate}%;">
+                {pass_rate:.1f}% 通过率
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📋 测试详情</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">状态</th>
+                        <th>测试用例</th>
+                        <th style="width: 100px;">结果</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {test_details_rows}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>❌ 失败详情</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">状态</th>
+                        <th>用例名称</th>
+                        <th>错误信息</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {failed_rows}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>🔗 变更接口</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">方法</th>
+                        <th>路径</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {endpoint_rows}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>Generated by API Test Framework | © 2026</p>
+        </div>
+    </div>
+</body>
+</html>"""
+        
+        with open(report_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        
+        logger.info(f"HTML report generated: {report_path}")
     
     def send_notifications(self, test_results: dict, changes: dict):
         """Send test results to WeChat Work"""
-        # Add additional metadata to test results
         test_results.update({
             'changed_files': changes.get('changed_files', []),
             'affected_endpoints': changes.get('affected_endpoints', []),
@@ -250,7 +661,6 @@ class TestRunner:
             'timestamp': datetime.now().isoformat()
         })
         
-        # Send notification
         success = self.wechat_notifier.send_test_report(test_results)
         
         if success:
@@ -273,19 +683,15 @@ def main():
     
     args = parser.parse_args()
     
-    # Set environment file if specified
     if args.config and Path(args.config).exists():
         os.environ['ENV_FILE'] = args.config
     
-    # Override git repo path if specified via command line
     if args.git_repo_path:
         os.environ['GIT_REPO_PATH'] = args.git_repo_path
     
-    # Create and run test runner
     runner = TestRunner(git_repo_path=args.git_repo_path)
     success = runner.run(args.commit_range)
     
-    # Exit with appropriate code
     sys.exit(0 if success else 1)
 
 

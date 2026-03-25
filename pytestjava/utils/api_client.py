@@ -40,9 +40,8 @@ class APIClient:
         """Make HTTP request with logging and error handling"""
         url = f"{self.base_url}{endpoint}"
         
-        # Set default timeout
         if "timeout" not in kwargs:
-            kwargs["timeout"] = settings.test_timeout
+            kwargs["timeout"] = (3, 5)
         
         logger.info(f"Making {method} request to {url}")
         
@@ -50,7 +49,6 @@ class APIClient:
             response = self.session.request(method, url, **kwargs)
             logger.info(f"Response status: {response.status_code}")
             
-            # Log response body for debugging (truncate if too long)
             if response.text:
                 body_preview = response.text[:500] + "..." if len(response.text) > 500 else response.text
                 logger.debug(f"Response body: {body_preview}")

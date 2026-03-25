@@ -1,4 +1,9 @@
 import pytest
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 from utils.api_client import api_client
 
 
@@ -10,14 +15,14 @@ from utils.api_client import api_client
 
 @pytest.mark.positive
 @pytest.mark.smoke
-def test_list_positive():
-    """测试 get /list - 正向测试用例"""
+def test_system_config_1_positive():
+    """测试 get /system/config/1 - 正向测试用例"""
     
     # 准备测试数据
-    test_data = {}
+    test_data = {"id": 1}
     
     # 发起API请求
-    response = api_client.get('/list', data=test_data)
+    response = api_client.get('/system/config/1', data=test_data)
     
     # 验证响应
     data = api_client.validate_response(response, 200)
@@ -29,14 +34,14 @@ def test_list_positive():
 
 @pytest.mark.positive
 @pytest.mark.smoke
-def test_unlock_username_positive():
-    """测试 get /unlock/{userName} - 正向测试用例"""
+def test_captchaimage_positive():
+    """测试 get /captchaImage - 正向测试用例"""
     
     # 准备测试数据
-    test_data = {}
+    test_data = {"id": 1}
     
     # 发起API请求
-    response = api_client.get('/unlock/{userName}', data=test_data)
+    response = api_client.get('/captchaImage', data=test_data)
     
     # 验证响应
     data = api_client.validate_response(response, 200)
@@ -48,14 +53,14 @@ def test_unlock_username_positive():
 
 @pytest.mark.positive
 @pytest.mark.smoke
-def test_infoids_positive():
-    """测试 delete /{infoIds} - 正向测试用例"""
+def test_system_config_refreshcache_positive():
+    """测试 delete /system/config/refreshCache - 正向测试用例"""
     
     # 准备测试数据
-    test_data = {}
+    test_data = {"infoIds": "test_user"}
     
     # 发起API请求
-    response = api_client.delete('/{infoIds}', data=test_data)
+    response = api_client.delete('/system/config/refreshCache', data=test_data)
     
     # 验证响应
     data = api_client.validate_response(response, 200)
@@ -67,14 +72,14 @@ def test_infoids_positive():
 
 @pytest.mark.positive
 @pytest.mark.smoke
-def test_clean_positive():
-    """测试 delete /clean - 正向测试用例"""
+def test_monitor_logininfor_1_positive():
+    """测试 delete /monitor/logininfor/1 - 正向测试用例"""
     
     # 准备测试数据
-    test_data = {}
+    test_data = {"infoIds": "test_user"}
     
     # 发起API请求
-    response = api_client.delete('/clean', data=test_data)
+    response = api_client.delete('/monitor/logininfor/1', data=test_data)
     
     # 验证响应
     data = api_client.validate_response(response, 200)
@@ -87,17 +92,17 @@ def test_clean_positive():
 # PERFORMANCE TEST CASES
 
 @pytest.mark.performance
-def test_list_performance():
-    """测试 get /list - 性能测试"""
+def test_system_config_1_performance():
+    """测试 get /system/config/1 - 性能测试"""
     
     # 准备测试数据
-    test_data = {}
+    test_data = {"id": 1}
     
     # 测量响应时间
     import time
     start_time = time.time()
     
-    response = api_client.get('/list', data=test_data)
+    response = api_client.get('/system/config/1', data=test_data)
     
     end_time = time.time()
     response_time = end_time - start_time
@@ -110,17 +115,17 @@ def test_list_performance():
 
 
 @pytest.mark.performance
-def test_unlock_username_performance():
-    """测试 get /unlock/{userName} - 性能测试"""
+def test_captchaimage_performance():
+    """测试 get /captchaImage - 性能测试"""
     
     # 准备测试数据
-    test_data = {}
+    test_data = {"id": 1}
     
     # 测量响应时间
     import time
     start_time = time.time()
     
-    response = api_client.get('/unlock/{userName}', data=test_data)
+    response = api_client.get('/captchaImage', data=test_data)
     
     end_time = time.time()
     response_time = end_time - start_time
@@ -133,17 +138,17 @@ def test_unlock_username_performance():
 
 
 @pytest.mark.performance
-def test_infoids_performance():
-    """测试 delete /{infoIds} - 性能测试"""
+def test_system_config_refreshcache_performance():
+    """测试 delete /system/config/refreshCache - 性能测试"""
     
     # 准备测试数据
-    test_data = {}
+    test_data = {"infoIds": "test_user"}
     
     # 测量响应时间
     import time
     start_time = time.time()
     
-    response = api_client.delete('/{infoIds}', data=test_data)
+    response = api_client.delete('/system/config/refreshCache', data=test_data)
     
     end_time = time.time()
     response_time = end_time - start_time
@@ -156,17 +161,17 @@ def test_infoids_performance():
 
 
 @pytest.mark.performance
-def test_clean_performance():
-    """测试 delete /clean - 性能测试"""
+def test_monitor_logininfor_1_performance():
+    """测试 delete /monitor/logininfor/1 - 性能测试"""
     
     # 准备测试数据
-    test_data = {}
+    test_data = {"infoIds": "test_user"}
     
     # 测量响应时间
     import time
     start_time = time.time()
     
-    response = api_client.delete('/clean', data=test_data)
+    response = api_client.delete('/monitor/logininfor/1', data=test_data)
     
     end_time = time.time()
     response_time = end_time - start_time

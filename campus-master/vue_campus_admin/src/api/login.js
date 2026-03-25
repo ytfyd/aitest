@@ -1,12 +1,9 @@
 import request from '@/utils/request'
 
-// 登录方法
-export function login(username, password, code, uuid) {
+export function login(username, password) {
   const data = {
     username,
-    password,
-    code,
-    uuid
+    password
   }
   return request({
     url: '/login',
