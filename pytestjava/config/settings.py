@@ -6,8 +6,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # API Configuration
-    api_base_url: str = "http://localhost:8080"
-    api_version: str = "v1"
+    api_base_url: str = "http://localhost:8160"
+    api_version: str = ""
     
     # Test Configuration
     test_timeout: int = 5

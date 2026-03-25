@@ -109,8 +109,7 @@ class TestRunner:
             "pytest",
             test_file,
             "-v",
-            "--tb=short",
-            "-q"
+            "--tb=long"
         ]
         
         logger.info(f"Executing: {' '.join(cmd)}")
@@ -139,17 +138,24 @@ class TestRunner:
             }
     
     def _parse_test_results(self, result: subprocess.CompletedProcess) -> dict:
-        """Parse pytest output to extract test results"""
+        """Parse pytest output to extract test results with detailed info"""
         output = result.stdout + result.stderr
         
         total_tests = 0
         passed_tests = 0
         failed_tests = 0
         skipped_tests = 0
-        test_details = []
         
+        # Use dict to avoid duplicates
+        test_details_dict = {}
+        failed_details_dict = {}
+        passed_details_dict = {}
+        
+        # Extract test data from test file for request parameters
+        test_data_map = self._extract_test_data_from_file()
+        
+        # Parse summary from output
         lines = output.split('\n')
-        
         for line in lines:
             if 'passed' in line.lower() or 'failed' in line.lower() or 'skipped' in line.lower():
                 import re
@@ -177,49 +183,141 @@ class TestRunner:
                 failed_tests = 1
                 total_tests = 1
         
-        failed_details = []
+        # Parse test results - only process lines with test outcomes
         error_messages = {}
         current_test = None
         error_buffer = []
         in_error = False
+        processed_tests = set()
         
         for i, line in enumerate(lines):
-            if 'FAILED' in line:
-                parts = line.split('::')
+            # Detect failed test from long format - look for lines with " test_name " between underscores
+            stripped = line.strip()
+            if stripped.startswith('_') and ' test_' in stripped:
+                # Extract test name - find the part between spaces
+                parts = stripped.split(' test_')
                 if len(parts) >= 2:
-                    test_name = parts[-1].split()[0].strip()
-                    current_test = test_name
-                    failed_details.append({
-                        'name': test_name,
-                        'error': ''
-                    })
-                    in_error = True
-                    error_buffer = []
+                    test_part = 'test_' + parts[1].split(' ')[0]
+                    if test_part.startswith('test_') and not test_part.endswith('_'):
+                        test_name = test_part.rstrip('_')
+                        # Save previous test's error if exists
+                        if current_test and error_buffer:
+                            error_messages[current_test] = '\n'.join(error_buffer[-5:])
+                        # Start new test
+                        if test_name not in processed_tests:
+                            processed_tests.add(test_name)
+                            current_test = test_name
+                            test_info = test_data_map.get(test_name, {})
+                            failed_details_dict[test_name] = {
+                                'name': test_name,
+                                'error': '',
+                                'request_params': test_info.get('request_params', 'N/A'),
+                                'response': test_info.get('response', 'N/A'),
+                                'method': test_info.get('method', 'N/A'),
+                                'path': test_info.get('path', 'N/A')
+                            }
+                            in_error = True
+                            error_buffer = []
+            # Capture error details from assertion errors (lines starting with 'E ')
             elif current_test and in_error:
-                if line.strip().startswith('===') or line.strip().startswith('---'):
+                if line.strip().startswith('E '):
+                    error_buffer.append(line.strip()[2:].strip())  # Remove 'E ' prefix
+                # End of error section
+                elif line.strip().startswith('===') or line.strip().startswith('---'):
                     if error_buffer:
-                        error_messages[current_test] = '\n'.join(error_buffer[-10:])
+                        error_messages[current_test] = '\n'.join(error_buffer[-5:])
                     current_test = None
                     in_error = False
                     error_buffer = []
-                elif line.strip() and not line.strip().startswith('='):
-                    error_buffer.append(line.strip())
+                elif line.strip().startswith('PASSED') or line.strip().startswith('FAILED'):
+                    if error_buffer:
+                        error_messages[current_test] = '\n'.join(error_buffer[-5:])
+                    current_test = None
+                    in_error = False
+                    error_buffer = []
             
-            if 'PASSED' in line or 'FAILED' in line:
+            # Also handle short format (FAILED tests/...::test_name) for summary
+            elif line.startswith('FAILED ') and '::' in line and 'test_' in line:
                 parts = line.split('::')
                 if len(parts) >= 2:
                     test_name = parts[-1].split()[0].strip()
-                    status = 'PASSED' if 'PASSED' in line else 'FAILED'
-                    test_details.append({
+                    if test_name not in processed_tests:
+                        processed_tests.add(test_name)
+                        test_info = test_data_map.get(test_name, {})
+                        failed_details_dict[test_name] = {
+                            'name': test_name,
+                            'error': '',
+                            'request_params': test_info.get('request_params', 'N/A'),
+                            'response': test_info.get('response', 'N/A'),
+                            'method': test_info.get('method', 'N/A'),
+                            'path': test_info.get('path', 'N/A')
+                        }
+            
+            # Detect passed/failed tests from test session output (like tests/file.py::test_name PASSED)
+            if (' PASSED' in line or ' FAILED' in line) and '::' in line and 'test_' in line:
+                parts = line.split('::')
+                if len(parts) >= 2:
+                    test_name = parts[-1].split()[0].strip()
+                    status = 'PASSED' if ' PASSED' in line else 'FAILED'
+                    test_info = test_data_map.get(test_name, {})
+                    test_detail = {
                         'name': test_name,
-                        'status': status
-                    })
+                        'status': status,
+                        'request_params': test_info.get('request_params', 'N/A'),
+                        'response': test_info.get('response', 'N/A'),
+                        'method': test_info.get('method', 'N/A'),
+                        'path': test_info.get('path', 'N/A')
+                    }
+                    test_details_dict[test_name] = test_detail
+                    
+                    if status == 'PASSED':
+                        passed_details_dict[test_name] = test_detail
         
-        for fail in failed_details:
-            if fail['name'] in error_messages:
-                fail['error'] = error_messages[fail['name']]
+        # Assign error messages to failed tests
+        for test_name, fail in failed_details_dict.items():
+            if test_name in error_messages:
+                fail['error'] = error_messages[test_name]
             elif not fail['error']:
                 fail['error'] = '连接超时或服务器未响应'
+        
+        # Load stored responses from file
+        responses_file = Path(__file__).parent / "test-reports" / "responses.json"
+        stored_responses = {}
+        if responses_file.exists():
+            try:
+                with open(responses_file, 'r', encoding='utf-8') as f:
+                    stored_responses = json.load(f)
+            except Exception as e:
+                logger.warning(f"Failed to load responses: {e}")
+        
+        # Update test details with actual responses
+        for test_name, detail in test_details_dict.items():
+            if test_name in stored_responses:
+                resp_data = stored_responses[test_name]
+                detail['response'] = json.dumps(resp_data.get('response', {}), ensure_ascii=False)
+                if 'request_params' in resp_data:
+                    detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
+        
+        # Update passed details with actual responses
+        for test_name, detail in passed_details_dict.items():
+            if test_name in stored_responses:
+                resp_data = stored_responses[test_name]
+                detail['response'] = json.dumps(resp_data.get('response', {}), ensure_ascii=False)
+                if 'request_params' in resp_data:
+                    detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
+        
+        # Update failed details with actual responses
+        for test_name, detail in failed_details_dict.items():
+            if test_name in stored_responses:
+                resp_data = stored_responses[test_name]
+                detail['response'] = json.dumps(resp_data.get('response', {}), ensure_ascii=False)
+                if 'request_params' in resp_data:
+                    detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
+        
+        # Convert dicts to lists
+        test_details = list(test_details_dict.values())
+        failed_details = list(failed_details_dict.values())
+        passed_details = list(passed_details_dict.values())
         
         return {
             'total_tests': total_tests,
@@ -227,9 +325,72 @@ class TestRunner:
             'failed_tests': failed_tests,
             'skipped_tests': skipped_tests,
             'failed_details': failed_details,
+            'passed_details': passed_details,
             'test_details': test_details,
             'return_code': result.returncode
         }
+    
+    def _extract_test_data_from_file(self) -> dict:
+        """Extract test data from the generated test file"""
+        test_data_map = {}
+        
+        try:
+            # Find the latest generated test file
+            tests_dir = Path(__file__).parent / "tests" / "generated"
+            test_files = list(tests_dir.glob("test_generated_*.py"))
+            
+            if not test_files:
+                return test_data_map
+            
+            latest_file = max(test_files, key=lambda p: p.stat().st_mtime)
+            
+            with open(latest_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Parse test functions to extract request data
+            import re
+            
+            # Find all test functions - improved pattern
+            test_pattern = r'def\s+(test_\w+)\s*\(\s*\)\s*:\s*"""(.*?)"""(.*?)\n\n\n|def\s+(test_\w+)\s*\(\s*\)\s*:\s*"""(.*?)"""(.*?)\Z'
+            matches = re.findall(test_pattern, content, re.DOTALL)
+            
+            for match in matches:
+                # Handle both pattern groups
+                if match[0]:  # First pattern matched
+                    test_name = match[0]
+                    docstring = match[1]
+                    func_body = match[2]
+                else:  # Second pattern matched (last test)
+                    test_name = match[3]
+                    docstring = match[4]
+                    func_body = match[5]
+                
+                # Extract method and path from docstring
+                method_match = re.search(r'(get|post|put|delete|patch).*?(/\S+)', docstring.lower())
+                method = method_match.group(1).upper() if method_match else 'GET'
+                path = method_match.group(2) if method_match else '/'
+                
+                # Extract data parameter from api_client call
+                # Look for data={...} in the function body
+                data_match = re.search(r'api_client\.\w+\s*\(\s*[\'"][^\'"]+[\'"]\s*,\s*data\s*=\s*(\{[^}]+\})', func_body)
+                if data_match:
+                    request_params = data_match.group(1)
+                else:
+                    # Fallback to test_data variable
+                    test_data_match = re.search(r'test_data\s*=\s*(\{[^}]*\})', func_body)
+                    request_params = test_data_match.group(1) if test_data_match else '{}'
+                
+                test_data_map[test_name] = {
+                    'method': method,
+                    'path': path,
+                    'request_params': request_params,
+                    'response': '待获取'  # Will be populated during actual test execution
+                }
+        
+        except Exception as e:
+            logger.warning(f"Failed to extract test data: {e}")
+        
+        return test_data_map
     
     def generate_html_report(self, test_results: dict, changes: dict):
         """Generate a beautiful HTML test report"""
@@ -259,22 +420,71 @@ class TestRunner:
         if not test_details_rows:
             test_details_rows = "<tr><td colspan='3' style='text-align:center;color:#888;'>暂无测试详情</td></tr>"
         
+        # Generate failed details with request/response info
         failed_rows = ""
         for idx, fail in enumerate(test_results.get('failed_details', [])):
             error_msg = fail.get('error', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
+            request_params = fail.get('request_params', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
+            response = fail.get('response', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
+            method = fail.get('method', 'N/A')
+            path = fail.get('path', 'N/A')
+            
             failed_rows += f"""
                 <tr class="failed-detail">
                     <td>❌</td>
-                    <td>{fail['name']}</td>
                     <td>
-                        <button class="error-btn" onclick="toggleError({idx})">查看详情</button>
-                        <div id="error-{idx}" class="error-detail">{error_msg}</div>
+                        <div><strong>{fail['name']}</strong></div>
+                        <div style="color:#888;font-size:0.85em;margin-top:5px;">{method} {path}</div>
+                    </td>
+                    <td>
+                        <button class="error-btn" onclick="toggleError('fail-{idx}')">查看详情</button>
+                        <div id="error-fail-{idx}" class="error-detail">
+                            <div style="margin-bottom:10px;"><strong style="color:#ef4444;">❌ 错误信息:</strong></div>
+                            <div style="background:rgba(239,68,68,0.1);padding:10px;border-radius:5px;margin-bottom:15px;">{error_msg}</div>
+                            
+                            <div style="margin-bottom:10px;"><strong style="color:#00d9ff;">📤 请求参数:</strong></div>
+                            <div style="background:rgba(0,217,255,0.1);padding:10px;border-radius:5px;margin-bottom:15px;font-family:monospace;">{request_params}</div>
+                            
+                            <div style="margin-bottom:10px;"><strong style="color:#10b981;">📥 返回结果:</strong></div>
+                            <div style="background:rgba(16,185,129,0.1);padding:10px;border-radius:5px;font-family:monospace;">{response}</div>
+                        </div>
                     </td>
                 </tr>
             """
         
         if not failed_rows:
             failed_rows = "<tr><td colspan='3' style='text-align:center;color:#10b981;'>🎉 无失败用例</td></tr>"
+        
+        # Generate passed details with request/response info
+        passed_rows = ""
+        for idx, passed in enumerate(test_results.get('passed_details', [])):
+            request_params = passed.get('request_params', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
+            response = passed.get('response', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
+            method = passed.get('method', 'N/A')
+            path = passed.get('path', 'N/A')
+            
+            passed_rows += f"""
+                <tr class="passed-detail">
+                    <td>✅</td>
+                    <td>
+                        <div><strong>{passed['name']}</strong></div>
+                        <div style="color:#888;font-size:0.85em;margin-top:5px;">{method} {path}</div>
+                    </td>
+                    <td>
+                        <button class="success-btn" onclick="toggleError('pass-{idx}')">查看详情</button>
+                        <div id="error-pass-{idx}" class="success-detail">
+                            <div style="margin-bottom:10px;"><strong style="color:#00d9ff;">📤 请求参数:</strong></div>
+                            <div style="background:rgba(0,217,255,0.1);padding:10px;border-radius:5px;margin-bottom:15px;font-family:monospace;">{request_params}</div>
+                            
+                            <div style="margin-bottom:10px;"><strong style="color:#10b981;">📥 返回结果:</strong></div>
+                            <div style="background:rgba(16,185,129,0.1);padding:10px;border-radius:5px;font-family:monospace;">{response}</div>
+                        </div>
+                    </td>
+                </tr>
+            """
+        
+        if not passed_rows:
+            passed_rows = "<tr><td colspan='3' style='text-align:center;color:#888;'>暂无成功用例</td></tr>"
         
         def get_real_path_from_swagger(path: str, method: str) -> str:
             real_path = swagger_client.get_real_path(path, method)
@@ -511,7 +721,7 @@ class TestRunner:
             font-size: 0.85em;
             white-space: pre-wrap;
             word-break: break-all;
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
         }}
         
@@ -519,6 +729,45 @@ class TestRunner:
             display: block;
             animation: fadeIn 0.3s ease;
         }}
+        
+        .success-btn {{
+            background: linear-gradient(135deg, #10b981 0%, #00ff88 100%);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }}
+        
+        .success-btn:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }}
+        
+        .success-detail {{
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow-y: auto;
+        }}
+        
+        .success-detail.show {{
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }}
+        
+        tr.passed-detail {{ background: rgba(16, 185, 129, 0.05); }}
+        tr.failed-detail {{ background: rgba(239, 68, 68, 0.05); }}
         
         @keyframes fadeIn {{
             from {{ opacity: 0; transform: translateY(-10px); }}
@@ -609,13 +858,29 @@ class TestRunner:
         </div>
         
         <div class="section">
+            <h2>✅ 成功详情</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">状态</th>
+                        <th>用例名称</th>
+                        <th>详情</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {passed_rows}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
             <h2>❌ 失败详情</h2>
             <table>
                 <thead>
                     <tr>
                         <th style="width: 50px;">状态</th>
                         <th>用例名称</th>
-                        <th>错误信息</th>
+                        <th>详情</th>
                     </tr>
                 </thead>
                 <tbody>

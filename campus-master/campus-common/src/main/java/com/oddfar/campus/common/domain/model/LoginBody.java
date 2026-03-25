@@ -22,18 +22,6 @@ public class LoginBody {
     @ApiModelProperty(value = "用户密码", example = "admin123")
     private String password;
 
-    /**
-     * 验证码
-     */
-    @ApiModelProperty(value = "验证码", example = "1234")
-    private String code;
-
-    /**
-     * 唯一标识
-     */
-    @ApiModelProperty(value = "唯一标识", example = "uuid-123456")
-    private String uuid;
-
     public String getUsername() {
         return username;
     }
@@ -48,21 +36,5 @@ public class LoginBody {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 }

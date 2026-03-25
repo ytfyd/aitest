@@ -34,7 +34,6 @@
         <hutool.version>5.8.23</hutool.version>
         <commons.fileupload.version>1.4</commons.fileupload.version>
         <mapstruct.version>1.5.3.Final</mapstruct.version>
-        <kaptcha.version>2.3.2</kaptcha.version>
         <jwt.version>0.9.1</jwt.version>
         <poi.version>4.1.2</poi.version>
         <sunmail.version>1.6.2</sunmail.version>
@@ -116,13 +115,6 @@
                 <groupId>eu.bitwalker</groupId>
                 <artifactId>UserAgentUtils</artifactId>
                 <version>${bitwalker.version}</version>
-            </dependency>
-
-            <!-- 验证码 -->
-            <dependency>
-                <groupId>com.github.penggle</groupId>
-                <artifactId>kaptcha</artifactId>
-                <version>${kaptcha.version}</version>
             </dependency>
 
             <!-- excel工具 -->

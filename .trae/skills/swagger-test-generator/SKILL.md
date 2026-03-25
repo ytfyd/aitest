@@ -85,11 +85,159 @@ def test_endpoint_name_positive():
     # Make API request
     response = api_client.get('/api/endpoint', params=test_data)
     
+    # Store response for reporting
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_endpoint_name_positive', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': test_data
+    })
+    
     # Validate response
     data = api_client.validate_response(response, 200)
     
-    # Assert response structure
-    assert 'requestId' in data
+    # Assert business response code
+    assert data.get('code') == 200, f"业务响应码错误: {data.get('msg', 'Unknown error')}"
+```
+
+## Critical Rules
+
+### 1. Login Endpoint Special Handling
+
+**IMPORTANT**: Login endpoints (`/login`) must use independent requests to avoid Authorization header conflicts.
+
+```python
+@pytest.mark.positive
+@pytest.mark.smoke
+def test_login_positive():
+    """测试 POST /login - 正向测试用例"""
+    
+    # Prepare test data
+    test_data = {"username": "admin", "password": "admin123"}
+    
+    # Use independent request for login endpoint to avoid auth header conflicts
+    import requests
+    response = requests.post('http://localhost:8160/login', json=test_data)
+    
+    # Store response for reporting
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_login_positive', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': test_data
+    })
+    
+    # Validate response
+    assert response.status_code == 200, f"HTTP状态码错误: {response.status_code}"
+    data = response.json()
+    
+    # Assert business response code
+    assert data.get('code') == 200, f"业务响应码错误: {data.get('msg', 'Unknown error')}"
+    assert 'token' in data, "登录响应缺少token字段"
+```
+
+**Why**: Login endpoints return 403 error when called with existing Authorization header.
+
+### 2. Response Assertion Rules
+
+**CRITICAL**: Always check business response code `code == 200`, NOT `requestId` field.
+
+```python
+# ✅ CORRECT - Check business response code
+assert data.get('code') == 200, f"业务响应码错误: {data.get('msg', 'Unknown error')}"
+
+# ❌ WRONG - Don't check requestId
+# assert 'requestId' in data
+```
+
+**Reason**: Actual API responses use `code` field for business status, not `requestId`.
+
+### 3. Response Storage Mechanism
+
+**REQUIRED**: Every test must save response data to `responses.json` for report generation.
+
+```python
+def save_response(test_name: str, response_data: dict):
+    """Save response data to file for reporting"""
+    try:
+        RESPONSE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        
+        responses = {}  # IMPORTANT: Use {}, not {{}}
+        if RESPONSE_FILE.exists():
+            with open(RESPONSE_FILE, 'r', encoding='utf-8') as f:
+                responses = json.load(f)
+        
+        responses[test_name] = response_data
+        
+        with open(RESPONSE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(responses, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Warning: Failed to save response: {e}")
+```
+
+**File Location**: `pytestjava/test-reports/responses.json`
+
+### 4. Authentication Mechanism
+
+**AUTO-LOGIN**: Use pytest fixture to automatically login before tests.
+
+```python
+# Authentication fixture - login before running tests
+@pytest.fixture(scope="session", autouse=True)
+def setup_authentication():
+    """Auto-login before running tests"""
+    # Clear previous responses
+    if RESPONSE_FILE.exists():
+        os.remove(RESPONSE_FILE)
+    
+    api_client.login(username="admin", password="admin123")
+    yield
+    api_client.clear_auth()
+```
+
+**Token Usage**: The `api_client` automatically adds `Authorization: Bearer {token}` header to all requests.
+
+### 5. Report Data Update
+
+**CRITICAL**: Update all test detail dictionaries with response data.
+
+```python
+# Load stored responses from file
+responses_file = Path(__file__).parent / "test-reports" / "responses.json"
+stored_responses = {}
+if responses_file.exists():
+    with open(responses_file, 'r', encoding='utf-8') as f:
+        stored_responses = json.load(f)
+
+# Update test details with actual responses
+for test_name, detail in test_details_dict.items():
+    if test_name in stored_responses:
+        resp_data = stored_responses[test_name]
+        detail['response'] = json.dumps(resp_data.get('response', {}), ensure_ascii=False)
+        if 'request_params' in resp_data:
+            detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
+
+# Update passed details with actual responses
+for test_name, detail in passed_details_dict.items():
+    if test_name in stored_responses:
+        resp_data = stored_responses[test_name]
+        detail['response'] = json.dumps(resp_data.get('response', {}), ensure_ascii=False)
+        if 'request_params' in resp_data:
+            detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
+
+# Update failed details with actual responses
+for test_name, detail in failed_details_dict.items():
+    if test_name in stored_responses:
+        resp_data = stored_responses[test_name]
+        detail['response'] = json.dumps(resp_data.get('response', {}), ensure_ascii=False)
+        if 'request_params' in resp_data:
+            detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
 ```
 
 ## Path Parameter Replacement

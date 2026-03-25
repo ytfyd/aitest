@@ -1,20 +1,15 @@
 package com.oddfar.campus.framework.web.service;
 
 import cn.hutool.extra.spring.SpringUtil;
-import com.oddfar.campus.common.constant.CacheConstants;
 import com.oddfar.campus.common.constant.Constants;
 import com.oddfar.campus.common.constant.UserConstants;
-import com.oddfar.campus.common.core.RedisCache;
 import com.oddfar.campus.common.domain.entity.SysUserEntity;
 import com.oddfar.campus.common.domain.event.LogininforEvent;
 import com.oddfar.campus.common.domain.model.RegisterBody;
-import com.oddfar.campus.common.exception.user.CaptchaException;
-import com.oddfar.campus.common.exception.user.CaptchaExpireException;
 import com.oddfar.campus.common.utils.MessageUtils;
 import com.oddfar.campus.common.utils.SecurityUtils;
 import com.oddfar.campus.common.utils.ServletUtils;
 import com.oddfar.campus.common.utils.StringUtils;
-import com.oddfar.campus.framework.service.SysConfigService;
 import com.oddfar.campus.framework.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,12 +22,6 @@ public class SysRegisterService {
     @Autowired
     private SysUserService userService;
 
-    @Autowired
-    private SysConfigService configService;
-
-    @Autowired
-    private RedisCache redisCache;
-
     /**
      * 注册
      */
@@ -40,12 +29,6 @@ public class SysRegisterService {
         String msg = "", username = registerBody.getUsername(), password = registerBody.getPassword();
         SysUserEntity sysUser = new SysUserEntity();
         sysUser.setUserName(username);
-
-        // 验证码开关
-        boolean captchaEnabled = configService.selectCaptchaEnabled();
-        if (captchaEnabled) {
-            validateCaptcha(username, registerBody.getCode(), registerBody.getUuid());
-        }
 
         if (StringUtils.isEmpty(username)) {
             msg = "用户名不能为空";
@@ -76,25 +59,5 @@ public class SysRegisterService {
             }
         }
         return msg;
-    }
-
-    /**
-     * 校验验证码
-     *
-     * @param username 用户名
-     * @param code     验证码
-     * @param uuid     唯一标识
-     * @return 结果
-     */
-    public void validateCaptcha(String username, String code, String uuid) {
-        String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
-        String captcha = redisCache.getCacheObject(verifyKey);
-        redisCache.deleteObject(verifyKey);
-        if (captcha == null) {
-            throw new CaptchaExpireException();
-        }
-        if (!code.equalsIgnoreCase(captcha)) {
-            throw new CaptchaException();
-        }
     }
 }

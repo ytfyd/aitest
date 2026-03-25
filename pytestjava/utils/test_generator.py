@@ -26,11 +26,22 @@ def test_{endpoint_name}_positive():
     # 发起API请求
     response = api_client.{method}('{path}'{params})
     
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {{"raw_text": response.text}}
+    save_response('test_{endpoint_name}_positive', {{
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {test_data}
+    }})
+    
     # 验证响应
     data = api_client.validate_response(response, {expected_status})
     
-    # 断言响应结构
-    assert 'requestId' in data
+    # 断言响应结构 - 检查业务响应码
+    assert data.get('code') == 200, f"业务响应码错误: {{data.get('msg', 'Unknown error')}}"
     {additional_assertions}
 """,
             
@@ -45,6 +56,17 @@ def test_{endpoint_name}_negative_{scenario}():
     
     # 发起API请求
     response = api_client.{method}('{path}', data=test_data)
+    
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {{"raw_text": response.text}}
+    save_response('test_{endpoint_name}_negative_{scenario}', {{
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {test_data}
+    }})
     
     # 验证错误响应
     assert response.status_code == {expected_status}
@@ -72,8 +94,23 @@ def test_{endpoint_name}_performance():
     end_time = time.time()
     response_time = end_time - start_time
     
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {{"raw_text": response.text}}
+    save_response('test_{endpoint_name}_performance', {{
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {test_data},
+        'response_time': response_time
+    }})
+    
     # 验证响应
     data = api_client.validate_response(response, {expected_status})
+    
+    # 断言业务响应码
+    assert data.get('code') == 200, f"业务响应码错误: {{data.get('msg', 'Unknown error')}}"
     
     # 断言性能要求
     assert response_time < {max_response_time}, "响应时间超过限制"
@@ -227,11 +264,64 @@ def test_{endpoint_name}_performance():
                                  test_data: Dict, query_params: Dict) -> Optional[str]:
         method_lower = method.lower() if isinstance(method, str) else str(method).lower()
         
+        # Build params string for query parameters or body data
         params_str = ""
         if query_params:
             params_str = f", params={json.dumps(query_params)}"
         
+        # For POST/PUT methods with body data, add data parameter
+        data_str = ""
+        if test_data and method_lower in ['post', 'put', 'patch']:
+            data_str = f", data={json.dumps(test_data)}"
+        
         test_data_str = json.dumps(test_data) if test_data else "{}"
+        
+        # Check if this is a login endpoint - needs special handling
+        is_login_endpoint = '/login' in path.lower()
+        
+        if is_login_endpoint:
+            # Use a separate session for login endpoint to avoid auth header conflicts
+            login_template = """
+@pytest.mark.positive
+@pytest.mark.smoke
+def test_{endpoint_name}_positive():
+    \"\"\"测试 {method} {path} - 正向测试用例\"\"\"
+    
+    # 准备测试数据
+    test_data = {test_data}
+    
+    # 登录接口使用独立请求，避免认证header冲突
+    import requests
+    response = requests.{method}('{base_url}{path}', json={test_data_str})
+    
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {{"raw_text": response.text}}
+    save_response('test_{endpoint_name}_positive', {{
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {test_data}
+    }})
+    
+    # 验证响应
+    assert response.status_code == 200, f"HTTP状态码错误: {{response.status_code}}"
+    data = response.json()
+    
+    # 断言业务响应码
+    assert data.get('code') == 200, f"业务响应码错误: {{data.get('msg', 'Unknown error')}}"
+    assert 'token' in data, "登录响应缺少token字段"
+"""
+            from config.settings import settings
+            return login_template.format(
+                endpoint_name=endpoint_name,
+                method=method_lower,
+                path=path,
+                test_data=test_data_str,
+                test_data_str=test_data_str,
+                base_url=settings.api_base_url
+            )
         
         template = self.test_templates["positive"]
         
@@ -240,7 +330,7 @@ def test_{endpoint_name}_performance():
             method=method_lower,
             path=path,
             test_data=test_data_str,
-            params=params_str,
+            params=params_str + data_str,
             expected_status=200,
             additional_assertions=self._get_additional_assertions(method, path)
         )
@@ -270,11 +360,70 @@ def test_{endpoint_name}_performance():
                                    test_data: Dict, query_params: Dict) -> Optional[str]:
         method_lower = method.lower() if isinstance(method, str) else str(method).lower()
         
+        # Build params string for query parameters or body data
         params_str = ""
         if query_params:
             params_str = f", params={json.dumps(query_params)}"
         
+        # For POST/PUT methods with body data, add data parameter
+        data_str = ""
+        if test_data and method_lower in ['post', 'put', 'patch']:
+            data_str = f", data={json.dumps(test_data)}"
+        
         test_data_str = json.dumps(test_data) if test_data else "{}"
+        
+        # Check if this is a login endpoint - needs special handling
+        is_login_endpoint = '/login' in path.lower()
+        
+        if is_login_endpoint:
+            # Use a separate session for login endpoint to avoid auth header conflicts
+            from config.settings import settings
+            login_perf_template = """
+@pytest.mark.performance
+def test_{endpoint_name}_performance():
+    \"\"\"测试 {method} {path} - 性能测试\"\"\"
+    
+    # 准备测试数据
+    test_data = {test_data}
+    
+    # 登录接口使用独立请求，避免认证header冲突
+    import time
+    import requests
+    start_time = time.time()
+    response = requests.{method}('{base_url}{path}', json={test_data_str})
+    end_time = time.time()
+    response_time = end_time - start_time
+    
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {{"raw_text": response.text}}
+    save_response('test_{endpoint_name}_performance', {{
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {test_data},
+        'response_time': response_time
+    }})
+    
+    # 验证响应
+    assert response.status_code == 200, f"HTTP状态码错误: {{response.status_code}}"
+    data = response.json()
+    
+    # 断言业务响应码
+    assert data.get('code') == 200, f"业务响应码错误: {{data.get('msg', 'Unknown error')}}"
+    
+    # 断言性能要求
+    assert response_time < 1.0, "响应时间超过限制"
+"""
+            return login_perf_template.format(
+                endpoint_name=endpoint_name,
+                method=method_lower,
+                path=path,
+                test_data=test_data_str,
+                test_data_str=test_data_str,
+                base_url=settings.api_base_url
+            )
         
         template = self.test_templates["performance"]
         
@@ -283,7 +432,7 @@ def test_{endpoint_name}_performance():
             method=method_lower,
             path=path,
             test_data=test_data_str,
-            params=params_str,
+            params=params_str + data_str,
             expected_status=200,
             max_response_time=1.0
         )
@@ -309,11 +458,49 @@ def test_{endpoint_name}_performance():
     def write_test_file(self, test_cases: Dict[str, List[str]], file_path: str):
         content = """import pytest
 import sys
+import json
+import os
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from utils.api_client import api_client
+
+
+# Response storage file
+RESPONSE_FILE = Path(__file__).parent.parent.parent / "test-reports" / "responses.json"
+
+
+def save_response(test_name: str, response_data: dict):
+    \"\"\"Save response data to file for reporting\"\"\"
+    try:
+        RESPONSE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        
+        responses = {}
+        if RESPONSE_FILE.exists():
+            with open(RESPONSE_FILE, 'r', encoding='utf-8') as f:
+                responses = json.load(f)
+        
+        responses[test_name] = response_data
+        
+        with open(RESPONSE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(responses, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Warning: Failed to save response: {e}")
+
+
+# Authentication fixture - login before running tests
+@pytest.fixture(scope="session", autouse=True)
+def setup_authentication():
+    \"\"\"Auto-login before running tests\"\"\"
+    # Clear previous responses
+    if RESPONSE_FILE.exists():
+        os.remove(RESPONSE_FILE)
+    
+    api_client.login(username="admin", password="admin123")
+    yield
+    api_client.clear_auth()
+
 
 """
 

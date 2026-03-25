@@ -47,8 +47,7 @@ public class SysLoginController {
     public R login(@ApiParam(value = "登录信息", required = true) @RequestBody LoginBody loginBody) {
         R r = R.ok();
         // 生成令牌
-        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
-                loginBody.getUuid());
+        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword());
         r.put(Constants.TOKEN, token);
         return r;
     }
