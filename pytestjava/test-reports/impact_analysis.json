@@ -1,0 +1,949 @@
+{
+  "timestamp": "2026-03-26T21:35:34.353269",
+  "commit_range": "HEAD~1..HEAD",
+  "changed_files": [
+    "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/config/CaptchaConfig.java",
+    "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/CaptchaController.java",
+    "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysLoginController.java",
+    "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysMenuController.java",
+    "campus-master/campus-common/src/main/java/com/oddfar/campus/common/constant/CacheConstants.java",
+    "campus-master/campus-common/src/main/java/com/oddfar/campus/common/constant/Constants.java",
+    "campus-master/campus-common/src/main/java/com/oddfar/campus/common/domain/model/LoginBody.java",
+    "campus-master/campus-common/src/main/java/com/oddfar/campus/common/exception/user/CaptchaException.java",
+    "campus-master/campus-common/src/main/java/com/oddfar/campus/common/exception/user/CaptchaExpireException.java",
+    "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/api/sysconfig/ConfigExpander.java",
+    "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/config/KaptchaTextCreator.java",
+    "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/config/SecurityConfig.java",
+    "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/service/SysConfigService.java",
+    "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/service/impl/SysConfigServiceImpl.java",
+    "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysLoginService.java",
+    "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysRegisterService.java"
+  ],
+  "code_changes": [
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "class",
+        "name": "CaptchaConfig",
+        "qualified_name": "CaptchaConfig",
+        "file_path": "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/config/CaptchaConfig.java",
+        "line_number": 18,
+        "signature": "package com.oddfar.campus.admin.config;\n\nimport com.google.code.kaptcha.impl.DefaultKaptcha;\nimport com.google.code.kaptcha.util.Config;\nimport org.springframework.context.annotation.Bean;\nimport org.",
+        "annotations": [
+          "@author",
+          "@Configuration"
+        ]
+      },
+      "diff_content": "package com.oddfar.campus.admin.config;\n\nimport com.google.code.kaptcha.impl.DefaultKaptcha;\nimport com.google.code.kaptcha.util.Config;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\n\nimport java.util.Properties;\n\nimport static com.google.code.kaptcha.Constants.*;\n\n/**\n * 验证码配置\n *\n * @author ruoyi\n */\n@Configuration\npublic class CaptchaConfig {\n    @Bean(name = \"captchaProducer\")\n    public DefaultKaptcha getKaptchaBean() {\n        DefaultKaptcha defaultKaptcha = new DefaultKaptcha();\n        Properties properties = new Properties();\n        // 是否有边框 默认为true 我们可以自己设置yes，no\n        properties.setProperty(KAPTCHA_BORDER, \"yes\");\n        // 验证码文本字符颜色 默认为Color.BLACK\n        properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_COLOR, \"black\");\n        // 验证码图片宽度 默认为200\n        properties.setProperty(KAPTCHA_IMAGE_WIDTH, \"160\");\n        // 验证码图片高度 默认为50\n        properties.setProperty(KAPTCHA_IMAGE_HEIGHT, \"60\");\n        // 验证码文本字符大小 默认为40\n        properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_SIZE, \"38\");\n        // KAPTCHA_SESSION_KEY\n        properties.setProperty(KAPTCHA_SESSION_CONFIG_KEY, \"kaptchaCode\");\n        // 验证码文本字符长度 默认为5\n        properties.setProperty(KAPTCHA_TEXTPRODUCER_CHAR_LENGTH, \"4\");\n        // 验证码文本字体样式 默认为new Font(\"Arial\", 1, fontSize), new Font(\"Courier\", 1, fontSize)\n        properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_NAMES, \"Arial,Courier\");\n        // 图片样式 水纹com.google.code.kaptcha.impl.WaterRipple 鱼眼com.google.code.kaptcha.impl.FishEyeGimpy 阴影com.google.code.kaptcha.impl.ShadowGimpy\n        properties.setProperty(KAPTCHA_OBSCURIFICATOR_IMPL, \"com.google.code.kaptcha.impl.ShadowGimpy\");\n        Config config = new Config(properties);\n        defaultKaptcha.setConfig(config);\n        return defaultKaptcha;\n    }\n\n    @Bean(name = \"captchaProducerMath\")\n    public DefaultKaptcha getKaptchaBeanMath() {\n        DefaultKaptcha defaultKaptcha = new DefaultKaptcha();\n        Properties properties = new Properties();\n        // 是否有边框 默认为true 我们可以自己设置yes，no\n        properties.setProperty(KAPTCHA_BORDER, \"yes\");\n        // 边框颜色 默认为Color.BLACK\n        properties.setProperty(KAPTCHA_BORDER_COLOR, \"105,179,90\");\n        // 验证码文本字符颜色 默认为Color.BLACK\n        properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_COLOR, \"blue\");\n        // 验证码图片宽度 默认为200\n        properties.setProperty(KAPTCHA_IMAGE_WIDTH, \"160\");\n        // 验证码图片高度 默认为50\n        properties.setProperty(KAPTCHA_IMAGE_HEIGHT, \"60\");\n        // 验证码文本字符大小 默认为40\n        properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_SIZE, \"35\");\n        // KAPTCHA_SESSION_KEY\n        properties.setProperty(KAPTCHA_SESSION_CONFIG_KEY, \"kaptchaCodeMath\");\n        // 验证码文本生成器\n        properties.setProperty(KAPTCHA_TEXTPRODUCER_IMPL, \"com.oddfar.campus.framework.config.KaptchaTextCreator\");\n        // 验证码文本字符间距 默认为2\n        properties.setProperty(KAPTCHA_TEXTPRODUCER_CHAR_SPACE, \"3\");\n        // 验证码文本字符长度 默认为5\n        properties.setProperty(KAPTCHA_TEXTPRODUCER_CHAR_LENGTH, \"6\");\n        // 验证码文本字体样式 默认为new Font(\"Arial\", 1, fontSize), new Font(\"Courier\", 1, fontSize)\n        properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_NAMES, \"Arial,Courier\");\n        // 验证码噪点颜色 默认为Color.BLACK\n        properties.setProperty(KAPTCHA_NOISE_COLOR, \"white\");\n        // 干扰实现类\n        properties.setProperty(KAPTCHA_NOISE_IMPL, \"com.google.code.kaptcha.impl.NoNoise\");\n        // 图片样式 水纹com.google.code.kaptcha.impl.WaterRipple 鱼眼com.google.code.kaptcha.impl.FishEyeGimpy 阴影com.google.code.kaptcha.impl.ShadowGimpy\n        properties.setProperty(KAPTCHA_OBSCURIFICATOR_IMPL, \"com.google.code.kaptcha.impl.ShadowGimpy\");\n        Config config = new Config(properties);\n        defaultKaptcha.setConfig(config);\n        return defaultKaptcha;\n    }\n}\n"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "class",
+        "name": "CaptchaController",
+        "qualified_name": "CaptchaController",
+        "file_path": "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/CaptchaController.java",
+        "line_number": 32,
+        "signature": "package com.oddfar.campus.admin.controller.system;\n\nimport cn.hutool.core.codec.Base64;\nimport com.google.code.kaptcha.Producer;\nimport com.oddfar.campus.common.annotation.Log;\nimport com.oddfar.campu",
+        "annotations": [
+          "@author",
+          "@RestController",
+          "@Log(openLog = false)"
+        ]
+      },
+      "diff_content": "package com.oddfar.campus.admin.controller.system;\n\nimport cn.hutool.core.codec.Base64;\nimport com.google.code.kaptcha.Producer;\nimport com.oddfar.campus.common.annotation.Log;\nimport com.oddfar.campus.common.constant.CacheConstants;\nimport com.oddfar.campus.common.constant.Constants;\nimport com.oddfar.campus.common.core.RedisCache;\nimport com.oddfar.campus.common.domain.R;\nimport com.oddfar.campus.common.utils.uuid.IdUtils;\nimport com.oddfar.campus.framework.api.sysconfig.ConfigExpander;\nimport com.oddfar.campus.framework.service.SysConfigService;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.util.FastByteArrayOutputStream;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport javax.annotation.Resource;\nimport javax.imageio.ImageIO;\nimport javax.servlet.http.HttpServletResponse;\nimport java.awt.image.BufferedImage;\nimport java.io.IOException;\nimport java.util.concurrent.TimeUnit;\n\n/**\n * 验证码操作处理\n *\n * @author ruoyi\n */\n@RestController\n@Log(openLog = false)\npublic class CaptchaController {\n    @Resource(name = \"captchaProducer\")\n    private Producer captchaProducer;\n\n    @Resource(name = \"captchaProducerMath\")\n    private Producer captchaProducerMath;\n\n    @Autowired\n    private RedisCache redisCache;\n    @Autowired\n    private SysConfigService configService;\n\n    /**\n     * 生成验证码\n     */\n    @GetMapping(value = \"/captchaImage\", name = \"生产验证码\")\n    public R getCode(HttpServletResponse response) throws IOException {\n        R ajax = R.ok();\n        boolean captchaEnabled = configService.selectCaptchaEnabled();\n        ajax.put(\"captchaEnabled\", captchaEnabled);\n        if (!captchaEnabled) {\n            return ajax;\n        }\n\n        // 保存验证码信息\n        String uuid = IdUtils.simpleUUID();\n        String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + uuid;\n\n        String capStr = null, code = null;\n        BufferedImage image = null;\n\n        String captchaType = ConfigExpander.getLoginCaptchaType();\n        if (\"math\".equals(captchaType)) {\n            String capText = captchaProducerMath.createText();\n            capStr = capText.substring(0, capText.lastIndexOf(\"@\"));\n            code = capText.substring(capText.lastIndexOf(\"@\") + 1);\n            image = captchaProducerMath.createImage(capStr);\n        } else if (\"char\".equals(captchaType)) {\n            capStr = code = captchaProducer.createText();\n            image = captchaProducer.createImage(capStr);\n        }\n\n        redisCache.setCacheObject(verifyKey, code, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);\n        // 转换流信息写出\n        FastByteArrayOutputStream os = new FastByteArrayOutputStream();\n        try {\n            ImageIO.write(image, \"jpg\", os);\n        } catch (IOException e) {\n            return R.error(e.getMessage());\n        }\n\n        ajax.put(\"uuid\", uuid);\n        ajax.put(\"img\", Base64.encode(os.toByteArray()));\n        return ajax;\n    }\n}\n"
+    },
+    {
+      "change_type": "modified",
+      "element": {
+        "element_type": "method",
+        "name": "login",
+        "qualified_name": "SysLoginController.login",
+        "file_path": "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysLoginController.java",
+        "line_number": 19,
+        "signature": "R login(LoginBody)",
+        "annotations": [
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@return",
+          "@ApiOperation(value = \"登录方法\", notes = \"用户登录接口，返回JWT令牌\")",
+          "@PostMapping(value = \"/login\", name = \"登录方法\")"
+        ]
+      },
+      "diff_content": "-         String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),\n-                 loginBody.getUuid());\n-         r.put(Constants.TOKEN, token);\n-         return r;\n-     }\n+         String token = loginService.login(loginBody.getUsername(), loginBody.getPassword());\n+         r.put(Constants.TOKEN, token);\n+         return r;\n+     }",
+      "old_element": {
+        "element_type": "method",
+        "name": "login",
+        "qualified_name": "SysLoginController.login",
+        "file_path": "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysLoginController.java",
+        "line_number": 19,
+        "signature": "R login(LoginBody)",
+        "annotations": [
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@return",
+          "@ApiOperation(value = \"登录方法\", notes = \"用户登录接口，返回JWT令牌\")",
+          "@PostMapping(value = \"/login\", name = \"登录方法\")"
+        ]
+      }
+    },
+    {
+      "change_type": "modified",
+      "element": {
+        "element_type": "method",
+        "name": "remove",
+        "qualified_name": "SysMenuController.remove",
+        "file_path": "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysMenuController.java",
+        "line_number": 81,
+        "signature": "R remove(Long)",
+        "annotations": [
+          "@Autowired",
+          "@PreAuthorize(\"@ss.hasPermi('system:menu:list')",
+          "@GetMapping(value = \"/list\", name = \"菜单管理-分页\")",
+          "@PreAuthorize(\"@ss.hasPermi('system:menu:query')",
+          "@GetMapping(value = \"/{menuId}\", name = \"菜单管理-查询\")",
+          "@PathVariable",
+          "@GetMapping(value = \"/treeselect\", name = \"菜单管理-获取菜单下拉树列表\")",
+          "@GetMapping(value = \"/roleMenuTreeselect/{roleId}\", name = \"菜单管理-加载对应角色菜单列表树\")",
+          "@PathVariable(\"roleId\")",
+          "@PreAuthorize(\"@ss.hasPermi('system:menu:add')",
+          "@PostMapping(name = \"菜单管理-新增\")",
+          "@Validated",
+          "@RequestBody",
+          "@PreAuthorize(\"@ss.hasPermi('system:menu:edit')",
+          "@PutMapping(name = \"菜单管理-修改\")",
+          "@Validated",
+          "@RequestBody",
+          "@PreAuthorize(\"@ss.hasPermi('system:menu:remove')",
+          "@DeleteMapping(value = \"/{menuId}\", name = \"菜单管理-删除\")"
+        ]
+      },
+      "diff_content": "-             return R.error(\"存在子菜单,不允许删除\");\n-             return R.error(\"菜单已分配,不允许删除\");\n+             return R.error(\"存在子菜单,不允许删除。\");\n+             return R.error(\"菜单已分配,不允许删除。\");",
+      "old_element": {
+        "element_type": "method",
+        "name": "remove",
+        "qualified_name": "SysMenuController.remove",
+        "file_path": "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysMenuController.java",
+        "line_number": 81,
+        "signature": "R remove(Long)",
+        "annotations": [
+          "@Autowired",
+          "@PreAuthorize(\"@ss.hasPermi('system:menu:list')",
+          "@GetMapping(value = \"/list\", name = \"菜单管理-分页\")",
+          "@PreAuthorize(\"@ss.hasPermi('system:menu:query')",
+          "@GetMapping(value = \"/{menuId}\", name = \"菜单管理-查询\")",
+          "@PathVariable",
+          "@GetMapping(value = \"/treeselect\", name = \"菜单管理-获取菜单下拉树列表\")",
+          "@GetMapping(value = \"/roleMenuTreeselect/{roleId}\", name = \"菜单管理-加载对应角色菜单列表树\")",
+          "@PathVariable(\"roleId\")",
+          "@PreAuthorize(\"@ss.hasPermi('system:menu:add')",
+          "@PostMapping(name = \"菜单管理-新增\")",
+          "@Validated",
+          "@RequestBody",
+          "@PreAuthorize(\"@ss.hasPermi('system:menu:edit')",
+          "@PutMapping(name = \"菜单管理-修改\")",
+          "@Validated",
+          "@RequestBody",
+          "@PreAuthorize(\"@ss.hasPermi('system:menu:remove')",
+          "@DeleteMapping(value = \"/{menuId}\", name = \"菜单管理-删除\")"
+        ]
+      }
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "CAPTCHA_CODE_KEY",
+        "qualified_name": "CacheConstants.CAPTCHA_CODE_KEY",
+        "file_path": "campus-master/campus-common/src/main/java/com/oddfar/campus/common/constant/CacheConstants.java",
+        "line_number": 14,
+        "signature": "String CAPTCHA_CODE_KEY",
+        "annotations": []
+      },
+      "diff_content": "public static final String CAPTCHA_CODE_KEY ="
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "CAPTCHA_EXPIRATION",
+        "qualified_name": "Constants.CAPTCHA_EXPIRATION",
+        "file_path": "campus-master/campus-common/src/main/java/com/oddfar/campus/common/constant/Constants.java",
+        "line_number": 70,
+        "signature": "Integer CAPTCHA_EXPIRATION",
+        "annotations": []
+      },
+      "diff_content": "public static final Integer CAPTCHA_EXPIRATION ="
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "getCode",
+        "qualified_name": "LoginBody.getCode",
+        "file_path": "campus-master/campus-common/src/main/java/com/oddfar/campus/common/domain/model/LoginBody.java",
+        "line_number": 42,
+        "signature": "String getCode()",
+        "annotations": [
+          "@ApiModelProperty(value = \"用户名\", example = \"admin\")",
+          "@ApiModelProperty(value = \"用户密码\", example = \"admin123\")",
+          "@ApiModelProperty(value = \"验证码\", example = \"1234\")",
+          "@ApiModelProperty(value = \"唯一标识\", example = \"uuid-123456\")"
+        ]
+      },
+      "diff_content": "public String getCode() {\n        return code;\n    }"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "setCode",
+        "qualified_name": "LoginBody.setCode",
+        "file_path": "campus-master/campus-common/src/main/java/com/oddfar/campus/common/domain/model/LoginBody.java",
+        "line_number": 46,
+        "signature": "void setCode(String)",
+        "annotations": [
+          "@ApiModelProperty(value = \"用户名\", example = \"admin\")",
+          "@ApiModelProperty(value = \"用户密码\", example = \"admin123\")",
+          "@ApiModelProperty(value = \"验证码\", example = \"1234\")",
+          "@ApiModelProperty(value = \"唯一标识\", example = \"uuid-123456\")"
+        ]
+      },
+      "diff_content": "public void setCode(String code) {\n        this.code = code;\n    }"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "getUuid",
+        "qualified_name": "LoginBody.getUuid",
+        "file_path": "campus-master/campus-common/src/main/java/com/oddfar/campus/common/domain/model/LoginBody.java",
+        "line_number": 50,
+        "signature": "String getUuid()",
+        "annotations": [
+          "@ApiModelProperty(value = \"用户名\", example = \"admin\")",
+          "@ApiModelProperty(value = \"用户密码\", example = \"admin123\")",
+          "@ApiModelProperty(value = \"验证码\", example = \"1234\")",
+          "@ApiModelProperty(value = \"唯一标识\", example = \"uuid-123456\")"
+        ]
+      },
+      "diff_content": "public String getUuid() {\n        return uuid;\n    }"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "setUuid",
+        "qualified_name": "LoginBody.setUuid",
+        "file_path": "campus-master/campus-common/src/main/java/com/oddfar/campus/common/domain/model/LoginBody.java",
+        "line_number": 54,
+        "signature": "void setUuid(String)",
+        "annotations": [
+          "@ApiModelProperty(value = \"用户名\", example = \"admin\")",
+          "@ApiModelProperty(value = \"用户密码\", example = \"admin123\")",
+          "@ApiModelProperty(value = \"验证码\", example = \"1234\")",
+          "@ApiModelProperty(value = \"唯一标识\", example = \"uuid-123456\")"
+        ]
+      },
+      "diff_content": "public void setUuid(String uuid) {\n        this.uuid = uuid;\n    }"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "code",
+        "qualified_name": "LoginBody.code",
+        "file_path": "campus-master/campus-common/src/main/java/com/oddfar/campus/common/domain/model/LoginBody.java",
+        "line_number": 18,
+        "signature": "String code",
+        "annotations": [
+          "@ApiModelProperty(value = \"用户名\", example = \"admin\")",
+          "@ApiModelProperty(value = \"用户密码\", example = \"admin123\")",
+          "@ApiModelProperty(value = \"验证码\", example = \"1234\")"
+        ]
+      },
+      "diff_content": "private String code;"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "uuid",
+        "qualified_name": "LoginBody.uuid",
+        "file_path": "campus-master/campus-common/src/main/java/com/oddfar/campus/common/domain/model/LoginBody.java",
+        "line_number": 24,
+        "signature": "String uuid",
+        "annotations": [
+          "@ApiModelProperty(value = \"用户名\", example = \"admin\")",
+          "@ApiModelProperty(value = \"用户密码\", example = \"admin123\")",
+          "@ApiModelProperty(value = \"验证码\", example = \"1234\")",
+          "@ApiModelProperty(value = \"唯一标识\", example = \"uuid-123456\")"
+        ]
+      },
+      "diff_content": "private String uuid;"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "class",
+        "name": "CaptchaException",
+        "qualified_name": "CaptchaException",
+        "file_path": "campus-master/campus-common/src/main/java/com/oddfar/campus/common/exception/user/CaptchaException.java",
+        "line_number": 8,
+        "signature": "package com.oddfar.campus.common.exception.user;\n\n/**\n * 验证码错误异常类\n *\n * @author ruoyi\n */\npublic class CaptchaException extends UserException {\n    private static final long serialVersionUID = 1L;\n\n  ",
+        "annotations": [
+          "@author"
+        ]
+      },
+      "diff_content": "package com.oddfar.campus.common.exception.user;\n\n/**\n * 验证码错误异常类\n *\n * @author ruoyi\n */\npublic class CaptchaException extends UserException {\n    private static final long serialVersionUID = 1L;\n\n    public CaptchaException() {\n        super(\"user.jcaptcha.error\", null);\n    }\n}\n"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "class",
+        "name": "CaptchaExpireException",
+        "qualified_name": "CaptchaExpireException",
+        "file_path": "campus-master/campus-common/src/main/java/com/oddfar/campus/common/exception/user/CaptchaExpireException.java",
+        "line_number": 8,
+        "signature": "package com.oddfar.campus.common.exception.user;\n\n/**\n * 验证码失效异常类\n *\n * @author ruoyi\n */\npublic class CaptchaExpireException extends UserException {\n    private static final long serialVersionUID = 1",
+        "annotations": [
+          "@author"
+        ]
+      },
+      "diff_content": "package com.oddfar.campus.common.exception.user;\n\n/**\n * 验证码失效异常类\n *\n * @author ruoyi\n */\npublic class CaptchaExpireException extends UserException {\n    private static final long serialVersionUID = 1L;\n\n    public CaptchaExpireException() {\n        super(\"user.jcaptcha.expire\", null);\n    }\n}\n"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "getLoginCaptchaType",
+        "qualified_name": "ConfigExpander.getLoginCaptchaType",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/api/sysconfig/ConfigExpander.java",
+        "line_number": 12,
+        "signature": "String getLoginCaptchaType()",
+        "annotations": []
+      },
+      "diff_content": "public static String getLoginCaptchaType() {\n        return ConfigContext.me().selectConfigByKey(\"sys.login.captchaType\", String.class, \"math\");\n    }"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "class",
+        "name": "KaptchaTextCreator",
+        "qualified_name": "KaptchaTextCreator",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/config/KaptchaTextCreator.java",
+        "line_number": 13,
+        "signature": "package com.oddfar.campus.framework.config;\n\nimport com.google.code.kaptcha.text.impl.DefaultTextCreator;\nimport org.springframework.context.annotation.Configuration;\n\nimport java.util.Random;\n\n/**\n *",
+        "annotations": [
+          "@author"
+        ]
+      },
+      "diff_content": "package com.oddfar.campus.framework.config;\n\nimport com.google.code.kaptcha.text.impl.DefaultTextCreator;\nimport org.springframework.context.annotation.Configuration;\n\nimport java.util.Random;\n\n/**\n * 验证码文本生成器\n *\n * @author ruoyi\n */\npublic class KaptchaTextCreator extends DefaultTextCreator {\n    private static final String[] CNUMBERS = \"0,1,2,3,4,5,6,7,8,9,10\".split(\",\");\n\n    @Override\n    public String getText() {\n        Integer result = 0;\n        Random random = new Random();\n        int x = random.nextInt(10);\n        int y = random.nextInt(10);\n        StringBuilder suChinese = new StringBuilder();\n        int randomoperands = random.nextInt(3);\n        if (randomoperands == 0) {\n            result = x * y;\n            suChinese.append(CNUMBERS[x]);\n            suChinese.append(\"*\");\n            suChinese.append(CNUMBERS[y]);\n        } else if (randomoperands == 1) {\n            if ((x != 0) && y % x == 0) {\n                result = y / x;\n                suChinese.append(CNUMBERS[y]);\n                suChinese.append(\"/\");\n                suChinese.append(CNUMBERS[x]);\n            } else {\n                result = x + y;\n                suChinese.append(CNUMBERS[x]);\n                suChinese.append(\"+\");\n                suChinese.append(CNUMBERS[y]);\n            }\n        } else {\n            if (x >= y) {\n                result = x - y;\n                suChinese.append(CNUMBERS[x]);\n                suChinese.append(\"-\");\n                suChinese.append(CNUMBERS[y]);\n            } else {\n                result = y - x;\n                suChinese.append(CNUMBERS[y]);\n                suChinese.append(\"-\");\n                suChinese.append(CNUMBERS[x]);\n            }\n        }\n        suChinese.append(\"=?@\" + result);\n        return suChinese.toString();\n    }\n}"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "selectCaptchaEnabled",
+        "qualified_name": "SysConfigService.selectCaptchaEnabled",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/service/SysConfigService.java",
+        "line_number": 48,
+        "signature": "boolean selectCaptchaEnabled()",
+        "annotations": [
+          "@param",
+          "@return",
+          "@param",
+          "@return",
+          "@param",
+          "@param",
+          "@param",
+          "@return",
+          "@param",
+          "@param",
+          "@param",
+          "@param",
+          "@return",
+          "@return"
+        ]
+      },
+      "diff_content": "\n    boolean selectCaptchaEnabled();"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "selectCaptchaEnabled",
+        "qualified_name": "SysConfigServiceImpl.selectCaptchaEnabled",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/service/impl/SysConfigServiceImpl.java",
+        "line_number": 79,
+        "signature": "boolean selectCaptchaEnabled()",
+        "annotations": [
+          "@Resource",
+          "@Autowired",
+          "@PostConstruct",
+          "@Override",
+          "@Override",
+          "@param",
+          "@return",
+          "@Override",
+          "@Override",
+          "@Override",
+          "@return",
+          "@Override"
+        ]
+      },
+      "diff_content": "public boolean selectCaptchaEnabled() {\n        String captchaEnabled = selectConfigByKey(\"sys.account.captchaEnabled\");\n        if (StringUtils.isEmpty(captchaEnabled)) {\n            return true;\n        }\n        return Convert.toBool(captchaEnabled);\n    }"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "captchaEnabled",
+        "qualified_name": "SysConfigServiceImpl.captchaEnabled",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/service/impl/SysConfigServiceImpl.java",
+        "line_number": 79,
+        "signature": "String captchaEnabled",
+        "annotations": [
+          "@Resource",
+          "@Autowired",
+          "@PostConstruct",
+          "@Override",
+          "@Override",
+          "@param",
+          "@return",
+          "@Override",
+          "@Override",
+          "@Override",
+          "@return",
+          "@Override"
+        ]
+      },
+      "diff_content": "\n        String captchaEnabled ="
+    },
+    {
+      "change_type": "modified",
+      "element": {
+        "element_type": "method",
+        "name": "login",
+        "qualified_name": "SysLoginService.login",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysLoginService.java",
+        "line_number": 18,
+        "signature": "String login(String, String)",
+        "annotations": [
+          "@Autowired",
+          "@Resource",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": "- public String login(String username, String password, String code, String uuid) {\n-         boolean captchaEnabled = configService.selectCaptchaEnabled();\n-         // 验证码开关\n-         if (captchaEnabled) {\n-             validateCaptcha(username, code, uuid);\n-         }\n-         // 用户验证\n-         Authentication authentication = null;\n-         try {\n-             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);\n-             AuthenticationContextHolder.setContext(authenticationToken);\n-             // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername\n-             authentication = authenticationManager.authenticate(authenticationToken);\n-         } catch (Exception e) {\n-             if (e instanceof BadCredentialsException) {\n-                 //异步执行->保存登录信息\n-                 LogininforEvent logininforEvent = new LogininforEvent();\n-                 logininforEvent.setUsername(username);\n-                 logininforEvent.setStatus(Constants.LOGIN_FAIL);\n-                 logininforEvent.setMessage(MessageUtils.message(\"user.password.not.match\"));",
+      "old_element": {
+        "element_type": "method",
+        "name": "login",
+        "qualified_name": "SysLoginService.login",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysLoginService.java",
+        "line_number": 26,
+        "signature": "String login(String, String, String, String)",
+        "annotations": [
+          "@Autowired",
+          "@Resource",
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      }
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "validateCaptcha",
+        "qualified_name": "SysLoginService.validateCaptcha",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysLoginService.java",
+        "line_number": 80,
+        "signature": "void validateCaptcha(String, String, String)",
+        "annotations": [
+          "@Autowired",
+          "@Resource",
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@param",
+          "@return",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": "public void validateCaptcha(String username, String code, String uuid) {\n        if (\"6666\".equals(code)) {\n            return;\n        }\n        String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, \"\");\n        String captcha = redisCache.getCacheObject(verifyKey);\n        redisCache.deleteObject(verifyKey);\n        if (captcha == null) {\n            throw new CaptchaExpireException();\n        }\n        if (!code.equalsIgnoreCase(captcha)) {\n            throw new CaptchaException();\n        }\n    }"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "CaptchaExpireException",
+        "qualified_name": "SysLoginService.CaptchaExpireException",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysLoginService.java",
+        "line_number": 88,
+        "signature": "new CaptchaExpireException()",
+        "annotations": [
+          "@Autowired",
+          "@Resource",
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@param",
+          "@return",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": " new CaptchaExpireException();"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "CaptchaException",
+        "qualified_name": "SysLoginService.CaptchaException",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysLoginService.java",
+        "line_number": 91,
+        "signature": "new CaptchaException()",
+        "annotations": [
+          "@Autowired",
+          "@Resource",
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@param",
+          "@return",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": " new CaptchaException();"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "redisCache",
+        "qualified_name": "SysLoginService.redisCache",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysLoginService.java",
+        "line_number": 9,
+        "signature": "RedisCache redisCache",
+        "annotations": [
+          "@Autowired",
+          "@Resource",
+          "@Autowired"
+        ]
+      },
+      "diff_content": "private RedisCache redisCache;"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "configService",
+        "qualified_name": "SysLoginService.configService",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysLoginService.java",
+        "line_number": 15,
+        "signature": "SysConfigService configService",
+        "annotations": [
+          "@Autowired",
+          "@Resource",
+          "@Autowired",
+          "@Autowired",
+          "@Autowired"
+        ]
+      },
+      "diff_content": "private SysConfigService configService;"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "captchaEnabled",
+        "qualified_name": "SysLoginService.captchaEnabled",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysLoginService.java",
+        "line_number": 26,
+        "signature": "boolean captchaEnabled",
+        "annotations": [
+          "@Autowired",
+          "@Resource",
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": "\n        boolean captchaEnabled ="
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "verifyKey",
+        "qualified_name": "SysLoginService.verifyKey",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysLoginService.java",
+        "line_number": 83,
+        "signature": "String verifyKey",
+        "annotations": [
+          "@Autowired",
+          "@Resource",
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@param",
+          "@return",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": "\n        String verifyKey ="
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "captcha",
+        "qualified_name": "SysLoginService.captcha",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysLoginService.java",
+        "line_number": 84,
+        "signature": "String captcha",
+        "annotations": [
+          "@Autowired",
+          "@Resource",
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@param",
+          "@return",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": "\n        String captcha ="
+    },
+    {
+      "change_type": "modified",
+      "element": {
+        "element_type": "method",
+        "name": "register",
+        "qualified_name": "SysRegisterService.register",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysRegisterService.java",
+        "line_number": 8,
+        "signature": "String register(RegisterBody)",
+        "annotations": [
+          "@Autowired"
+        ]
+      },
+      "diff_content": "-         // 验证码开关\n-         boolean captchaEnabled = configService.selectCaptchaEnabled();\n-         if (captchaEnabled) {\n-             validateCaptcha(username, registerBody.getCode(), registerBody.getUuid());\n-         }\n- \n-         if (StringUtils.isEmpty(username)) {\n-             msg = \"用户名不能为空\";\n-         } else if (StringUtils.isEmpty(password)) {\n-             msg = \"用户密码不能为空\";\n-         } else if (username.length() < UserConstants.USERNAME_MIN_LENGTH\n-                 || username.length() > UserConstants.USERNAME_MAX_LENGTH) {\n-             msg = \"账户长度必须在2到20个字符之间\";\n-         } else if (password.length() < UserConstants.PASSWORD_MIN_LENGTH\n-                 || password.length() > UserConstants.PASSWORD_MAX_LENGTH) {\n-             msg = \"密码长度必须在5到20个字符之间\";\n-         } else if (!(userService.checkUserNameUnique(sysUser))) {\n-             msg = \"保存用户'\" + username + \"'失败，注册账号已存在\";\n-         } else {\n-             sysUser.setNickName(username);",
+      "old_element": {
+        "element_type": "method",
+        "name": "register",
+        "qualified_name": "SysRegisterService.register",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysRegisterService.java",
+        "line_number": 14,
+        "signature": "String register(RegisterBody)",
+        "annotations": [
+          "@Autowired",
+          "@Autowired",
+          "@Autowired"
+        ]
+      }
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "validateCaptcha",
+        "qualified_name": "SysRegisterService.validateCaptcha",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysRegisterService.java",
+        "line_number": 64,
+        "signature": "void validateCaptcha(String, String, String)",
+        "annotations": [
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": "public void validateCaptcha(String username, String code, String uuid) {\n        String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, \"\");\n        String captcha = redisCache.getCacheObject(verifyKey);\n        redisCache.deleteObject(verifyKey);\n        if (captcha == null) {\n            throw new CaptchaExpireException();\n        }\n        if (!code.equalsIgnoreCase(captcha)) {\n            throw new CaptchaException();\n        }\n    }"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "CaptchaExpireException",
+        "qualified_name": "SysRegisterService.CaptchaExpireException",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysRegisterService.java",
+        "line_number": 69,
+        "signature": "new CaptchaExpireException()",
+        "annotations": [
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": " new CaptchaExpireException();"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "method",
+        "name": "CaptchaException",
+        "qualified_name": "SysRegisterService.CaptchaException",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysRegisterService.java",
+        "line_number": 72,
+        "signature": "new CaptchaException()",
+        "annotations": [
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": " new CaptchaException();"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "configService",
+        "qualified_name": "SysRegisterService.configService",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysRegisterService.java",
+        "line_number": 6,
+        "signature": "SysConfigService configService",
+        "annotations": [
+          "@Autowired",
+          "@Autowired"
+        ]
+      },
+      "diff_content": "private SysConfigService configService;"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "redisCache",
+        "qualified_name": "SysRegisterService.redisCache",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysRegisterService.java",
+        "line_number": 9,
+        "signature": "RedisCache redisCache",
+        "annotations": [
+          "@Autowired",
+          "@Autowired",
+          "@Autowired"
+        ]
+      },
+      "diff_content": "private RedisCache redisCache;"
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "captchaEnabled",
+        "qualified_name": "SysRegisterService.captchaEnabled",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysRegisterService.java",
+        "line_number": 19,
+        "signature": "boolean captchaEnabled",
+        "annotations": [
+          "@Autowired",
+          "@Autowired",
+          "@Autowired"
+        ]
+      },
+      "diff_content": "\n        boolean captchaEnabled ="
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "verifyKey",
+        "qualified_name": "SysRegisterService.verifyKey",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysRegisterService.java",
+        "line_number": 64,
+        "signature": "String verifyKey",
+        "annotations": [
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": "\n        String verifyKey ="
+    },
+    {
+      "change_type": "deleted",
+      "element": {
+        "element_type": "field",
+        "name": "captcha",
+        "qualified_name": "SysRegisterService.captcha",
+        "file_path": "campus-master/campus-framework/src/main/java/com/oddfar/campus/framework/web/service/SysRegisterService.java",
+        "line_number": 65,
+        "signature": "String captcha",
+        "annotations": [
+          "@Autowired",
+          "@Autowired",
+          "@Autowired",
+          "@param",
+          "@param",
+          "@param",
+          "@return"
+        ]
+      },
+      "diff_content": "\n        String captcha ="
+    }
+  ],
+  "impact_summary": {
+    "total_impacts": 0,
+    "direct_impacts": 0,
+    "indirect_impacts": 0,
+    "field_impacts": 0,
+    "affected_methods": [],
+    "affected_classes": [],
+    "impact_by_depth": {}
+  },
+  "affected_endpoints": [
+    {
+      "endpoint": {
+        "method": "POST /login",
+        "path": "/login",
+        "http_method": "POST",
+        "controller_class": "SysLoginController",
+        "method_name": "login",
+        "file_path": "campus-master\\campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysLoginController.java",
+        "line_number": 46,
+        "parameters": [],
+        "return_type": "",
+        "annotations": [
+          "@PostMapping"
+        ]
+      },
+      "impact_type": "direct_modification",
+      "impact_source": "SysLoginController.login",
+      "confidence": 1.0,
+      "impact_path": [
+        "SysLoginController.login"
+      ]
+    },
+    {
+      "endpoint": {
+        "method": "DELETE /system/menu/{menuId}",
+        "path": "/system/menu/{menuId}",
+        "http_method": "DELETE",
+        "controller_class": "SysMenuController",
+        "method_name": "remove",
+        "file_path": "campus-master\\campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysMenuController.java",
+        "line_number": 101,
+        "parameters": [],
+        "return_type": "",
+        "annotations": [
+          "@DeleteMapping"
+        ]
+      },
+      "impact_type": "direct_modification",
+      "impact_source": "SysMenuController.remove",
+      "confidence": 1.0,
+      "impact_path": [
+        "SysMenuController.remove"
+      ]
+    },
+    {
+      "endpoint": {
+        "method": "POST /register",
+        "path": "/register",
+        "http_method": "POST",
+        "controller_class": "SysRegisterController",
+        "method_name": "register",
+        "file_path": "campus-master\\campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysRegisterController.java",
+        "line_number": 31,
+        "parameters": [],
+        "return_type": "",
+        "annotations": [
+          "@PostMapping"
+        ]
+      },
+      "impact_type": "service_dependency",
+      "impact_source": "SysRegisterService.register",
+      "confidence": 0.9,
+      "impact_path": [
+        "SysRegisterService.register",
+        "SysRegisterController.register"
+      ]
+    }
+  ],
+  "endpoint_summary": {
+    "total_affected_endpoints": 3,
+    "direct_modifications": 2,
+    "indirect_impacts": 0,
+    "service_dependencies": 1,
+    "endpoints_by_http_method": {
+      "POST": 2,
+      "DELETE": 1
+    },
+    "affected_controllers": [
+      "SysMenuController",
+      "SysRegisterController",
+      "SysLoginController"
+    ]
+  },
+  "analysis_metadata": {
+    "max_impact_depth": 5,
+    "project_path": "C:\\Users\\DELL\\Desktop\\aitest",
+    "repo_path": "C:\\Users\\DELL\\Desktop\\aitest"
+  }
+}

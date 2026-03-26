@@ -34,7 +34,6 @@ class Settings(BaseSettings):
     
     # Git Configuration
     git_repo_path: str = "."
-    git_branch: str = "main"
     
     model_config = SettingsConfigDict(
         env_file=".env", 

@@ -120,6 +120,9 @@ def test_{endpoint_name}_performance():
     def generate_test_cases(self, endpoints: List[Dict[str, str]]) -> Dict[str, List[str]]:
         test_cases = {"positive": [], "negative": [], "performance": []}
         
+        # Track generated test names to avoid duplicates
+        generated_tests = set()
+        
         for endpoint in endpoints:
             method = endpoint['method']
             path = endpoint['path']
@@ -137,22 +140,39 @@ def test_{endpoint_name}_performance():
             
             endpoint_name = self._sanitize_endpoint_name(final_path)
             
-            positive_test = self._generate_positive_test(
-                endpoint_name, method, final_path, test_data, query_params
-            )
-            if positive_test:
-                test_cases["positive"].append(positive_test)
+            # Generate positive test
+            positive_test_name = f"test_{endpoint_name}_positive"
+            if positive_test_name not in generated_tests:
+                positive_test = self._generate_positive_test(
+                    endpoint_name, method, final_path, test_data, query_params
+                )
+                if positive_test:
+                    test_cases["positive"].append(positive_test)
+                    generated_tests.add(positive_test_name)
             
+            # Generate negative tests
             negative_tests = self._generate_negative_tests(
                 endpoint_name, method, final_path, test_data
             )
-            test_cases["negative"].extend(negative_tests)
+            for test in negative_tests:
+                # Extract test name from test code
+                import re
+                test_name_match = re.search(r'def\s+(test_\w+)\s*\(', test)
+                if test_name_match:
+                    test_name = test_name_match.group(1)
+                    if test_name not in generated_tests:
+                        test_cases["negative"].append(test)
+                        generated_tests.add(test_name)
             
-            performance_test = self._generate_performance_test(
-                endpoint_name, method, final_path, test_data, query_params
-            )
-            if performance_test:
-                test_cases["performance"].append(performance_test)
+            # Generate performance test
+            performance_test_name = f"test_{endpoint_name}_performance"
+            if performance_test_name not in generated_tests:
+                performance_test = self._generate_performance_test(
+                    endpoint_name, method, final_path, test_data, query_params
+                )
+                if performance_test:
+                    test_cases["performance"].append(performance_test)
+                    generated_tests.add(performance_test_name)
         
         return test_cases
     
@@ -191,10 +211,16 @@ def test_{endpoint_name}_performance():
         if request_body:
             content = request_body.get("content", {})
             if "application/json" in content:
-                schema_ref = content["application/json"].get("schema", {}).get("$ref", "")
+                schema_info = content["application/json"].get("schema", {})
+                schema_ref = schema_info.get("$ref", "")
+                
                 if "LoginBody" in schema_ref:
                     test_data["username"] = "admin"
                     test_data["password"] = "admin123"
+                elif schema_ref:
+                    schema_name = schema_ref.split("/")[-1]
+                    body_data = swagger_client._generate_data_from_schema_ref(schema_name)
+                    test_data.update(body_data)
         
         return test_data, path_params, query_params
     
@@ -277,7 +303,8 @@ def test_{endpoint_name}_performance():
         test_data_str = json.dumps(test_data) if test_data else "{}"
         
         # Check if this is a login endpoint - needs special handling
-        is_login_endpoint = '/login' in path.lower()
+        # Only match exact /login endpoint, not any endpoint containing 'login'
+        is_login_endpoint = path.lower() == '/login' or path.lower().endswith('/login')
         
         if is_login_endpoint:
             # Use a separate session for login endpoint to avoid auth header conflicts
@@ -447,6 +474,34 @@ def test_{endpoint_name}_performance():
                     "status": 401
                 }
             }
+        else:
+            # For POST/PUT/PATCH endpoints - test missing required fields
+            if method.upper() in ['POST', 'PUT', 'PATCH']:
+                scenarios["missing_required_fields"] = {
+                    "data": "{}",
+                    "status": 400
+                }
+            
+            # For GET endpoints - test invalid parameters
+            if method.upper() == 'GET':
+                scenarios["invalid_params"] = {
+                    "data": '{"invalid_param": "invalid_value"}',
+                    "status": 400
+                }
+            
+            # For DELETE endpoints - test invalid ID or unauthorized access
+            if method.upper() == 'DELETE':
+                scenarios["unauthorized"] = {
+                    "data": "{}",
+                    "status": 403
+                }
+            
+            # For endpoints with path parameters - test invalid ID
+            if '{' in path and '}' in path:
+                scenarios["invalid_id"] = {
+                    "data": "{}",
+                    "status": 404
+                }
         
         return scenarios
     

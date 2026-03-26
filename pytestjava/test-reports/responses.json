@@ -1,4 +1,105 @@
 {
+  "test_login_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "token": "eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6ImE5NmY4OGYyLTM2YWEtNGIwMy1hOTdhLTdhYWM1OTE0Y2ExNyJ9.6G1KHyVTE1kDEgmUUJssYy5AeaXfg_sSpeoum-EY4iPpj12GRlTsYzkHCeNgrYEOzxbk4_SJWlPtL3dxkx5aeQ"
+    },
+    "request_params": {
+      "username": "admin",
+      "password": "admin123"
+    }
+  },
+  "test_system_menu_1_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "存在子菜单,不允许删除",
+      "code": 500
+    },
+    "request_params": {}
+  },
+  "test_register_positive": {
+    "status_code": 403,
+    "response": {
+      "raw_text": ""
+    },
+    "request_params": {}
+  },
+  "test_system_menu_list_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'createTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.baomidou.mybatisplus.annotation.TableField java.util.Date] for value [2024-01-01T00:00:00]; nested exception is java.lang.IllegalArgumentException",
+      "code": 500
+    },
+    "request_params": {
+      "component": "test",
+      "createTime": "2024-01-01T00:00:00",
+      "createUser": 1,
+      "delFlag": 1,
+      "icon": "test",
+      "isCache": "test",
+      "isFrame": "test",
+      "menuId": 1,
+      "menuName": "test_name",
+      "menuType": "test_type",
+      "orderNum": 1,
+      "params": {},
+      "parentId": 1,
+      "parentName": "test_name",
+      "path": "test",
+      "perms": "test",
+      "query": "test",
+      "remark": "test",
+      "status": "0",
+      "updateTime": "2024-01-01T00:00:00",
+      "updateUser": 1,
+      "visible": "test"
+    }
+  },
+  "test_system_menu_treeselect_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'createTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.baomidou.mybatisplus.annotation.TableField java.util.Date] for value [2024-01-01T00:00:00]; nested exception is java.lang.IllegalArgumentException",
+      "code": 500
+    },
+    "request_params": {
+      "component": "test",
+      "createTime": "2024-01-01T00:00:00",
+      "createUser": 1,
+      "delFlag": 1,
+      "icon": "test",
+      "isCache": "test",
+      "isFrame": "test",
+      "menuId": 1,
+      "menuName": "test_name",
+      "menuType": "test_type",
+      "orderNum": 1,
+      "params": {},
+      "parentId": 1,
+      "parentName": "test_name",
+      "path": "test",
+      "perms": "test",
+      "query": "test",
+      "remark": "test",
+      "status": "0",
+      "updateTime": "2024-01-01T00:00:00",
+      "updateUser": 1,
+      "visible": "test"
+    }
+  },
+  "test_system_menu_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "\r\n### Error updating database.  Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1\r\n### The error may exist in com/oddfar/campus/framework/mapper/SysMenuMapper.java (best guess)\r\n### The error may involve com.oddfar.campus.framework.mapper.SysMenuMapper.insert-Inline\r\n### The error occurred while setting parameters\r\n### SQL: INSERT INTO sys_menu  ( menu_id, menu_name,  order_num,      menu_type,      create_time, create_user,   del_flag )  VALUES (  ?, ?,  ?,      ?,      ?, ?,   ?  )\r\n### Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1\n; Data truncation: Data too long for column 'menu_type' at row 1; nested exception is com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1",
+      "code": 500
+    },
+    "request_params": {
+      "menuName": "test_name",
+      "menuType": "test_type",
+      "orderNum": 1
+    }
+  },
   "test_getinfo_positive": {
     "status_code": 200,
     "response": {
@@ -25,7 +126,7 @@
         "password": "$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2",
         "status": "0",
         "loginIp": "127.0.0.1",
-        "loginDate": "2026-03-25 21:15:09",
+        "loginDate": "2026-03-26 21:35:36",
         "remark": "管理员",
         "roles": [
           {
@@ -232,17 +333,2097 @@
     },
     "request_params": {}
   },
-  "test_login_positive": {
+  "test_system_menu_rolemenutreeselect_1_positive": {
     "status_code": 200,
     "response": {
       "msg": "success",
       "code": 200,
-      "token": "eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6ImEzZDU5MDA3LWQxMzgtNDU2ZC05ZGJhLTAzYzI2YjZhOTZlOCJ9.M727kTjUisqjf6tEfXAeQRDDxTF6rxIpaDFnX8CnBxzylo2Fby5Jtpcy46a59AC_z3BHpUos5_utgDbW08Gltg"
+      "menus": [
+        {
+          "id": 1,
+          "label": "系统管理",
+          "children": [
+            {
+              "id": 100,
+              "label": "用户管理",
+              "children": [
+                {
+                  "id": 1000,
+                  "label": "用户查询"
+                },
+                {
+                  "id": 1001,
+                  "label": "用户新增"
+                },
+                {
+                  "id": 1002,
+                  "label": "用户修改"
+                },
+                {
+                  "id": 1003,
+                  "label": "用户删除"
+                },
+                {
+                  "id": 1004,
+                  "label": "用户导出"
+                },
+                {
+                  "id": 1005,
+                  "label": "用户导入"
+                },
+                {
+                  "id": 1006,
+                  "label": "重置密码"
+                }
+              ]
+            },
+            {
+              "id": 101,
+              "label": "角色管理",
+              "children": [
+                {
+                  "id": 1007,
+                  "label": "角色查询"
+                },
+                {
+                  "id": 1008,
+                  "label": "角色新增"
+                },
+                {
+                  "id": 1009,
+                  "label": "角色修改"
+                },
+                {
+                  "id": 1010,
+                  "label": "角色删除"
+                },
+                {
+                  "id": 1011,
+                  "label": "角色导出"
+                }
+              ]
+            },
+            {
+              "id": 102,
+              "label": "菜单管理",
+              "children": [
+                {
+                  "id": 1012,
+                  "label": "菜单查询"
+                },
+                {
+                  "id": 1013,
+                  "label": "菜单新增"
+                },
+                {
+                  "id": 1014,
+                  "label": "菜单修改"
+                },
+                {
+                  "id": 1015,
+                  "label": "菜单删除"
+                }
+              ]
+            },
+            {
+              "id": 105,
+              "label": "字典管理",
+              "children": [
+                {
+                  "id": 1025,
+                  "label": "字典查询"
+                },
+                {
+                  "id": 1026,
+                  "label": "字典新增"
+                },
+                {
+                  "id": 1027,
+                  "label": "字典修改"
+                },
+                {
+                  "id": 1028,
+                  "label": "字典删除"
+                },
+                {
+                  "id": 1029,
+                  "label": "字典导出"
+                }
+              ]
+            },
+            {
+              "id": 106,
+              "label": "参数设置",
+              "children": [
+                {
+                  "id": 1030,
+                  "label": "参数查询"
+                },
+                {
+                  "id": 1031,
+                  "label": "参数新增"
+                },
+                {
+                  "id": 1032,
+                  "label": "参数修改"
+                },
+                {
+                  "id": 1033,
+                  "label": "参数删除"
+                },
+                {
+                  "id": 1034,
+                  "label": "参数导出"
+                }
+              ]
+            },
+            {
+              "id": 108,
+              "label": "日志管理",
+              "children": [
+                {
+                  "id": 500,
+                  "label": "操作日志",
+                  "children": [
+                    {
+                      "id": 1039,
+                      "label": "操作查询"
+                    },
+                    {
+                      "id": 1040,
+                      "label": "操作删除"
+                    },
+                    {
+                      "id": 1041,
+                      "label": "日志导出"
+                    }
+                  ]
+                },
+                {
+                  "id": 501,
+                  "label": "登录日志",
+                  "children": [
+                    {
+                      "id": 1042,
+                      "label": "登录查询"
+                    },
+                    {
+                      "id": 1043,
+                      "label": "登录删除"
+                    },
+                    {
+                      "id": 1044,
+                      "label": "日志导出"
+                    },
+                    {
+                      "id": 1045,
+                      "label": "账户解锁"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "label": "系统工具",
+          "children": [
+            {
+              "id": 115,
+              "label": "表单构建"
+            },
+            {
+              "id": 117,
+              "label": "系统接口"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "label": "源码地址"
+        }
+      ],
+      "checkedKeys": []
+    },
+    "request_params": {}
+  },
+  "test_login_negative_missing_required_fields": {
+    "status_code": 403,
+    "response": {
+      "raw_text": ""
+    },
+    "request_params": {}
+  },
+  "test_system_menu_1_negative_unauthorized": {
+    "status_code": 200,
+    "response": {
+      "msg": "存在子菜单,不允许删除",
+      "code": 500
+    },
+    "request_params": {}
+  },
+  "test_register_negative_missing_required_fields": {
+    "status_code": 403,
+    "response": {
+      "raw_text": ""
+    },
+    "request_params": {}
+  },
+  "test_system_menu_list_negative_invalid_params": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": [
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": "2022-11-14 14:41:50",
+          "updateUser": 1,
+          "menuId": 1,
+          "menuName": "系统管理",
+          "parentName": null,
+          "parentId": 0,
+          "orderNum": 1,
+          "path": "system",
+          "component": null,
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "M",
+          "visible": "0",
+          "status": "0",
+          "perms": "",
+          "icon": "system",
+          "remark": "系统管理目录",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 3,
+          "menuName": "系统工具",
+          "parentName": null,
+          "parentId": 0,
+          "orderNum": 3,
+          "path": "tool",
+          "component": null,
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "M",
+          "visible": "0",
+          "status": "0",
+          "perms": "",
+          "icon": "tool",
+          "remark": "系统工具目录",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": "2022-11-21 17:11:40",
+          "updateUser": 1,
+          "menuId": 4,
+          "menuName": "源码地址",
+          "parentName": null,
+          "parentId": 0,
+          "orderNum": 10,
+          "path": "http://github.com/oddfar/campus",
+          "component": null,
+          "query": "",
+          "isFrame": "0",
+          "isCache": "0",
+          "menuType": "M",
+          "visible": "0",
+          "status": "0",
+          "perms": "",
+          "icon": "guide",
+          "remark": "若依官网地址",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 100,
+          "menuName": "用户管理",
+          "parentName": null,
+          "parentId": 1,
+          "orderNum": 1,
+          "path": "user",
+          "component": "system/user/index",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "C",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:user:list",
+          "icon": "user",
+          "remark": "用户管理菜单",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 101,
+          "menuName": "角色管理",
+          "parentName": null,
+          "parentId": 1,
+          "orderNum": 2,
+          "path": "role",
+          "component": "system/role/index",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "C",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:role:list",
+          "icon": "peoples",
+          "remark": "角色管理菜单",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 102,
+          "menuName": "菜单管理",
+          "parentName": null,
+          "parentId": 1,
+          "orderNum": 3,
+          "path": "menu",
+          "component": "system/menu/index",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "C",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:menu:list",
+          "icon": "tree-table",
+          "remark": "菜单管理菜单",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 105,
+          "menuName": "字典管理",
+          "parentName": null,
+          "parentId": 1,
+          "orderNum": 6,
+          "path": "dict",
+          "component": "system/dict/index",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "C",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:dict:list",
+          "icon": "dict",
+          "remark": "字典管理菜单",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 106,
+          "menuName": "参数设置",
+          "parentName": null,
+          "parentId": 1,
+          "orderNum": 7,
+          "path": "config",
+          "component": "system/config/index",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "C",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:config:list",
+          "icon": "edit",
+          "remark": "参数设置菜单",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 108,
+          "menuName": "日志管理",
+          "parentName": null,
+          "parentId": 1,
+          "orderNum": 9,
+          "path": "log",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "M",
+          "visible": "0",
+          "status": "0",
+          "perms": "",
+          "icon": "log",
+          "remark": "日志管理菜单",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 115,
+          "menuName": "表单构建",
+          "parentName": null,
+          "parentId": 3,
+          "orderNum": 1,
+          "path": "build",
+          "component": "tool/build/index",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "C",
+          "visible": "0",
+          "status": "0",
+          "perms": "tool:build:list",
+          "icon": "build",
+          "remark": "表单构建菜单",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 117,
+          "menuName": "系统接口",
+          "parentName": null,
+          "parentId": 3,
+          "orderNum": 3,
+          "path": "swagger",
+          "component": "tool/swagger/index",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "C",
+          "visible": "0",
+          "status": "0",
+          "perms": "tool:swagger:list",
+          "icon": "swagger",
+          "remark": "系统接口菜单",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 500,
+          "menuName": "操作日志",
+          "parentName": null,
+          "parentId": 108,
+          "orderNum": 1,
+          "path": "operlog",
+          "component": "monitor/operlog/index",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "C",
+          "visible": "0",
+          "status": "0",
+          "perms": "monitor:operlog:list",
+          "icon": "form",
+          "remark": "操作日志菜单",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 501,
+          "menuName": "登录日志",
+          "parentName": null,
+          "parentId": 108,
+          "orderNum": 2,
+          "path": "logininfor",
+          "component": "monitor/logininfor/index",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "C",
+          "visible": "0",
+          "status": "0",
+          "perms": "monitor:logininfor:list",
+          "icon": "logininfor",
+          "remark": "登录日志菜单",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1000,
+          "menuName": "用户查询",
+          "parentName": null,
+          "parentId": 100,
+          "orderNum": 1,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:user:query",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1001,
+          "menuName": "用户新增",
+          "parentName": null,
+          "parentId": 100,
+          "orderNum": 2,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:user:add",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1002,
+          "menuName": "用户修改",
+          "parentName": null,
+          "parentId": 100,
+          "orderNum": 3,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:user:edit",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1003,
+          "menuName": "用户删除",
+          "parentName": null,
+          "parentId": 100,
+          "orderNum": 4,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:user:remove",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1004,
+          "menuName": "用户导出",
+          "parentName": null,
+          "parentId": 100,
+          "orderNum": 5,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:user:export",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1005,
+          "menuName": "用户导入",
+          "parentName": null,
+          "parentId": 100,
+          "orderNum": 6,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:user:import",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1006,
+          "menuName": "重置密码",
+          "parentName": null,
+          "parentId": 100,
+          "orderNum": 7,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:user:resetPwd",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1007,
+          "menuName": "角色查询",
+          "parentName": null,
+          "parentId": 101,
+          "orderNum": 1,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:role:query",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1008,
+          "menuName": "角色新增",
+          "parentName": null,
+          "parentId": 101,
+          "orderNum": 2,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:role:add",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1009,
+          "menuName": "角色修改",
+          "parentName": null,
+          "parentId": 101,
+          "orderNum": 3,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:role:edit",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1010,
+          "menuName": "角色删除",
+          "parentName": null,
+          "parentId": 101,
+          "orderNum": 4,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:role:remove",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1011,
+          "menuName": "角色导出",
+          "parentName": null,
+          "parentId": 101,
+          "orderNum": 5,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:role:export",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1012,
+          "menuName": "菜单查询",
+          "parentName": null,
+          "parentId": 102,
+          "orderNum": 1,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:menu:query",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1013,
+          "menuName": "菜单新增",
+          "parentName": null,
+          "parentId": 102,
+          "orderNum": 2,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:menu:add",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1014,
+          "menuName": "菜单修改",
+          "parentName": null,
+          "parentId": 102,
+          "orderNum": 3,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:menu:edit",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1015,
+          "menuName": "菜单删除",
+          "parentName": null,
+          "parentId": 102,
+          "orderNum": 4,
+          "path": "",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:menu:remove",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1025,
+          "menuName": "字典查询",
+          "parentName": null,
+          "parentId": 105,
+          "orderNum": 1,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:dict:query",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1026,
+          "menuName": "字典新增",
+          "parentName": null,
+          "parentId": 105,
+          "orderNum": 2,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:dict:add",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1027,
+          "menuName": "字典修改",
+          "parentName": null,
+          "parentId": 105,
+          "orderNum": 3,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:dict:edit",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1028,
+          "menuName": "字典删除",
+          "parentName": null,
+          "parentId": 105,
+          "orderNum": 4,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:dict:remove",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1029,
+          "menuName": "字典导出",
+          "parentName": null,
+          "parentId": 105,
+          "orderNum": 5,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:dict:export",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1030,
+          "menuName": "参数查询",
+          "parentName": null,
+          "parentId": 106,
+          "orderNum": 1,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:config:query",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1031,
+          "menuName": "参数新增",
+          "parentName": null,
+          "parentId": 106,
+          "orderNum": 2,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:config:add",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1032,
+          "menuName": "参数修改",
+          "parentName": null,
+          "parentId": 106,
+          "orderNum": 3,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:config:edit",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1033,
+          "menuName": "参数删除",
+          "parentName": null,
+          "parentId": 106,
+          "orderNum": 4,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:config:remove",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1034,
+          "menuName": "参数导出",
+          "parentName": null,
+          "parentId": 106,
+          "orderNum": 5,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "system:config:export",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1039,
+          "menuName": "操作查询",
+          "parentName": null,
+          "parentId": 500,
+          "orderNum": 1,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "monitor:operlog:query",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1040,
+          "menuName": "操作删除",
+          "parentName": null,
+          "parentId": 500,
+          "orderNum": 2,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "monitor:operlog:remove",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1041,
+          "menuName": "日志导出",
+          "parentName": null,
+          "parentId": 500,
+          "orderNum": 3,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "monitor:operlog:export",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1042,
+          "menuName": "登录查询",
+          "parentName": null,
+          "parentId": 501,
+          "orderNum": 1,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "monitor:logininfor:query",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1043,
+          "menuName": "登录删除",
+          "parentName": null,
+          "parentId": 501,
+          "orderNum": 2,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "monitor:logininfor:remove",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1044,
+          "menuName": "日志导出",
+          "parentName": null,
+          "parentId": 501,
+          "orderNum": 3,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "monitor:logininfor:export",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        },
+        {
+          "createTime": "2022-10-05 15:28:43",
+          "createUser": null,
+          "updateTime": null,
+          "updateUser": null,
+          "menuId": 1045,
+          "menuName": "账户解锁",
+          "parentName": null,
+          "parentId": 501,
+          "orderNum": 4,
+          "path": "#",
+          "component": "",
+          "query": "",
+          "isFrame": "1",
+          "isCache": "0",
+          "menuType": "F",
+          "visible": "0",
+          "status": "0",
+          "perms": "monitor:logininfor:unlock",
+          "icon": "#",
+          "remark": "",
+          "children": []
+        }
+      ]
+    },
+    "request_params": {
+      "invalid_param": "invalid_value"
+    }
+  },
+  "test_system_menu_treeselect_negative_invalid_params": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": [
+        {
+          "id": 1,
+          "label": "系统管理",
+          "children": [
+            {
+              "id": 100,
+              "label": "用户管理",
+              "children": [
+                {
+                  "id": 1000,
+                  "label": "用户查询"
+                },
+                {
+                  "id": 1001,
+                  "label": "用户新增"
+                },
+                {
+                  "id": 1002,
+                  "label": "用户修改"
+                },
+                {
+                  "id": 1003,
+                  "label": "用户删除"
+                },
+                {
+                  "id": 1004,
+                  "label": "用户导出"
+                },
+                {
+                  "id": 1005,
+                  "label": "用户导入"
+                },
+                {
+                  "id": 1006,
+                  "label": "重置密码"
+                }
+              ]
+            },
+            {
+              "id": 101,
+              "label": "角色管理",
+              "children": [
+                {
+                  "id": 1007,
+                  "label": "角色查询"
+                },
+                {
+                  "id": 1008,
+                  "label": "角色新增"
+                },
+                {
+                  "id": 1009,
+                  "label": "角色修改"
+                },
+                {
+                  "id": 1010,
+                  "label": "角色删除"
+                },
+                {
+                  "id": 1011,
+                  "label": "角色导出"
+                }
+              ]
+            },
+            {
+              "id": 102,
+              "label": "菜单管理",
+              "children": [
+                {
+                  "id": 1012,
+                  "label": "菜单查询"
+                },
+                {
+                  "id": 1013,
+                  "label": "菜单新增"
+                },
+                {
+                  "id": 1014,
+                  "label": "菜单修改"
+                },
+                {
+                  "id": 1015,
+                  "label": "菜单删除"
+                }
+              ]
+            },
+            {
+              "id": 105,
+              "label": "字典管理",
+              "children": [
+                {
+                  "id": 1025,
+                  "label": "字典查询"
+                },
+                {
+                  "id": 1026,
+                  "label": "字典新增"
+                },
+                {
+                  "id": 1027,
+                  "label": "字典修改"
+                },
+                {
+                  "id": 1028,
+                  "label": "字典删除"
+                },
+                {
+                  "id": 1029,
+                  "label": "字典导出"
+                }
+              ]
+            },
+            {
+              "id": 106,
+              "label": "参数设置",
+              "children": [
+                {
+                  "id": 1030,
+                  "label": "参数查询"
+                },
+                {
+                  "id": 1031,
+                  "label": "参数新增"
+                },
+                {
+                  "id": 1032,
+                  "label": "参数修改"
+                },
+                {
+                  "id": 1033,
+                  "label": "参数删除"
+                },
+                {
+                  "id": 1034,
+                  "label": "参数导出"
+                }
+              ]
+            },
+            {
+              "id": 108,
+              "label": "日志管理",
+              "children": [
+                {
+                  "id": 500,
+                  "label": "操作日志",
+                  "children": [
+                    {
+                      "id": 1039,
+                      "label": "操作查询"
+                    },
+                    {
+                      "id": 1040,
+                      "label": "操作删除"
+                    },
+                    {
+                      "id": 1041,
+                      "label": "日志导出"
+                    }
+                  ]
+                },
+                {
+                  "id": 501,
+                  "label": "登录日志",
+                  "children": [
+                    {
+                      "id": 1042,
+                      "label": "登录查询"
+                    },
+                    {
+                      "id": 1043,
+                      "label": "登录删除"
+                    },
+                    {
+                      "id": 1044,
+                      "label": "日志导出"
+                    },
+                    {
+                      "id": 1045,
+                      "label": "账户解锁"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "label": "系统工具",
+          "children": [
+            {
+              "id": 115,
+              "label": "表单构建"
+            },
+            {
+              "id": 117,
+              "label": "系统接口"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "label": "源码地址"
+        }
+      ]
+    },
+    "request_params": {
+      "invalid_param": "invalid_value"
+    }
+  },
+  "test_system_menu_negative_missing_required_fields": {
+    "status_code": 200,
+    "response": {
+      "msg": "Required request body is missing: public com.oddfar.campus.common.domain.R com.oddfar.campus.admin.controller.system.SysMenuController.add(com.oddfar.campus.common.domain.entity.SysMenuEntity)",
+      "code": 500
+    },
+    "request_params": {}
+  },
+  "test_getinfo_negative_invalid_params": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "permissions": [
+        "*:*:*"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "user": {
+        "createTime": "2022-10-05 15:28:43",
+        "createUser": 0,
+        "updateTime": null,
+        "updateUser": null,
+        "userId": 1,
+        "userName": "admin",
+        "nickName": "admin",
+        "email": "oddfar@163.com",
+        "phonenumber": "15888888888",
+        "sex": "0",
+        "avatar": "https://img0.baidu.com/it/u=1183896628,1403534286&fm=253&fmt=auto&app=138&f=PNG",
+        "password": "$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2",
+        "status": "0",
+        "loginIp": "127.0.0.1",
+        "loginDate": "2026-03-26 21:35:36",
+        "remark": "管理员",
+        "roles": [
+          {
+            "createTime": "2022-10-05 15:28:43",
+            "createUser": 0,
+            "updateTime": null,
+            "updateUser": null,
+            "roleId": 1,
+            "roleName": "超级管理员",
+            "roleKey": "admin",
+            "roleSort": "1",
+            "menuCheckStrictly": false,
+            "status": "0",
+            "flag": false,
+            "menuIds": null,
+            "permissions": null,
+            "remark": "管理员",
+            "admin": true
+          }
+        ],
+        "roleIds": null,
+        "postIds": null,
+        "roleId": 1,
+        "admin": true
+      }
+    },
+    "request_params": {
+      "invalid_param": "invalid_value"
+    }
+  },
+  "test_getrouters_negative_invalid_params": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": [
+        {
+          "name": "System",
+          "path": "/system",
+          "hidden": false,
+          "redirect": "noRedirect",
+          "component": "Layout",
+          "alwaysShow": true,
+          "meta": {
+            "title": "系统管理",
+            "icon": "system",
+            "noCache": false,
+            "link": null
+          },
+          "children": [
+            {
+              "name": "User",
+              "path": "user",
+              "hidden": false,
+              "component": "system/user/index",
+              "meta": {
+                "title": "用户管理",
+                "icon": "user",
+                "noCache": false,
+                "link": null
+              }
+            },
+            {
+              "name": "Role",
+              "path": "role",
+              "hidden": false,
+              "component": "system/role/index",
+              "meta": {
+                "title": "角色管理",
+                "icon": "peoples",
+                "noCache": false,
+                "link": null
+              }
+            },
+            {
+              "name": "Menu",
+              "path": "menu",
+              "hidden": false,
+              "component": "system/menu/index",
+              "meta": {
+                "title": "菜单管理",
+                "icon": "tree-table",
+                "noCache": false,
+                "link": null
+              }
+            },
+            {
+              "name": "Dict",
+              "path": "dict",
+              "hidden": false,
+              "component": "system/dict/index",
+              "meta": {
+                "title": "字典管理",
+                "icon": "dict",
+                "noCache": false,
+                "link": null
+              }
+            },
+            {
+              "name": "Config",
+              "path": "config",
+              "hidden": false,
+              "component": "system/config/index",
+              "meta": {
+                "title": "参数设置",
+                "icon": "edit",
+                "noCache": false,
+                "link": null
+              }
+            },
+            {
+              "name": "Log",
+              "path": "log",
+              "hidden": false,
+              "redirect": "noRedirect",
+              "component": "ParentView",
+              "alwaysShow": true,
+              "meta": {
+                "title": "日志管理",
+                "icon": "log",
+                "noCache": false,
+                "link": null
+              },
+              "children": [
+                {
+                  "name": "Operlog",
+                  "path": "operlog",
+                  "hidden": false,
+                  "component": "monitor/operlog/index",
+                  "meta": {
+                    "title": "操作日志",
+                    "icon": "form",
+                    "noCache": false,
+                    "link": null
+                  }
+                },
+                {
+                  "name": "Logininfor",
+                  "path": "logininfor",
+                  "hidden": false,
+                  "component": "monitor/logininfor/index",
+                  "meta": {
+                    "title": "登录日志",
+                    "icon": "logininfor",
+                    "noCache": false,
+                    "link": null
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tool",
+          "path": "/tool",
+          "hidden": false,
+          "redirect": "noRedirect",
+          "component": "Layout",
+          "alwaysShow": true,
+          "meta": {
+            "title": "系统工具",
+            "icon": "tool",
+            "noCache": false,
+            "link": null
+          },
+          "children": [
+            {
+              "name": "Build",
+              "path": "build",
+              "hidden": false,
+              "component": "tool/build/index",
+              "meta": {
+                "title": "表单构建",
+                "icon": "build",
+                "noCache": false,
+                "link": null
+              }
+            },
+            {
+              "name": "Swagger",
+              "path": "swagger",
+              "hidden": false,
+              "component": "tool/swagger/index",
+              "meta": {
+                "title": "系统接口",
+                "icon": "swagger",
+                "noCache": false,
+                "link": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "Http://github.com/oddfar/campus",
+          "path": "http://github.com/oddfar/campus",
+          "hidden": false,
+          "component": "Layout",
+          "meta": {
+            "title": "源码地址",
+            "icon": "guide",
+            "noCache": false,
+            "link": "http://github.com/oddfar/campus"
+          }
+        }
+      ]
+    },
+    "request_params": {
+      "invalid_param": "invalid_value"
+    }
+  },
+  "test_system_menu_rolemenutreeselect_1_negative_invalid_params": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "menus": [
+        {
+          "id": 1,
+          "label": "系统管理",
+          "children": [
+            {
+              "id": 100,
+              "label": "用户管理",
+              "children": [
+                {
+                  "id": 1000,
+                  "label": "用户查询"
+                },
+                {
+                  "id": 1001,
+                  "label": "用户新增"
+                },
+                {
+                  "id": 1002,
+                  "label": "用户修改"
+                },
+                {
+                  "id": 1003,
+                  "label": "用户删除"
+                },
+                {
+                  "id": 1004,
+                  "label": "用户导出"
+                },
+                {
+                  "id": 1005,
+                  "label": "用户导入"
+                },
+                {
+                  "id": 1006,
+                  "label": "重置密码"
+                }
+              ]
+            },
+            {
+              "id": 101,
+              "label": "角色管理",
+              "children": [
+                {
+                  "id": 1007,
+                  "label": "角色查询"
+                },
+                {
+                  "id": 1008,
+                  "label": "角色新增"
+                },
+                {
+                  "id": 1009,
+                  "label": "角色修改"
+                },
+                {
+                  "id": 1010,
+                  "label": "角色删除"
+                },
+                {
+                  "id": 1011,
+                  "label": "角色导出"
+                }
+              ]
+            },
+            {
+              "id": 102,
+              "label": "菜单管理",
+              "children": [
+                {
+                  "id": 1012,
+                  "label": "菜单查询"
+                },
+                {
+                  "id": 1013,
+                  "label": "菜单新增"
+                },
+                {
+                  "id": 1014,
+                  "label": "菜单修改"
+                },
+                {
+                  "id": 1015,
+                  "label": "菜单删除"
+                }
+              ]
+            },
+            {
+              "id": 105,
+              "label": "字典管理",
+              "children": [
+                {
+                  "id": 1025,
+                  "label": "字典查询"
+                },
+                {
+                  "id": 1026,
+                  "label": "字典新增"
+                },
+                {
+                  "id": 1027,
+                  "label": "字典修改"
+                },
+                {
+                  "id": 1028,
+                  "label": "字典删除"
+                },
+                {
+                  "id": 1029,
+                  "label": "字典导出"
+                }
+              ]
+            },
+            {
+              "id": 106,
+              "label": "参数设置",
+              "children": [
+                {
+                  "id": 1030,
+                  "label": "参数查询"
+                },
+                {
+                  "id": 1031,
+                  "label": "参数新增"
+                },
+                {
+                  "id": 1032,
+                  "label": "参数修改"
+                },
+                {
+                  "id": 1033,
+                  "label": "参数删除"
+                },
+                {
+                  "id": 1034,
+                  "label": "参数导出"
+                }
+              ]
+            },
+            {
+              "id": 108,
+              "label": "日志管理",
+              "children": [
+                {
+                  "id": 500,
+                  "label": "操作日志",
+                  "children": [
+                    {
+                      "id": 1039,
+                      "label": "操作查询"
+                    },
+                    {
+                      "id": 1040,
+                      "label": "操作删除"
+                    },
+                    {
+                      "id": 1041,
+                      "label": "日志导出"
+                    }
+                  ]
+                },
+                {
+                  "id": 501,
+                  "label": "登录日志",
+                  "children": [
+                    {
+                      "id": 1042,
+                      "label": "登录查询"
+                    },
+                    {
+                      "id": 1043,
+                      "label": "登录删除"
+                    },
+                    {
+                      "id": 1044,
+                      "label": "日志导出"
+                    },
+                    {
+                      "id": 1045,
+                      "label": "账户解锁"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "label": "系统工具",
+          "children": [
+            {
+              "id": 115,
+              "label": "表单构建"
+            },
+            {
+              "id": 117,
+              "label": "系统接口"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "label": "源码地址"
+        }
+      ],
+      "checkedKeys": []
+    },
+    "request_params": {
+      "invalid_param": "invalid_value"
+    }
+  },
+  "test_login_performance": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "token": "eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6IjM0MzE1NzhhLTcyMmEtNGRhMi1iNzhhLTg1YWY2NWQyM2JhNSJ9.a-85CHx7458TCpOaxD-ubyHSAuYmO3UEyQJUiR8dYdQgiSK4YL7ptgZqGsJjvngWojSnnQwVP0kFoKUj3yxTAw"
     },
     "request_params": {
       "username": "admin",
       "password": "admin123"
-    }
+    },
+    "response_time": 0.15396666526794434
+  },
+  "test_system_menu_1_performance": {
+    "status_code": 200,
+    "response": {
+      "msg": "存在子菜单,不允许删除",
+      "code": 500
+    },
+    "request_params": {},
+    "response_time": 0.004685878753662109
+  },
+  "test_register_performance": {
+    "status_code": 403,
+    "response": {
+      "raw_text": ""
+    },
+    "request_params": {},
+    "response_time": 0.0031213760375976562
+  },
+  "test_system_menu_list_performance": {
+    "status_code": 200,
+    "response": {
+      "msg": "Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'createTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.baomidou.mybatisplus.annotation.TableField java.util.Date] for value [2024-01-01T00:00:00]; nested exception is java.lang.IllegalArgumentException",
+      "code": 500
+    },
+    "request_params": {
+      "component": "test",
+      "createTime": "2024-01-01T00:00:00",
+      "createUser": 1,
+      "delFlag": 1,
+      "icon": "test",
+      "isCache": "test",
+      "isFrame": "test",
+      "menuId": 1,
+      "menuName": "test_name",
+      "menuType": "test_type",
+      "orderNum": 1,
+      "params": {},
+      "parentId": 1,
+      "parentName": "test_name",
+      "path": "test",
+      "perms": "test",
+      "query": "test",
+      "remark": "test",
+      "status": "0",
+      "updateTime": "2024-01-01T00:00:00",
+      "updateUser": 1,
+      "visible": "test"
+    },
+    "response_time": 0.017207860946655273
+  },
+  "test_system_menu_treeselect_performance": {
+    "status_code": 200,
+    "response": {
+      "msg": "Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'createTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.baomidou.mybatisplus.annotation.TableField java.util.Date] for value [2024-01-01T00:00:00]; nested exception is java.lang.IllegalArgumentException",
+      "code": 500
+    },
+    "request_params": {
+      "component": "test",
+      "createTime": "2024-01-01T00:00:00",
+      "createUser": 1,
+      "delFlag": 1,
+      "icon": "test",
+      "isCache": "test",
+      "isFrame": "test",
+      "menuId": 1,
+      "menuName": "test_name",
+      "menuType": "test_type",
+      "orderNum": 1,
+      "params": {},
+      "parentId": 1,
+      "parentName": "test_name",
+      "path": "test",
+      "perms": "test",
+      "query": "test",
+      "remark": "test",
+      "status": "0",
+      "updateTime": "2024-01-01T00:00:00",
+      "updateUser": 1,
+      "visible": "test"
+    },
+    "response_time": 0.0053119659423828125
+  },
+  "test_system_menu_performance": {
+    "status_code": 200,
+    "response": {
+      "msg": "\r\n### Error updating database.  Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1\r\n### The error may exist in com/oddfar/campus/framework/mapper/SysMenuMapper.java (best guess)\r\n### The error may involve com.oddfar.campus.framework.mapper.SysMenuMapper.insert-Inline\r\n### The error occurred while setting parameters\r\n### SQL: INSERT INTO sys_menu  ( menu_id, menu_name,  order_num,      menu_type,      create_time, create_user,   del_flag )  VALUES (  ?, ?,  ?,      ?,      ?, ?,   ?  )\r\n### Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1\n; Data truncation: Data too long for column 'menu_type' at row 1; nested exception is com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1",
+      "code": 500
+    },
+    "request_params": {
+      "menuName": "test_name",
+      "menuType": "test_type",
+      "orderNum": 1
+    },
+    "response_time": 0.007657766342163086
   },
   "test_getinfo_performance": {
     "status_code": 200,
@@ -270,7 +2451,7 @@
         "password": "$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2",
         "status": "0",
         "loginIp": "127.0.0.1",
-        "loginDate": "2026-03-25 21:17:09",
+        "loginDate": "2026-03-26 21:35:36",
         "remark": "管理员",
         "roles": [
           {
@@ -298,7 +2479,7 @@
       }
     },
     "request_params": {},
-    "response_time": 0.003170013427734375
+    "response_time": 0.003088712692260742
   },
   "test_getrouters_performance": {
     "status_code": 200,
@@ -477,19 +2658,222 @@
       ]
     },
     "request_params": {},
-    "response_time": 0.004795551300048828
+    "response_time": 0.004701375961303711
   },
-  "test_login_performance": {
+  "test_system_menu_rolemenutreeselect_1_performance": {
     "status_code": 200,
     "response": {
       "msg": "success",
       "code": 200,
-      "token": "eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6IjNiOGNiYmNhLTkyZDktNDIzZi05MGM4LWEwZDQ4YzMxMTIyOSJ9.HwgbU3SKW0iekWWIiTElZP6Ai_6l80AMI1eoNtkBBrZNjRre6CFfuC-Uf1MendA8S6fy29GcElA7hb6_BWIM0A"
+      "menus": [
+        {
+          "id": 1,
+          "label": "系统管理",
+          "children": [
+            {
+              "id": 100,
+              "label": "用户管理",
+              "children": [
+                {
+                  "id": 1000,
+                  "label": "用户查询"
+                },
+                {
+                  "id": 1001,
+                  "label": "用户新增"
+                },
+                {
+                  "id": 1002,
+                  "label": "用户修改"
+                },
+                {
+                  "id": 1003,
+                  "label": "用户删除"
+                },
+                {
+                  "id": 1004,
+                  "label": "用户导出"
+                },
+                {
+                  "id": 1005,
+                  "label": "用户导入"
+                },
+                {
+                  "id": 1006,
+                  "label": "重置密码"
+                }
+              ]
+            },
+            {
+              "id": 101,
+              "label": "角色管理",
+              "children": [
+                {
+                  "id": 1007,
+                  "label": "角色查询"
+                },
+                {
+                  "id": 1008,
+                  "label": "角色新增"
+                },
+                {
+                  "id": 1009,
+                  "label": "角色修改"
+                },
+                {
+                  "id": 1010,
+                  "label": "角色删除"
+                },
+                {
+                  "id": 1011,
+                  "label": "角色导出"
+                }
+              ]
+            },
+            {
+              "id": 102,
+              "label": "菜单管理",
+              "children": [
+                {
+                  "id": 1012,
+                  "label": "菜单查询"
+                },
+                {
+                  "id": 1013,
+                  "label": "菜单新增"
+                },
+                {
+                  "id": 1014,
+                  "label": "菜单修改"
+                },
+                {
+                  "id": 1015,
+                  "label": "菜单删除"
+                }
+              ]
+            },
+            {
+              "id": 105,
+              "label": "字典管理",
+              "children": [
+                {
+                  "id": 1025,
+                  "label": "字典查询"
+                },
+                {
+                  "id": 1026,
+                  "label": "字典新增"
+                },
+                {
+                  "id": 1027,
+                  "label": "字典修改"
+                },
+                {
+                  "id": 1028,
+                  "label": "字典删除"
+                },
+                {
+                  "id": 1029,
+                  "label": "字典导出"
+                }
+              ]
+            },
+            {
+              "id": 106,
+              "label": "参数设置",
+              "children": [
+                {
+                  "id": 1030,
+                  "label": "参数查询"
+                },
+                {
+                  "id": 1031,
+                  "label": "参数新增"
+                },
+                {
+                  "id": 1032,
+                  "label": "参数修改"
+                },
+                {
+                  "id": 1033,
+                  "label": "参数删除"
+                },
+                {
+                  "id": 1034,
+                  "label": "参数导出"
+                }
+              ]
+            },
+            {
+              "id": 108,
+              "label": "日志管理",
+              "children": [
+                {
+                  "id": 500,
+                  "label": "操作日志",
+                  "children": [
+                    {
+                      "id": 1039,
+                      "label": "操作查询"
+                    },
+                    {
+                      "id": 1040,
+                      "label": "操作删除"
+                    },
+                    {
+                      "id": 1041,
+                      "label": "日志导出"
+                    }
+                  ]
+                },
+                {
+                  "id": 501,
+                  "label": "登录日志",
+                  "children": [
+                    {
+                      "id": 1042,
+                      "label": "登录查询"
+                    },
+                    {
+                      "id": 1043,
+                      "label": "登录删除"
+                    },
+                    {
+                      "id": 1044,
+                      "label": "日志导出"
+                    },
+                    {
+                      "id": 1045,
+                      "label": "账户解锁"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "label": "系统工具",
+          "children": [
+            {
+              "id": 115,
+              "label": "表单构建"
+            },
+            {
+              "id": 117,
+              "label": "系统接口"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "label": "源码地址"
+        }
+      ],
+      "checkedKeys": []
     },
-    "request_params": {
-      "username": "admin",
-      "password": "admin123"
-    },
-    "response_time": 0.15657687187194824
+    "request_params": {},
+    "response_time": 0.014472723007202148
   }
 }

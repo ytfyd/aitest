@@ -39,6 +39,36 @@ Generate three types of test cases for each endpoint:
 #### From Swagger Schema
 - Extract `example` values from Swagger schema properties
 - For `LoginBody`, use: `{"username": "admin", "password": "admin123", "code": "1234", "uuid": "uuid-123456"}`
+- For other schemas, generate data from required fields
+
+#### Schema-Based Generation
+```python
+def _generate_data_from_schema_ref(self, schema_name: str) -> Dict[str, Any]:
+    """根据 schema 引用生成测试数据"""
+    api_docs = self.fetch_api_docs()
+    schemas = api_docs.get("components", {}).get("schemas", {})
+    schema = schemas.get(schema_name, {})
+    
+    if not schema:
+        return {}
+    
+    properties = schema.get("properties", {})
+    required_fields = schema.get("required", [])
+    
+    test_data = {}
+    for prop_name, prop_info in properties.items():
+        prop_type = prop_info.get("type", "string")
+        prop_format = prop_info.get("format", "")
+        description = prop_info.get("description", "")
+        
+        # Generate data for required fields and key fields
+        if prop_name in required_fields or prop_name in ["menuName", "menuType", "orderNum"]:
+            test_data[prop_name] = self._generate_value_by_type(
+                prop_name, prop_type, prop_format, prop_info, description
+            )
+    
+    return test_data
+```
 
 #### Type-Based Generation
 | Type | Format | Example Value |
@@ -117,7 +147,85 @@ assert 'errorCode' in error_data
 assert 'message' in error_data
 ```
 
-### 5. Special Endpoint Handling
+### 5. Negative Test Case Generation
+
+**MANDATORY**: Generate negative test cases for all endpoints to ensure error handling coverage.
+
+#### Negative Test Scenarios
+
+```python
+def _get_negative_scenarios(self, method: str, path: str) -> Dict[str, Dict[str, Any]]:
+    """Generate negative test scenarios based on endpoint type"""
+    scenarios = {}
+    
+    # For authentication endpoints
+    if "/auth/" in path:
+        scenarios["unauthorized"] = {
+            "data": "{}",
+            "status": 401
+        }
+    else:
+        # For POST/PUT/PATCH endpoints - test missing required fields
+        if method.upper() in ['POST', 'PUT', 'PATCH']:
+            scenarios["missing_required_fields"] = {
+                "data": "{}",
+                "status": 400
+            }
+        
+        # For GET endpoints - test invalid parameters
+        if method.upper() == 'GET':
+            scenarios["invalid_params"] = {
+                "data": '{"invalid_param": "invalid_value"}',
+                "status": 400
+            }
+        
+        # For endpoints with path parameters - test invalid ID
+        if '{' in path and '}' in path:
+            scenarios["invalid_id"] = {
+                "data": "{}",
+                "status": 404
+            }
+    
+    return scenarios
+```
+
+#### Negative Test Case Template
+
+```python
+@pytest.mark.negative
+@pytest.mark.regression
+def test_endpoint_name_negative_scenario():
+    """测试 METHOD /path - 负向测试用例: scenario"""
+    
+    # 准备无效的测试数据
+    test_data = {}
+    
+    # 发起API请求
+    response = api_client.method('/path', data=test_data)
+    
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_endpoint_name_negative_scenario', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': test_data
+    })
+    
+    # 验证错误响应
+    assert response.status_code == 400
+    
+    # 断言错误结构
+    error_data = response.json()
+    assert 'errorCode' in error_data
+    assert 'message' in error_data
+```
+
+**Coverage**: Negative tests ensure API error handling works correctly for invalid inputs.
+
+### 6. Special Endpoint Handling
 
 #### Login Endpoint (`/login`) - CRITICAL
 
@@ -166,7 +274,7 @@ def test_login_positive():
 - Include `page` and `size` in query params
 - Assert response contains `list`, `total`, `pageNum`, `pageSize`
 
-### 6. Test File Structure
+### 7. Test File Structure
 
 ```python
 import pytest
@@ -320,7 +428,7 @@ def test_api_users_get_performance():
     assert response_time < 1.0, "响应时间超过限制"
 ```
 
-### 7. Critical Implementation Rules
+### 8. Critical Implementation Rules
 
 #### Rule 1: Response Storage
 - **MUST** save every test response to `responses.json`
@@ -346,21 +454,21 @@ def test_api_users_get_performance():
 - **MUST** use `responses = {}` (single braces)
 - **DO NOT** use `responses = {{}}` (double braces)
 - Double braces are only for format strings, not direct file writes
-    
-    # 验证响应
-    data = api_client.validate_response(response, 200)
-    
-    # 断言性能要求
-    assert response_time < 1.0, "响应时间超过限制"
-```
 
-### 7. Naming Conventions
+#### Rule 6: Negative Test Generation
+- **MUST** generate negative tests for all endpoints
+- Generate different scenarios based on endpoint type
+- Test missing required fields for POST/PUT/PATCH
+- Test invalid parameters for GET
+- Test invalid ID for path parameter endpoints
+
+### 9. Naming Conventions
 
 - **Function name**: `test_{endpoint_path}_{method}_{type}`
 - **Endpoint path**: Replace `/` with `_`, remove `{` and `}`
 - **Example**: `/api/users/{id}` → `test_api_users_id_get_positive`
 
-### 8. Swagger Integration
+### 10. Swagger Integration
 
 1. Fetch API docs from `http://localhost:8160/v3/api-docs`
 2. Parse endpoints from `paths` section
@@ -368,7 +476,7 @@ def test_api_users_get_performance():
 4. Use `example` values from schema properties
 5. Follow `$ref` references for request/response bodies
 
-### 9. Output Location
+### 11. Output Location
 
 - Generated files: `pytestjava/tests/generated/test_generated_{timestamp}.py`
 - Report files: `pytestjava/test-reports/test-report.html`

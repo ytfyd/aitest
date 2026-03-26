@@ -183,7 +183,126 @@ def save_response(test_name: str, response_data: dict):
 
 **File Location**: `pytestjava/test-reports/responses.json`
 
-### 4. Authentication Mechanism
+### 4. Negative Test Case Generation
+
+**MANDATORY**: Generate negative test cases for all endpoints to ensure error handling coverage.
+
+#### Negative Test Scenarios
+
+```python
+def _get_negative_scenarios(self, method: str, path: str) -> Dict[str, Dict[str, Any]]:
+    """Generate negative test scenarios based on endpoint type"""
+    scenarios = {}
+    
+    # For authentication endpoints
+    if "/auth/" in path:
+        scenarios["unauthorized"] = {
+            "data": "{}",
+            "status": 401
+        }
+    else:
+        # For POST/PUT/PATCH endpoints - test missing required fields
+        if method.upper() in ['POST', 'PUT', 'PATCH']:
+            scenarios["missing_required_fields"] = {
+                "data": "{}",
+                "status": 400
+            }
+        
+        # For GET endpoints - test invalid parameters
+        if method.upper() == 'GET':
+            scenarios["invalid_params"] = {
+                "data": '{"invalid_param": "invalid_value"}',
+                "status": 400
+            }
+        
+        # For endpoints with path parameters - test invalid ID
+        if '{' in path and '}' in path:
+            scenarios["invalid_id"] = {
+                "data": "{}",
+                "status": 404
+            }
+    
+    return scenarios
+```
+
+#### Negative Test Case Template
+
+```python
+@pytest.mark.negative
+@pytest.mark.regression
+def test_endpoint_name_negative_scenario():
+    """测试 METHOD /path - 负向测试用例: scenario"""
+    
+    # 准备无效的测试数据
+    test_data = {}
+    
+    # 发起API请求
+    response = api_client.method('/path', data=test_data)
+    
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_endpoint_name_negative_scenario', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': test_data
+    })
+    
+    # 验证错误响应
+    assert response.status_code == 400
+    
+    # 断言错误结构
+    error_data = response.json()
+    assert 'errorCode' in error_data
+    assert 'message' in error_data
+```
+
+**Coverage**: Negative tests ensure API error handling works correctly for invalid inputs.
+
+### 5. Request Body Data Generation
+
+**SMART**: Automatically generate request body data from Swagger schema definitions.
+
+```python
+def _generate_data_from_schema_ref(self, schema_name: str) -> Dict[str, Any]:
+    """根据 schema 引用生成测试数据"""
+    api_docs = self.fetch_api_docs()
+    schemas = api_docs.get("components", {}).get("schemas", {})
+    schema = schemas.get(schema_name, {})
+    
+    if not schema:
+        return {}
+    
+    properties = schema.get("properties", {})
+    required_fields = schema.get("required", [])
+    
+    test_data = {}
+    for prop_name, prop_info in properties.items():
+        prop_type = prop_info.get("type", "string")
+        prop_format = prop_info.get("format", "")
+        description = prop_info.get("description", "")
+        
+        # Generate data for required fields and key fields
+        if prop_name in required_fields or prop_name in ["menuName", "menuType", "orderNum"]:
+            test_data[prop_name] = self._generate_value_by_type(
+                prop_name, prop_type, prop_format, prop_info, description
+            )
+    
+    return test_data
+```
+
+**Example**: For `SysMenuEntity` schema, generates:
+```json
+{
+  "menuName": "test_name",
+  "menuType": "test_type",
+  "orderNum": 1
+}
+```
+
+### 6. Authentication Mechanism
 
 **AUTO-LOGIN**: Use pytest fixture to automatically login before tests.
 
@@ -203,7 +322,7 @@ def setup_authentication():
 
 **Token Usage**: The `api_client` automatically adds `Authorization: Bearer {token}` header to all requests.
 
-### 5. Report Data Update
+### 7. Report Data Update
 
 **CRITICAL**: Update all test detail dictionaries with response data.
 
@@ -277,6 +396,7 @@ Generates HTML reports with:
 - Pass/fail statistics
 - Failed test details
 - Response time metrics
+- Request method field (GET, POST, PUT, etc.)
 
 Report location: `pytestjava/test-reports/test-report.html`
 

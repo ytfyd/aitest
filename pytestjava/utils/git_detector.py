@@ -100,31 +100,28 @@ class GitChangeDetector:
                 if request_mapping_match:
                     base_path = request_mapping_match.group(1)
                 
-                method_patterns = [
-                    (r'@GetMapping\s*\(\s*"([^"]+)"\s*\)', 'GET'),
-                    (r'@GetMapping\s*\(\s*value\s*=\s*"([^"]+)"', 'GET'),
-                    (r'@PostMapping\s*\(\s*"([^"]+)"\s*\)', 'POST'),
-                    (r'@PostMapping\s*\(\s*value\s*=\s*"([^"]+)"', 'POST'),
-                    (r'@PutMapping\s*\(\s*"([^"]+)"\s*\)', 'PUT'),
-                    (r'@PutMapping\s*\(\s*value\s*=\s*"([^"]+)"', 'PUT'),
-                    (r'@DeleteMapping\s*\(\s*"([^"]+)"\s*\)', 'DELETE'),
-                    (r'@DeleteMapping\s*\(\s*value\s*=\s*"([^"]+)"', 'DELETE'),
-                    (r'@PatchMapping\s*\(\s*"([^"]+)"\s*\)', 'PATCH'),
-                    (r'@PatchMapping\s*\(\s*value\s*=\s*"([^"]+)"', 'PATCH'),
-                    (r'@RequestMapping\(.*?method\s*=\s*RequestMethod\.(GET|POST|PUT|DELETE|PATCH).*?value\s*=\s*"([^"]+)"\)', 'DYNAMIC')
+                method_mappings = [
+                    ('@GetMapping', 'GET'),
+                    ('@PostMapping', 'POST'),
+                    ('@PutMapping', 'PUT'),
+                    ('@DeleteMapping', 'DELETE'),
+                    ('@PatchMapping', 'PATCH')
                 ]
                 
-                for pattern, method in method_patterns:
-                    matches = re.findall(pattern, content)
+                for annotation, method in method_mappings:
+                    pattern = rf'{annotation}\s*\((.*?)\)'
+                    matches = re.findall(pattern, content, re.DOTALL)
+                    
                     for match in matches:
-                        if isinstance(match, tuple):
-                            if len(match) == 2:
-                                actual_method, path = match
-                                method = actual_method
-                            else:
-                                path = match[0]
+                        path = ""
+                        
+                        value_match = re.search(r'value\s*=\s*"([^"]+)"', match)
+                        if value_match:
+                            path = value_match.group(1)
                         else:
-                            path = match
+                            simple_match = re.search(r'^\s*"([^"]+)"', match)
+                            if simple_match:
+                                path = simple_match.group(1)
                         
                         full_endpoint_path = f"{base_path}{path}".replace("//", "/")
                         endpoints.append({
@@ -133,6 +130,28 @@ class GitChangeDetector:
                             'path': full_endpoint_path,
                             'full_endpoint': f"{method} {full_endpoint_path}"
                         })
+                
+                request_method_pattern = r'@RequestMapping\s*\((.*?)\)'
+                request_method_matches = re.findall(request_method_pattern, content, re.DOTALL)
+                
+                for match in request_method_matches:
+                    method_match = re.search(r'method\s*=\s*RequestMethod\.(\w+)', match)
+                    if method_match:
+                        method = method_match.group(1)
+                        path = ""
+                        
+                        value_match = re.search(r'value\s*=\s*"([^"]+)"', match)
+                        if value_match:
+                            path = value_match.group(1)
+                        
+                        if path:
+                            full_endpoint_path = f"{base_path}{path}".replace("//", "/")
+                            endpoints.append({
+                                'file': file_path,
+                                'method': method,
+                                'path': full_endpoint_path,
+                                'full_endpoint': f"{method} {full_endpoint_path}"
+                            })
         
         except Exception as e:
             print(f"Error extracting endpoints from {file_path}: {e}")

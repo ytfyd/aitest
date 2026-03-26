@@ -104,12 +104,43 @@ class SwaggerClient:
         if request_body:
             content = request_body.get("content", {})
             if "application/json" in content:
-                schema_ref = content["application/json"].get("schema", {}).get("$ref", "")
+                schema_info = content["application/json"].get("schema", {})
+                schema_ref = schema_info.get("$ref", "")
+                
                 if "LoginBody" in schema_ref:
                     test_data["username"] = "admin"
                     test_data["password"] = "admin123"
                     test_data["code"] = "1234"
                     test_data["uuid"] = "test-uuid"
+                elif schema_ref:
+                    schema_name = schema_ref.split("/")[-1]
+                    body_data = self._generate_data_from_schema_ref(schema_name)
+                    test_data.update(body_data)
+        
+        return test_data
+    
+    def _generate_data_from_schema_ref(self, schema_name: str) -> Dict[str, Any]:
+        """根据 schema 引用生成测试数据"""
+        api_docs = self.fetch_api_docs()
+        schemas = api_docs.get("components", {}).get("schemas", {})
+        schema = schemas.get(schema_name, {})
+        
+        if not schema:
+            return {}
+        
+        properties = schema.get("properties", {})
+        required_fields = schema.get("required", [])
+        
+        test_data = {}
+        for prop_name, prop_info in properties.items():
+            prop_type = prop_info.get("type", "string")
+            prop_format = prop_info.get("format", "")
+            description = prop_info.get("description", "")
+            
+            if prop_name in required_fields or prop_name in ["menuName", "menuType", "orderNum"]:
+                test_data[prop_name] = self._generate_value_by_type(
+                    prop_name, prop_type, prop_format, prop_info, description
+                )
         
         return test_data
     

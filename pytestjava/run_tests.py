@@ -20,6 +20,7 @@ from utils.test_generator import TestCaseGenerator
 from utils.wechat_notifier import WeChatWorkNotifier
 from utils.swagger_client import swagger_client
 from config.settings import settings
+from utils.enhanced_impact_analyzer import EnhancedImpactAnalyzer
 
 
 logging.basicConfig(
@@ -38,6 +39,15 @@ class TestRunner:
         self.test_generator = TestCaseGenerator()
         self.wechat_notifier = WeChatWorkNotifier()
         self.test_results = {}
+        self.failed_tests_file = Path(__file__).parent / "test-reports" / "failed_tests.json"
+        
+        # Initialize enhanced impact analyzer
+        try:
+            self.enhanced_analyzer = EnhancedImpactAnalyzer(repo_path, repo_path)
+            logger.info("Enhanced impact analyzer initialized successfully")
+        except Exception as e:
+            logger.warning(f"Failed to initialize enhanced analyzer, falling back to basic detection: {e}")
+            self.enhanced_analyzer = None
     
     def run(self, commit_range: str = "HEAD~1..HEAD") -> bool:
         """Run the complete testing workflow"""
@@ -78,7 +88,45 @@ class TestRunner:
             return False
     
     def detect_changes(self, commit_range: str) -> dict:
-        """Detect API changes in the specified commit range"""
+        """Detect API changes in the specified commit range using enhanced analyzer"""
+        # Try to use enhanced analyzer first
+        if self.enhanced_analyzer:
+            try:
+                logger.info("Using enhanced impact analyzer with Spoon framework")
+                
+                # Get affected endpoints from enhanced analyzer
+                affected_endpoints = self.enhanced_analyzer.get_affected_endpoints_for_testing(commit_range)
+                
+                # Get change summary
+                change_summary = self.enhanced_analyzer.get_change_summary(commit_range)
+                
+                # Get changed files
+                changed_files = self.git_detector.get_changed_files(commit_range)
+                
+                logger.info(f"Enhanced analysis detected {len(affected_endpoints)} affected endpoints")
+                for endpoint in affected_endpoints:
+                    logger.info(f"  - {endpoint['full_endpoint']} (impact: {endpoint['impact_type']}, confidence: {endpoint['confidence']:.2f})")
+                
+                # Save detailed analysis report
+                try:
+                    reports_dir = Path(__file__).parent / "test-reports"
+                    reports_dir.mkdir(parents=True, exist_ok=True)
+                    analysis_file = reports_dir / "impact_analysis.json"
+                    self.enhanced_analyzer.save_analysis_report(str(analysis_file), commit_range)
+                    logger.info(f"Detailed analysis saved to {analysis_file}")
+                except Exception as e:
+                    logger.warning(f"Failed to save analysis report: {e}")
+                
+                return {
+                    'changed_files': changed_files,
+                    'affected_endpoints': affected_endpoints,
+                    'change_summary': change_summary
+                }
+            except Exception as e:
+                logger.warning(f"Enhanced analyzer failed, falling back to basic detection: {e}")
+        
+        # Fallback to basic git detector
+        logger.info("Using basic git change detector")
         changes = self.git_detector.detect_api_changes(commit_range)
         
         logger.info(f"Detected {len(changes['changed_files'])} changed Java files")
@@ -91,10 +139,34 @@ class TestRunner:
     
     def generate_tests(self, endpoints: list) -> str:
         """Generate test cases for affected endpoints"""
-        test_cases = self.test_generator.generate_test_cases(endpoints)
-        
         tests_dir = Path(__file__).parent / "tests" / "generated"
         tests_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Clean old test files
+        self._clean_old_test_files(tests_dir)
+        
+        # Load failed test cases from last run
+        failed_endpoints = self._load_failed_tests()
+        
+        # Merge current endpoints with failed endpoints (avoid duplicates)
+        all_endpoints = []
+        endpoint_set = set()
+        
+        for endpoint in endpoints:
+            endpoint_key = f"{endpoint['method']}_{endpoint['path']}"
+            if endpoint_key not in endpoint_set:
+                endpoint_set.add(endpoint_key)
+                all_endpoints.append(endpoint)
+        
+        for endpoint in failed_endpoints:
+            endpoint_key = f"{endpoint['method']}_{endpoint['path']}"
+            if endpoint_key not in endpoint_set:
+                endpoint_set.add(endpoint_key)
+                all_endpoints.append(endpoint)
+        
+        logger.info(f"Generating tests for {len(endpoints)} new endpoints + {len(failed_endpoints)} failed endpoints = {len(all_endpoints)} total")
+        
+        test_cases = self.test_generator.generate_test_cases(all_endpoints)
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         test_file = tests_dir / f"test_generated_{timestamp}.py"
@@ -123,6 +195,9 @@ class TestRunner:
             logger.info(f"  - Passed: {test_results['passed_tests']}")
             logger.info(f"  - Failed: {test_results['failed_tests']}")
             logger.info(f"  - Skipped: {test_results['skipped_tests']}")
+            
+            # Save failed test cases for next run
+            self._save_failed_tests(test_results)
             
             return test_results
             
@@ -409,16 +484,19 @@ class TestRunner:
         for detail in test_results.get('test_details', []):
             row_status = "passed" if detail['status'] == 'PASSED' else "failed"
             row_icon = "✅" if detail['status'] == 'PASSED' else "❌"
+            method = detail.get('method', 'N/A')
+            method_class = f"method-{method.lower()}" if method != 'N/A' else ""
             test_details_rows += f"""
                 <tr class="{row_status}">
                     <td>{row_icon}</td>
                     <td>{detail['name']}</td>
+                    <td><span class="method-badge {method_class}">{method}</span></td>
                     <td class="status-{row_status}">{detail['status']}</td>
                 </tr>
             """
         
         if not test_details_rows:
-            test_details_rows = "<tr><td colspan='3' style='text-align:center;color:#888;'>暂无测试详情</td></tr>"
+            test_details_rows = "<tr><td colspan='4' style='text-align:center;color:#888;'>暂无测试详情</td></tr>"
         
         # Generate failed details with request/response info
         failed_rows = ""
@@ -428,14 +506,16 @@ class TestRunner:
             response = fail.get('response', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
             method = fail.get('method', 'N/A')
             path = fail.get('path', 'N/A')
+            method_class = f"method-{method.lower()}" if method != 'N/A' else ""
             
             failed_rows += f"""
                 <tr class="failed-detail">
                     <td>❌</td>
                     <td>
                         <div><strong>{fail['name']}</strong></div>
-                        <div style="color:#888;font-size:0.85em;margin-top:5px;">{method} {path}</div>
+                        <div style="color:#888;font-size:0.85em;margin-top:5px;">{path}</div>
                     </td>
+                    <td><span class="method-badge {method_class}">{method}</span></td>
                     <td>
                         <button class="error-btn" onclick="toggleError('fail-{idx}')">查看详情</button>
                         <div id="error-fail-{idx}" class="error-detail">
@@ -453,7 +533,7 @@ class TestRunner:
             """
         
         if not failed_rows:
-            failed_rows = "<tr><td colspan='3' style='text-align:center;color:#10b981;'>🎉 无失败用例</td></tr>"
+            failed_rows = "<tr><td colspan='4' style='text-align:center;color:#10b981;'>🎉 无失败用例</td></tr>"
         
         # Generate passed details with request/response info
         passed_rows = ""
@@ -462,14 +542,16 @@ class TestRunner:
             response = passed.get('response', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
             method = passed.get('method', 'N/A')
             path = passed.get('path', 'N/A')
+            method_class = f"method-{method.lower()}" if method != 'N/A' else ""
             
             passed_rows += f"""
                 <tr class="passed-detail">
                     <td>✅</td>
                     <td>
                         <div><strong>{passed['name']}</strong></div>
-                        <div style="color:#888;font-size:0.85em;margin-top:5px;">{method} {path}</div>
+                        <div style="color:#888;font-size:0.85em;margin-top:5px;">{path}</div>
                     </td>
+                    <td><span class="method-badge {method_class}">{method}</span></td>
                     <td>
                         <button class="success-btn" onclick="toggleError('pass-{idx}')">查看详情</button>
                         <div id="error-pass-{idx}" class="success-detail">
@@ -484,7 +566,7 @@ class TestRunner:
             """
         
         if not passed_rows:
-            passed_rows = "<tr><td colspan='3' style='text-align:center;color:#888;'>暂无成功用例</td></tr>"
+            passed_rows = "<tr><td colspan='4' style='text-align:center;color:#888;'>暂无成功用例</td></tr>"
         
         def get_real_path_from_swagger(path: str, method: str) -> str:
             real_path = swagger_client.get_real_path(path, method)
@@ -507,6 +589,95 @@ class TestRunner:
         
         if not endpoint_rows:
             endpoint_rows = "<tr><td colspan='2' style='text-align:center;color:#888;'>暂无变更接口</td></tr>"
+        
+        # Generate impact analysis section
+        impact_analysis_html = ""
+        if 'change_summary' in changes:
+            summary = changes['change_summary']
+            
+            impact_analysis_html = f"""
+        <div class="section">
+            <h2>🔍 影响分析详情</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; color: #00d9ff; font-weight: bold;">{summary.get('total_files_changed', 0)}</div>
+                    <div style="color: #888; font-size: 0.9em;">变更文件</div>
+                </div>
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; color: #10b981; font-weight: bold;">{summary.get('added_methods', 0)}</div>
+                    <div style="color: #888; font-size: 0.9em;">新增方法</div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; color: #f59e0b; font-weight: bold;">{summary.get('modified_methods', 0)}</div>
+                    <div style="color: #888; font-size: 0.9em;">修改方法</div>
+                </div>
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; color: #ef4444; font-weight: bold;">{summary.get('deleted_methods', 0)}</div>
+                    <div style="color: #888; font-size: 0.9em;">删除方法</div>
+                </div>
+            </div>
+        """
+            
+            # Add file-level changes
+            if 'files' in summary and summary['files']:
+                impact_analysis_html += """
+            <h3 style="margin-top: 20px; margin-bottom: 15px; color: #00d9ff;">📁 文件变更详情</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>文件路径</th>
+                        <th style="width: 150px;">新增</th>
+                        <th style="width: 150px;">修改</th>
+                        <th style="width: 150px;">删除</th>
+                    </tr>
+                </thead>
+                <tbody>
+            """
+                
+                for file_path, file_changes in summary['files'].items():
+                    added = ', '.join(file_changes['added']) if file_changes['added'] else '-'
+                    modified = ', '.join(file_changes['modified']) if file_changes['modified'] else '-'
+                    deleted = ', '.join(file_changes['deleted']) if file_changes['deleted'] else '-'
+                    
+                    impact_analysis_html += f"""
+                    <tr>
+                        <td style="font-family: monospace; font-size: 0.9em;">{file_path}</td>
+                        <td style="color: #10b981;">{added}</td>
+                        <td style="color: #f59e0b;">{modified}</td>
+                        <td style="color: #ef4444;">{deleted}</td>
+                    </tr>
+                    """
+                
+                impact_analysis_html += """
+                </tbody>
+            </table>
+            """
+            
+            impact_analysis_html += """
+        </div>
+            """
+        
+        # Generate endpoint impact details
+        endpoint_impact_html = ""
+        for ep in changes.get('affected_endpoints', []):
+            impact_type = ep.get('impact_type', 'unknown')
+            confidence = ep.get('confidence', 0)
+            
+            impact_color = "#10b981" if impact_type == 'direct_modification' else "#f59e0b" if impact_type == 'service_dependency' else "#8b5cf6"
+            impact_text = "直接修改" if impact_type == 'direct_modification' else "服务依赖" if impact_type == 'service_dependency' else "间接影响"
+            
+            real_path = get_real_path_from_swagger(ep['path'], ep['method'])
+            endpoint_rows += f"""
+                <tr>
+                    <td><span class="method-badge method-{ep['method'].lower()}">{ep['method']}</span></td>
+                    <td>{real_path}</td>
+                    <td style="color: {impact_color}; font-weight: bold;">{impact_text}</td>
+                    <td>{confidence:.0%}</td>
+                </tr>
+            """
+        
+        if not endpoint_rows:
+            endpoint_rows = "<tr><td colspan='4' style='text-align:center;color:#888;'>暂无变更接口</td></tr>"
         
         html_content = f"""<!DOCTYPE html>
 <html lang="zh-CN">
@@ -848,6 +1019,7 @@ class TestRunner:
                     <tr>
                         <th style="width: 50px;">状态</th>
                         <th>测试用例</th>
+                        <th style="width: 100px;">请求方式</th>
                         <th style="width: 100px;">结果</th>
                     </tr>
                 </thead>
@@ -864,6 +1036,7 @@ class TestRunner:
                     <tr>
                         <th style="width: 50px;">状态</th>
                         <th>用例名称</th>
+                        <th style="width: 100px;">请求方式</th>
                         <th>详情</th>
                     </tr>
                 </thead>
@@ -880,6 +1053,7 @@ class TestRunner:
                     <tr>
                         <th style="width: 50px;">状态</th>
                         <th>用例名称</th>
+                        <th style="width: 100px;">请求方式</th>
                         <th>详情</th>
                     </tr>
                 </thead>
@@ -896,6 +1070,8 @@ class TestRunner:
                     <tr>
                         <th style="width: 100px;">方法</th>
                         <th>路径</th>
+                        <th style="width: 120px;">影响类型</th>
+                        <th style="width: 100px;">置信度</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -903,6 +1079,8 @@ class TestRunner:
                 </tbody>
             </table>
         </div>
+        
+        {impact_analysis_html}
         
         <div class="footer">
             <p>Generated by API Test Framework | © 2026</p>
@@ -932,6 +1110,58 @@ class TestRunner:
             logger.info("Test report sent successfully")
         else:
             logger.warning("Failed to send test report")
+    
+    def _clean_old_test_files(self, tests_dir: Path):
+        """Clean old test files from previous runs"""
+        try:
+            test_files = list(tests_dir.glob("test_generated_*.py"))
+            for test_file in test_files:
+                test_file.unlink()
+                logger.info(f"Removed old test file: {test_file}")
+        except Exception as e:
+            logger.warning(f"Failed to clean old test files: {e}")
+    
+    def _load_failed_tests(self) -> list:
+        """Load failed test cases from last run"""
+        if not self.failed_tests_file.exists():
+            return []
+        
+        try:
+            with open(self.failed_tests_file, 'r', encoding='utf-8') as f:
+                failed_tests = json.load(f)
+            logger.info(f"Loaded {len(failed_tests)} failed test cases from last run")
+            return failed_tests
+        except Exception as e:
+            logger.warning(f"Failed to load failed tests: {e}")
+            return []
+    
+    def _save_failed_tests(self, test_results: dict):
+        """Save failed test cases for next run"""
+        failed_endpoints = []
+        
+        # Extract endpoint info from failed test names
+        for fail in test_results.get('failed_details', []):
+            test_name = fail.get('name', '')
+            method = fail.get('method', 'GET')
+            path = fail.get('path', '/')
+            
+            # Only save if we have valid endpoint info
+            if method != 'N/A' and path != 'N/A':
+                failed_endpoints.append({
+                    'method': method,
+                    'path': path,
+                    'full_endpoint': f"{method} {path}",
+                    'test_name': test_name
+                })
+        
+        # Save to file
+        try:
+            self.failed_tests_file.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.failed_tests_file, 'w', encoding='utf-8') as f:
+                json.dump(failed_endpoints, f, ensure_ascii=False, indent=2)
+            logger.info(f"Saved {len(failed_endpoints)} failed test cases for next run")
+        except Exception as e:
+            logger.warning(f"Failed to save failed tests: {e}")
 
 
 def main():
