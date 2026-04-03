@@ -1217,9 +1217,20 @@ def main():
     """Main entry point"""
     import argparse
     
-    parser = argparse.ArgumentParser(description='API Test Runner')
+    parser = argparse.ArgumentParser(description='API Test Runner', 
+                                     formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     epilog="""
+使用示例:
+  python run_tests.py                              # 分析最近一次提交
+  python run_tests.py --commit-range HEAD~5..HEAD  # 分析最近5次提交
+  python run_tests.py --branch test-feature main   # 对比test-feature与main分支
+  python run_tests.py --branch feature-xxx origin/main  # 对比本地分支与远程分支
+""")
+    
     parser.add_argument('--commit-range', default='HEAD~1..HEAD', 
                        help='Git commit range to analyze (default: HEAD~1..HEAD)')
+    parser.add_argument('--branch', nargs=2, metavar=('SOURCE', 'TARGET'),
+                       help='Compare two branches (e.g., --branch test-feature main)')
     parser.add_argument('--config', default='.env', 
                        help='Configuration file path (default: .env)')
     parser.add_argument('--git-repo-path', default=None,
@@ -1233,8 +1244,37 @@ def main():
     if args.git_repo_path:
         os.environ['GIT_REPO_PATH'] = args.git_repo_path
     
+    commit_range = args.commit_range
+    if args.branch:
+        source_branch, target_branch = args.branch
+        commit_range = f"{target_branch}..{source_branch}"
+        logger.info(f"Branch comparison mode: {source_branch} vs {target_branch}")
+        logger.info(f"Converted to commit range: {commit_range}")
+        
+        is_remote_branch = '/' in source_branch or '/' in target_branch
+        if is_remote_branch:
+            import subprocess
+            repo_path = args.git_repo_path or os.getenv("GIT_REPO_PATH", ".")
+            logger.info(f"Detected remote branch(es), running 'git fetch' to update remote references...")
+            try:
+                fetch_result = subprocess.run(
+                    ['git', 'fetch', '--all'],
+                    cwd=repo_path,
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+                if fetch_result.returncode == 0:
+                    logger.info(f"Git fetch completed successfully")
+                else:
+                    logger.warning(f"Git fetch warning: {fetch_result.stderr}")
+            except subprocess.TimeoutExpired:
+                logger.warning("Git fetch timed out (60s), using cached remote references")
+            except Exception as e:
+                logger.warning(f"Git fetch failed: {e}, using cached remote references")
+    
     runner = TestRunner(git_repo_path=args.git_repo_path)
-    success = runner.run(args.commit_range)
+    success = runner.run(commit_range)
     
     sys.exit(0 if success else 1)
 

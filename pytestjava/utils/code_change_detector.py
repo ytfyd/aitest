@@ -77,6 +77,16 @@ class CodeChangeDetector:
             commits = list(self.repo.iter_commits(commit_range))
             
             if not commits:
+                is_branch_comparison = '..' in commit_range and not commit_range.startswith('HEAD')
+                if is_branch_comparison:
+                    logger.warning(f"No commits found in range {commit_range}")
+                    logger.warning("This means the two branches have no differences (they point to the same commit)")
+                    logger.warning("Suggestions:")
+                    logger.warning("  1. Check if branches are up to date: git fetch --all")
+                    logger.warning("  2. Verify branch names: git branch -a")
+                    logger.warning("  3. Use --commit-range to specify a different range")
+                    logger.warning("  4. Example: python run_tests.py --commit-range HEAD~5..HEAD")
+                
                 try:
                     all_commits = list(self.repo.iter_commits())
                     if all_commits:

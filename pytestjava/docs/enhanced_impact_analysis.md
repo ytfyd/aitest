@@ -627,15 +627,156 @@ analyzer.save_analysis_report("impact_analysis.json", "HEAD~1..HEAD")
 
 ### 命令行执行
 
-```bash
-# 执行测试
-python run_tests.py --commit-range HEAD~1..HEAD
+#### 模式1：提交范围模式（默认）
 
+```bash
+# 执行测试（分析最近一次提交）
+python run_tests.py
+
+# 分析最近5次提交
+python run_tests.py --commit-range HEAD~5..HEAD
+
+# 分析特定commit范围
+python run_tests.py --commit-range abc1234..def5678
+```
+
+**适用场景**：
+- 日常开发后测试最近一次提交
+- 代码审查后的回归测试
+- 多次提交的累积影响分析
+
+#### 模式2：分支对比模式（新增）
+
+```bash
+# 对比test-feature与main分支（本地分支）
+python run_tests.py --branch test-feature main
+
+# 对比本地分支与远程分支
+python run_tests.py --branch feature-xxx origin/main
+
+# 对比两个远程分支（自动执行 git fetch 更新远程引用）
+python run_tests.py --branch origin/test-feature origin/main
+
+# 对比两个功能分支
+python run_tests.py --branch feature-a feature-b
+
+# 结合配置文件使用
+python run_tests.py --branch test-feature main --config .env.test
+```
+
+**适用场景**：
+- 合并请求（PR/MR）前的测试验证
+- 分支合并前的代码质量检查
+- 对比不同分支的功能差异影响
+- CI/CD流水线中的分支对比测试
+- **PR/MR 审查时对比远程分支最新代码**
+
+**工作原理**：
+```
+--branch origin/test-feature origin/main
+    ↓
+检测到远程分支（包含 '/'）
+    ↓
+自动执行: git fetch --all（更新远程引用）
+    ↓
+转换为 commit_range: origin/main..origin/test-feature
+    ↓
+Git 命令: git log origin/main..origin/test-feature
+    ↓
+获取 origin/test-feature 相对于 origin/main 的所有变更
+    ↓
+后续流程与模式1完全相同
+```
+
+**远程分支处理规则**：
+
+| 分支组合 | 是否自动 fetch | 说明 |
+|----------|----------------|------|
+| `test-feature` vs `main` | ❌ 不需要 | 两个都是本地分支 |
+| `feature` vs `origin/main` | ✅ 自动 fetch | 包含远程分支 |
+| `origin/dev` vs `origin/master` | ✅ 自动 fetch | 两个都是远程分支 |
+
+**容错机制**：
+- `git fetch` 超时（60秒）→ 使用缓存的远程引用继续执行
+- `git fetch` 失败 → 使用缓存的远程引用继续执行
+- 网络不可用 → 回退到本地缓存数据
+
+#### 通用参数
+
+```bash
 # 指定Git仓库路径
 python run_tests.py --git-repo-path /path/to/repo
 
 # 指定配置文件
 python run_tests.py --config .env
+
+# 组合使用
+python run_tests.py --branch test-feature main --git-repo-path D:\projects\app --config .env.prod
+```
+
+---
+
+## 规则详解（续）
+
+### 规则14：分支对比模式规则
+
+**位置**：`run_tests.py::main()` + `utils/enhanced_impact_analyzer.py::analyze()`
+
+**规则内容**：
+```
+分支对比模式将两个分支名称转换为Git commit range格式，复用现有分析流程
+```
+
+**参数转换规则**：
+
+| 输入 | 转换结果 | 说明 |
+|------|----------|------|
+| `--branch test-feature main` | `main..test-feature` | 对比test-feature相对于main的变更 |
+| `--branch feature origin/main` | `origin/main..feature` | 对比本地分支相对于远程main |
+| 无--branch参数 | `HEAD~1..HEAD` | 使用默认提交范围 |
+
+**实现细节**：
+
+**run_tests.py 参数解析**：
+```python
+parser.add_argument('--branch', nargs=2, metavar=('SOURCE', 'TARGET'),
+                   help='Compare two branches (e.g., --branch test-feature main)')
+
+if args.branch:
+    source_branch, target_branch = args.branch
+    commit_range = f"{target_branch}..{source_branch}"
+    logger.info(f"Branch comparison mode: {source_branch} vs {target_branch}")
+```
+
+**EnhancedImpactAnalyzer 分支检测**：
+```python
+def analyze(self, commit_range, max_impact_depth):
+    is_branch_mode = '..' in commit_range and not commit_range.startswith('HEAD')
+    
+    if is_branch_mode:
+        parts = commit_range.split('..')
+        target_branch = parts[0]
+        source_branch = parts[1]
+        logger.info(f"[EnhancedImpactAnalyzer] 分支对比模式: {source_branch} vs {target_branch}")
+    else:
+        logger.info(f"[EnhancedImpactAnalyzer] 提交范围: {commit_range}")
+    
+    # 后续流程完全相同...
+```
+
+**日志输出示例**：
+```
+Branch comparison mode: test-feature vs main
+Converted to commit range: main..test-feature
+
+[EnhancedImpactAnalyzer] ========== 开始影响分析 ==========
+[EnhancedImpactAnalyzer] 分支对比模式: test-feature vs main
+[EnhancedImpactAnalyzer] 步骤4: 检测变更文件
+[EnhancedImpactAnalyzer] 发现 15 个变更的Java文件
+[EnhancedImpactAnalyzer] 步骤5: 分析代码变更详情
+[EnhancedImpactAnalyzer] 检测到 28 个代码变更
+...
+Total endpoints for testing: 12 (from 5 changed controller files, 32 affected methods)
 ```
 
 ---

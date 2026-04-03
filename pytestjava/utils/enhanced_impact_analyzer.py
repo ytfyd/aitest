@@ -85,7 +85,15 @@ class EnhancedImpactAnalyzer:
     
     def analyze(self, commit_range: str = "HEAD~1..HEAD", max_impact_depth: int = 5) -> AnalysisResult:
         logger.info(f"[EnhancedImpactAnalyzer] ========== 开始影响分析 ==========")
-        logger.info(f"[EnhancedImpactAnalyzer] 提交范围: {commit_range}, 最大影响深度: {max_impact_depth}")
+        
+        is_branch_mode = '..' in commit_range and not commit_range.startswith('HEAD')
+        if is_branch_mode:
+            parts = commit_range.split('..')
+            target_branch = parts[0] if len(parts) > 0 else 'unknown'
+            source_branch = parts[1] if len(parts) > 1 else 'unknown'
+            logger.info(f"[EnhancedImpactAnalyzer] 分支对比模式: {source_branch} vs {target_branch}")
+        else:
+            logger.info(f"[EnhancedImpactAnalyzer] 提交范围: {commit_range}, 最大影响深度: {max_impact_depth}")
         
         self.initialize()
         
