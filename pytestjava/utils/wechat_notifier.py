@@ -1,6 +1,12 @@
+import os
 import json
 import requests
 from typing import Dict, Any, List, Optional
+from dotenv import load_dotenv
+from pathlib import Path
+
+load_dotenv(Path(__file__).parent.parent / ".env", override=True)
+
 from config.settings import settings
 
 
@@ -12,9 +18,12 @@ class WeChatWorkNotifier:
     
     def _get_webhook_url(self) -> Optional[str]:
         """Get webhook URL, constructing it only if key is available"""
-        if not settings.wechat_work_key:
+        webhook_url = os.getenv("WECHAT_WORK_WEBHOOK_URL")
+        webhook_key = os.getenv("WECHAT_WORK_KEY")
+        
+        if not webhook_url or not webhook_key:
             return None
-        return f"{settings.wechat_work_webhook_url}?key={settings.wechat_work_key}"
+        return f"{webhook_url}?key={webhook_key}"
     
     def send_test_report(self, test_results: Dict[str, Any]) -> bool:
         """Send test results to WeChat Work"""

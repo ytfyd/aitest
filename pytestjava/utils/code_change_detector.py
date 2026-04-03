@@ -8,7 +8,7 @@ from git import Repo, Commit
 from git.diff import Diff
 from git.exc import InvalidGitRepositoryError
 
-from .spoon_analyzer import SpoonAnalyzer, JavaElement, CodeChange, ChangeType
+from .jcci_analyzer import JCCIAnalyzer, JavaElement, CodeChange, ChangeType
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class ClassSignature:
 
 
 class CodeChangeDetector:
-    """Detect code changes using Git and analyze with Spoon"""
+    """Detect code changes using Git and analyze with JCCI"""
     
     def __init__(self, repo_path: str, project_path: str = None):
         try:
@@ -58,7 +58,7 @@ class CodeChangeDetector:
                 f"Please initialize a Git repository first: cd {repo_path} && git init"
             )
         
-        self.spoon_analyzer = SpoonAnalyzer(str(self.project_path))
+        self.jcci_analyzer = JCCIAnalyzer(str(self.project_path))
         self._temp_dir = None
     
     def __del__(self):
@@ -214,27 +214,24 @@ class CodeChangeDetector:
         methods = []
         class_body = content[class_start:class_end]
         
-        # Updated pattern to handle annotations in parameters
-        # Match method signature including annotations in parameters
-        method_pattern = r'(?:public|private|protected)?\s*(?:static\s+)?(?:final\s+)?(?:synchronized\s+)?(?:\w+(?:<[\w\s,<>]+>)?)\s+(\w+)\s*\(((?:[^()]|\([^()]*\))*)\)(?:\s+throws\s+[\w\s,]+)?\s*(?:\{|;)'
+        method_pattern = r'((?:@\w+(?:\([^)]*\))?\s*)*)((?:public|private|protected)?\s*(?:static\s+)?(?:final\s+)?(?:synchronized\s+)?(?:\w+(?:<[\w\s,<>]+>)?)\s+(\w+)\s*\(((?:[^()]|\([^()]*\))*)\)(?:\s+throws\s+[\w\s,]+)?)\s*(?:\{|;)'
         
         for match in re.finditer(method_pattern, class_body):
-            method_name = match.group(1)
-            params_str = match.group(2)
+            annotations_str = match.group(1)
+            method_name = match.group(3)
+            params_str = match.group(4)
             
             if method_name in ['if', 'for', 'while', 'switch', 'catch', 'class', 'interface']:
                 continue
             
             line_number = class_body[:match.start()].count('\n') + 1
             
-            method_annotations = self._extract_annotations(class_body[:match.start()])
+            method_annotations = self._extract_annotations(annotations_str)
             
-            return_type = match.group(0).split(method_name)[0].strip().split()[-1] if method_name else "void"
+            return_type = match.group(2).split(method_name)[0].strip().split()[-1] if method_name else "void"
             
-            # Extract parameters, handling annotations
             parameters = []
             if params_str.strip():
-                # Split by comma, but be careful with nested parentheses
                 param_parts = []
                 current_param = ""
                 paren_depth = 0
@@ -258,7 +255,6 @@ class CodeChangeDetector:
                 for param in param_parts:
                     param = param.strip()
                     if param:
-                        # Remove annotations from parameter
                         param_clean = re.sub(r'@\w+(?:\([^)]*\))?\s*', '', param)
                         parts = param_clean.split()
                         if len(parts) >= 2:
@@ -267,7 +263,7 @@ class CodeChangeDetector:
             body_start = match.end()
             body_end = body_start
             
-            if match.group(0).endswith('{'):
+            if match.group(0).rstrip().endswith('{'):
                 brace_count = 1
                 pos = body_start
                 while pos < len(class_body) and brace_count > 0:
@@ -531,10 +527,11 @@ class CodeChangeDetector:
     
     def get_change_summary(self, commit_range: str = "HEAD~1..HEAD") -> Dict:
         """Get a summary of all changes"""
+        changed_files = self.get_changed_files(commit_range)
         all_changes = self.analyze_all_changes(commit_range)
         
         summary = {
-            'total_files_changed': len(all_changes),
+            'total_files_changed': len(changed_files),
             'total_changes': sum(len(changes) for changes in all_changes.values()),
             'added_methods': 0,
             'modified_methods': 0,
@@ -547,39 +544,40 @@ class CodeChangeDetector:
             'files': {}
         }
         
-        for file_path, changes in all_changes.items():
+        for file_path in changed_files:
             file_summary = {
                 'added': [],
                 'modified': [],
                 'deleted': []
             }
             
-            for change in changes:
-                if change.element.element_type == 'method':
-                    if change.change_type == ChangeType.ADDED:
-                        summary['added_methods'] += 1
-                        file_summary['added'].append(change.element.name)
-                    elif change.change_type == ChangeType.MODIFIED:
-                        summary['modified_methods'] += 1
-                        file_summary['modified'].append(change.element.name)
-                    elif change.change_type == ChangeType.DELETED:
-                        summary['deleted_methods'] += 1
-                        file_summary['deleted'].append(change.element.name)
-                elif change.element.element_type == 'field':
-                    if change.change_type == ChangeType.ADDED:
-                        summary['added_fields'] += 1
-                        file_summary['added'].append(change.element.name)
-                    elif change.change_type == ChangeType.MODIFIED:
-                        summary['modified_fields'] += 1
-                        file_summary['modified'].append(change.element.name)
-                    elif change.change_type == ChangeType.DELETED:
-                        summary['deleted_fields'] += 1
-                        file_summary['deleted'].append(change.element.name)
-                elif change.element.element_type == 'class':
-                    if change.change_type == ChangeType.ADDED:
-                        summary['added_classes'] += 1
-                    elif change.change_type == ChangeType.DELETED:
-                        summary['deleted_classes'] += 1
+            if file_path in all_changes:
+                for change in all_changes[file_path]:
+                    if change.element.element_type == 'method':
+                        if change.change_type == ChangeType.ADDED:
+                            summary['added_methods'] += 1
+                            file_summary['added'].append(change.element.name)
+                        elif change.change_type == ChangeType.MODIFIED:
+                            summary['modified_methods'] += 1
+                            file_summary['modified'].append(change.element.name)
+                        elif change.change_type == ChangeType.DELETED:
+                            summary['deleted_methods'] += 1
+                            file_summary['deleted'].append(change.element.name)
+                    elif change.element.element_type == 'field':
+                        if change.change_type == ChangeType.ADDED:
+                            summary['added_fields'] += 1
+                            file_summary['added'].append(change.element.name)
+                        elif change.change_type == ChangeType.MODIFIED:
+                            summary['modified_fields'] += 1
+                            file_summary['modified'].append(change.element.name)
+                        elif change.change_type == ChangeType.DELETED:
+                            summary['deleted_fields'] += 1
+                            file_summary['deleted'].append(change.element.name)
+                    elif change.element.element_type == 'class':
+                        if change.change_type == ChangeType.ADDED:
+                            summary['added_classes'] += 1
+                        elif change.change_type == ChangeType.DELETED:
+                            summary['deleted_classes'] += 1
             
             summary['files'][file_path] = file_summary
         

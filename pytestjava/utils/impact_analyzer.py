@@ -6,7 +6,7 @@ from typing import List, Dict, Set, Optional, Tuple
 from dataclasses import dataclass, field
 from collections import defaultdict, deque
 
-from .spoon_analyzer import JavaElement, CodeChange, ChangeType
+from .jcci_analyzer import JavaElement, CodeChange, ChangeType, JavaClassInfo, JavaMethodInfo, JavaFieldInfo, ImpactNode
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +56,7 @@ class ImpactPath:
     path: List[str]
     impact_type: str
     confidence: float
+    depth: int = 0
     
     def to_dict(self) -> Dict:
         return {
@@ -63,23 +64,77 @@ class ImpactPath:
             'end_element': self.end_element.to_dict(),
             'path': self.path,
             'impact_type': self.impact_type,
-            'confidence': self.confidence
+            'confidence': self.confidence,
+            'depth': self.depth
         }
 
 
 class ImpactAnalyzer:
-    """Analyze code change impact propagation"""
+    """Enhanced impact analyzer using JCCI call graph analysis
     
-    def __init__(self, project_path: str):
+    Analyzes code change impact propagation through:
+    - Call graph traversal
+    - Dependency chain tracking
+    - Confidence calculation based on depth
+    """
+    
+    def __init__(self, project_path: str, jcci_analyzer=None):
         self.project_path = Path(project_path).resolve()
+        self.jcci = jcci_analyzer
         self.call_graph: Dict[str, CallNode] = {}
         self.dependency_graph: Dict[str, Set[str]] = defaultdict(set)
         self.reverse_dependency_graph: Dict[str, Set[str]] = defaultdict(set)
         self.class_to_file: Dict[str, str] = {}
-        self._build_call_graph()
+        self.method_to_class: Dict[str, str] = {}
+        self.class_methods: Dict[str, Set[str]] = defaultdict(set)
+        self._initialized = False
+    
+    def initialize(self):
+        if self._initialized:
+            return
+        
+        if self.jcci:
+            self._build_from_jcci()
+        else:
+            self._build_call_graph()
+        
+        self._build_reverse_dependencies()
+        self._initialized = True
+        logger.info(f"[ImpactAnalyzer] 初始化完成: {len(self.call_graph)} 个方法节点, {len(self.class_to_file)} 个类, {sum(len(deps) for deps in self.dependency_graph.values())} 个依赖关系")
+    
+    def _build_from_jcci(self):
+        logger.info(f"[ImpactAnalyzer] 从JCCI构建调用图...")
+        
+        if not self.jcci._initialized:
+            self.jcci.initialize()
+        
+        method_count = 0
+        dependency_count = 0
+        
+        for class_name, class_info in self.jcci.java_classes.items():
+            self.class_to_file[class_name] = class_info.file_path
+            
+            for method_name, method_info in class_info.methods.items():
+                node_key = f"{class_name}.{method_name}"
+                self.method_to_class[node_key] = class_name
+                self.class_methods[class_name].add(node_key)
+                
+                self.call_graph[node_key] = CallNode(
+                    class_name=class_name,
+                    method_name=method_name,
+                    file_path=class_info.file_path,
+                    line_number=method_info.line_start,
+                    called_methods=method_info.called_methods
+                )
+                method_count += 1
+                
+                for called_method in method_info.called_methods:
+                    self.dependency_graph[node_key].add(called_method)
+                    dependency_count += 1
+        
+        logger.info(f"[ImpactAnalyzer] 调用图构建完成: {method_count} 个方法, {dependency_count} 个依赖关系")
     
     def _build_call_graph(self):
-        """Build call graph from all Java files in the project"""
         java_files = list(self.project_path.rglob("*.java"))
         java_files = [f for f in java_files if "target" not in str(f) and "build" not in str(f)]
         
@@ -90,11 +145,8 @@ class ImpactAnalyzer:
                 self._analyze_file(java_file)
             except Exception as e:
                 logger.error(f"Error analyzing {java_file}: {e}")
-        
-        self._build_reverse_dependencies()
     
     def _analyze_file(self, java_file: Path):
-        """Analyze a single Java file and extract call relationships"""
         try:
             with open(java_file, 'r', encoding='utf-8') as f:
                 content = f.read()
@@ -112,6 +164,8 @@ class ImpactAnalyzer:
         
         for method_sig, method_info in methods.items():
             node_key = f"{class_name}.{method_info['name']}"
+            self.method_to_class[node_key] = class_name
+            self.class_methods[class_name].add(node_key)
             
             called_methods = self._extract_method_calls(method_info['body'], class_name)
             
@@ -127,13 +181,11 @@ class ImpactAnalyzer:
                 self.dependency_graph[node_key].add(called_method)
     
     def _extract_class_name(self, content: str) -> Optional[str]:
-        """Extract class name from Java file content"""
         pattern = r'(?:public\s+|private\s+|protected\s+)?(?:abstract\s+|final\s+)?class\s+(\w+)'
         match = re.search(pattern, content)
         return match.group(1) if match else None
     
     def _extract_methods(self, content: str, class_name: str) -> Dict[str, Dict]:
-        """Extract all methods from a class"""
         methods = {}
         
         method_pattern = r'(?:public|private|protected)?\s*(?:static\s+)?(?:final\s+)?(?:synchronized\s+)?(?:\w+(?:<[\w\s,<>]+>)?)\s+(\w+)\s*\(([^)]*)\)(?:\s+throws\s+[\w\s,]+)?\s*\{'
@@ -159,7 +211,6 @@ class ImpactAnalyzer:
         return methods
     
     def _find_method_end(self, content: str, start: int) -> int:
-        """Find the end of a method body"""
         brace_count = 1
         pos = start
         
@@ -173,7 +224,6 @@ class ImpactAnalyzer:
         return pos
     
     def _extract_method_calls(self, method_body: str, current_class: str) -> List[str]:
-        """Extract method calls from a method body"""
         calls = []
         
         patterns = [
@@ -201,13 +251,11 @@ class ImpactAnalyzer:
         return list(set(calls))
     
     def _build_reverse_dependencies(self):
-        """Build reverse dependency graph (who calls whom)"""
         for node_key, node in self.call_graph.items():
             for called_method in node.called_methods:
                 self.reverse_dependency_graph[called_method].add(node_key)
     
     def find_callers(self, method_key: str, depth: int = 5) -> List[Tuple[str, int]]:
-        """Find all methods that call the given method (BFS)"""
         callers = []
         visited = set()
         queue = deque([(method_key, 0)])
@@ -232,7 +280,6 @@ class ImpactAnalyzer:
         return callers
     
     def find_callees(self, method_key: str, depth: int = 5) -> List[Tuple[str, int]]:
-        """Find all methods called by the given method (BFS)"""
         callees = []
         visited = set()
         queue = deque([(method_key, 0)])
@@ -257,7 +304,8 @@ class ImpactAnalyzer:
         return callees
     
     def analyze_impact(self, changes: List[CodeChange], max_depth: int = 5) -> List[ImpactPath]:
-        """Analyze the impact of code changes"""
+        self.initialize()
+        
         impact_paths = []
         
         for change in changes:
@@ -279,15 +327,20 @@ class ImpactAnalyzer:
                             signature=f"{caller_node.method_name}()"
                         )
                         
-                        impact_type = "direct" if depth == 1 else "indirect"
-                        confidence = 1.0 / (depth + 1)
+                        impact_type, confidence = self._calculate_impact_type_and_confidence(
+                            depth, 
+                            change.change_type,
+                            caller_key,
+                            method_key
+                        )
                         
                         impact_path = ImpactPath(
                             start_element=change.element,
                             end_element=caller_element,
                             path=[method_key, caller_key],
                             impact_type=impact_type,
-                            confidence=confidence
+                            confidence=confidence,
+                            depth=depth
                         )
                         impact_paths.append(impact_path)
             
@@ -318,7 +371,8 @@ class ImpactAnalyzer:
                                     end_element=caller_element,
                                     path=[change.element.qualified_name, node_key],
                                     impact_type="field_usage",
-                                    confidence=0.8
+                                    confidence=0.8,
+                                    depth=1
                                 )
                                 impact_paths.append(impact_path)
                         except Exception:
@@ -326,40 +380,61 @@ class ImpactAnalyzer:
         
         return impact_paths
     
+    def _calculate_impact_type_and_confidence(self, depth: int, change_type: ChangeType, caller_key: str, changed_method: str) -> Tuple[str, float]:
+        if depth == 1:
+            return ('direct_impact', 1.0)
+        elif depth == 2:
+            caller_class = caller_key.split('.')[0]
+            changed_class = changed_method.split('.')[0]
+            
+            if caller_class == changed_class:
+                return ('method_or_class_dependency', 0.85)
+            else:
+                return ('method_or_class_dependency', 0.8)
+        elif depth == 3:
+            return ('indirect_impact', 0.7)
+        elif depth == 4:
+            return ('indirect_impact', 0.6)
+        else:
+            return ('indirect_impact', max(0.5, 0.9 - depth * 0.1))
+    
     def get_impact_summary(self, impact_paths: List[ImpactPath]) -> Dict:
-        """Get a summary of impact analysis"""
         summary = {
             'total_impacts': len(impact_paths),
             'direct_impacts': 0,
             'indirect_impacts': 0,
+            'method_dependency_impacts': 0,
             'field_impacts': 0,
             'affected_methods': set(),
             'affected_classes': set(),
-            'impact_by_depth': defaultdict(int)
+            'impact_by_depth': defaultdict(int),
+            'impact_by_type': defaultdict(int)
         }
         
         for path in impact_paths:
-            if path.impact_type == 'direct':
+            if path.impact_type == 'direct_impact':
                 summary['direct_impacts'] += 1
-            elif path.impact_type == 'indirect':
+            elif path.impact_type == 'indirect_impact':
                 summary['indirect_impacts'] += 1
+            elif path.impact_type == 'method_or_class_dependency':
+                summary['method_dependency_impacts'] += 1
             elif path.impact_type == 'field_usage':
                 summary['field_impacts'] += 1
             
             summary['affected_methods'].add(path.end_element.qualified_name)
             summary['affected_classes'].add(path.end_element.qualified_name.split('.')[0])
             
-            depth = len(path.path) - 1
-            summary['impact_by_depth'][depth] += 1
+            summary['impact_by_depth'][path.depth] += 1
+            summary['impact_by_type'][path.impact_type] += 1
         
         summary['affected_methods'] = list(summary['affected_methods'])
         summary['affected_classes'] = list(summary['affected_classes'])
         summary['impact_by_depth'] = dict(summary['impact_by_depth'])
+        summary['impact_by_type'] = dict(summary['impact_by_type'])
         
         return summary
     
     def find_affected_controllers(self, impact_paths: List[ImpactPath]) -> List[str]:
-        """Find controller methods affected by changes"""
         affected_controllers = []
         
         for path in impact_paths:
@@ -385,3 +460,33 @@ class ImpactAnalyzer:
                 pass
         
         return list(set(affected_controllers))
+    
+    def get_methods_in_class(self, class_name: str) -> Set[str]:
+        return self.class_methods.get(class_name, set())
+    
+    def get_call_chain_depth(self, from_method: str, to_method: str, max_depth: int = 10) -> Optional[int]:
+        if from_method == to_method:
+            return 0
+        
+        visited = set()
+        queue = deque([(from_method, 0)])
+        
+        while queue:
+            current, depth = queue.popleft()
+            
+            if depth > max_depth:
+                continue
+            
+            if current in visited:
+                continue
+            
+            visited.add(current)
+            
+            if current in self.call_graph:
+                for called in self.call_graph[current].called_methods:
+                    if called == to_method:
+                        return depth + 1
+                    if called not in visited:
+                        queue.append((called, depth + 1))
+        
+        return None

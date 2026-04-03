@@ -1,17 +1,5 @@
 [
   {
-    "method": "DELETE",
-    "path": "/system/menu/1",
-    "full_endpoint": "DELETE /system/menu/1",
-    "test_name": "test_system_menu_1_positive"
-  },
-  {
-    "method": "POST",
-    "path": "/register",
-    "full_endpoint": "POST /register",
-    "test_name": "test_register_positive"
-  },
-  {
     "method": "GET",
     "path": "/system/menu/list",
     "full_endpoint": "GET /system/menu/list",
@@ -25,57 +13,39 @@
   },
   {
     "method": "POST",
-    "path": "/system/menu",
-    "full_endpoint": "POST /system/menu",
-    "test_name": "test_system_menu_positive"
-  },
-  {
-    "method": "POST",
-    "path": "/login",
-    "full_endpoint": "POST /login",
-    "test_name": "test_login_negative_missing_required_fields"
+    "path": "/system/menu/system/menu",
+    "full_endpoint": "POST /system/menu/system/menu",
+    "test_name": "test_system_menu_system_menu_positive"
   },
   {
     "method": "DELETE",
+    "path": "/system/dict/data/test_code",
+    "full_endpoint": "DELETE /system/dict/data/test_code",
+    "test_name": "test_system_dict_data_test_code_positive"
+  },
+  {
+    "method": "DELETE",
+    "path": "/system/dict/type/1",
+    "full_endpoint": "DELETE /system/dict/type/1",
+    "test_name": "test_system_dict_type_1_positive"
+  },
+  {
+    "method": "DELETE",
+    "path": "/system/role/1",
+    "full_endpoint": "DELETE /system/role/1",
+    "test_name": "test_system_role_1_positive"
+  },
+  {
+    "method": "POST",
+    "path": "/system/user/system/user",
+    "full_endpoint": "POST /system/user/system/user",
+    "test_name": "test_system_user_system_user_positive"
+  },
+  {
+    "method": "GET",
     "path": "/system/menu/1",
-    "full_endpoint": "DELETE /system/menu/1",
-    "test_name": "test_system_menu_1_negative_unauthorized"
-  },
-  {
-    "method": "POST",
-    "path": "/register",
-    "full_endpoint": "POST /register",
-    "test_name": "test_register_negative_missing_required_fields"
-  },
-  {
-    "method": "GET",
-    "path": "/system/menu/list",
-    "full_endpoint": "GET /system/menu/list",
-    "test_name": "test_system_menu_list_negative_invalid_params"
-  },
-  {
-    "method": "GET",
-    "path": "/system/menu/treeselect",
-    "full_endpoint": "GET /system/menu/treeselect",
-    "test_name": "test_system_menu_treeselect_negative_invalid_params"
-  },
-  {
-    "method": "POST",
-    "path": "/system/menu",
-    "full_endpoint": "POST /system/menu",
-    "test_name": "test_system_menu_negative_missing_required_fields"
-  },
-  {
-    "method": "GET",
-    "path": "/getinfo",
-    "full_endpoint": "GET /getinfo",
-    "test_name": "test_getinfo_negative_invalid_params"
-  },
-  {
-    "method": "GET",
-    "path": "/getrouters",
-    "full_endpoint": "GET /getrouters",
-    "test_name": "test_getrouters_negative_invalid_params"
+    "full_endpoint": "GET /system/menu/1",
+    "test_name": "test_system_menu_1_negative_invalid_params"
   },
   {
     "method": "GET",
@@ -87,30 +57,24 @@
     "method": "DELETE",
     "path": "/system/menu/1",
     "full_endpoint": "DELETE /system/menu/1",
-    "test_name": "test_system_menu_1_performance"
+    "test_name": "test_system_menu_1_negative_unauthorized"
   },
   {
-    "method": "POST",
-    "path": "/register",
-    "full_endpoint": "POST /register",
-    "test_name": "test_register_performance"
+    "method": "DELETE",
+    "path": "/monitor/logininfor/1",
+    "full_endpoint": "DELETE /monitor/logininfor/1",
+    "test_name": "test_monitor_logininfor_1_negative_unauthorized"
+  },
+  {
+    "method": "DELETE",
+    "path": "/monitor/operlog/1",
+    "full_endpoint": "DELETE /monitor/operlog/1",
+    "test_name": "test_monitor_operlog_1_negative_unauthorized"
   },
   {
     "method": "GET",
-    "path": "/system/menu/list",
-    "full_endpoint": "GET /system/menu/list",
-    "test_name": "test_system_menu_list_performance"
-  },
-  {
-    "method": "GET",
-    "path": "/system/menu/treeselect",
-    "full_endpoint": "GET /system/menu/treeselect",
-    "test_name": "test_system_menu_treeselect_performance"
-  },
-  {
-    "method": "POST",
-    "path": "/system/menu",
-    "full_endpoint": "POST /system/menu",
-    "test_name": "test_system_menu_performance"
+    "path": "/system/config/configkey/test_key",
+    "full_endpoint": "GET /system/config/configkey/test_key",
+    "test_name": "test_system_config_configkey_test_key_negative_invalid_params"
   }
 ]

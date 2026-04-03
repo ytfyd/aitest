@@ -34,10 +34,22 @@ class SwaggerClient:
         api_docs = self.fetch_api_docs()
         paths = api_docs.get("paths", {})
         
+        exact_match = None
+        pattern_match = None
+        
         for full_path, methods in paths.items():
             if method.lower() in methods:
-                if self._path_matches(full_path, path_pattern):
-                    return {
+                if full_path == path_pattern:
+                    exact_match = {
+                        "full_path": full_path,
+                        "method": method.upper(),
+                        "parameters": methods[method.lower()].get("parameters", []),
+                        "requestBody": methods[method.lower()].get("requestBody"),
+                        "summary": methods[method.lower()].get("summary", ""),
+                        "tags": methods[method.lower()].get("tags", [])
+                    }
+                elif self._path_matches(full_path, path_pattern) and pattern_match is None:
+                    pattern_match = {
                         "full_path": full_path,
                         "method": method.upper(),
                         "parameters": methods[method.lower()].get("parameters", []),
@@ -46,7 +58,7 @@ class SwaggerClient:
                         "tags": methods[method.lower()].get("tags", [])
                     }
         
-        return None
+        return exact_match or pattern_match
     
     def _path_matches(self, full_path: str, pattern: str) -> bool:
         """检查路径是否匹配模式"""
@@ -57,9 +69,9 @@ class SwaggerClient:
             return False
         
         for fp, pp in zip(full_parts, pattern_parts):
-            if fp.startswith("{") and fp.endswith("}"):
-                continue
             if pp.startswith("{") and pp.endswith("}"):
+                continue
+            if fp.startswith("{") and fp.endswith("}"):
                 continue
             if fp.lower() != pp.lower():
                 return False

@@ -1,3 +1,4 @@
+import os
 import time
 import json
 import logging
@@ -5,6 +6,10 @@ from typing import Dict, Any, Optional, List
 from requests import Session, Response
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from dotenv import load_dotenv
+from pathlib import Path
+
+load_dotenv(Path(__file__).parent.parent / ".env", override=True)
 
 from config.settings import settings
 
@@ -74,8 +79,15 @@ class APIClient:
         self.last_response: Optional[Dict[str, Any]] = None
         self.auth_token: Optional[str] = None
     
-    def login(self, username: str = "admin", password: str = "admin123") -> bool:
+    def login(self, username: Optional[str] = None, password: Optional[str] = None) -> bool:
         """Login and get authentication token"""
+        username = username or os.getenv("USERNAME")
+        password = password or os.getenv("PASSWORD")
+        
+        if not username or not password:
+            logger.error("Username and password must be configured in .env file")
+            return False
+        
         try:
             login_data = {"username": username, "password": password}
             response = self.session.post(

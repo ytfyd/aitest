@@ -79,22 +79,45 @@ def test_{endpoint_name}_negative_{scenario}():
             
             "performance": """
 @pytest.mark.performance
+@pytest.mark.slow
 def test_{endpoint_name}_performance():
-    \"\"\"测试 {method} {path} - 性能测试\"\"\"
+    \"\"\"测试 {method} {path} - 性能测试用例\"\"\"
+    import time
+    import statistics
     
     # 准备测试数据
     test_data = {test_data}
     
-    # 测量响应时间
-    import time
-    start_time = time.time()
+    # 性能测试配置
+    num_requests = 10  # 请求数量
+    max_response_time = 2.0  # 最大响应时间（秒）
+    avg_response_time = 1.0  # 平均响应时间（秒）
     
-    response = api_client.{method}('{path}'{params})
+    # 记录响应时间
+    response_times = []
     
-    end_time = time.time()
-    response_time = end_time - start_time
+    for i in range(num_requests):
+        start_time = time.time()
+        
+        # 发起API请求
+        response = api_client.{method}('{path}'{params})
+        
+        end_time = time.time()
+        response_time = end_time - start_time
+        response_times.append(response_time)
+        
+        # 验证响应
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get('code') == 200
     
-    # 存储响应结果用于报告
+    # 计算性能指标
+    avg_time = statistics.mean(response_times)
+    max_time = max(response_times)
+    min_time = min(response_times)
+    p95_time = statistics.quantiles(response_times, n=20)[18]  # 95th percentile
+    
+    # 存储性能数据
     try:
         resp_json = response.json()
     except:
@@ -103,17 +126,24 @@ def test_{endpoint_name}_performance():
         'status_code': response.status_code,
         'response': resp_json,
         'request_params': {test_data},
-        'response_time': response_time
+        'avg_response_time': avg_time,
+        'max_response_time': max_time,
+        'min_response_time': min_time,
+        'p95_response_time': p95_time,
+        'num_requests': num_requests
     }})
     
-    # 验证响应
-    data = api_client.validate_response(response, {expected_status})
+    # 验证性能指标
+    assert avg_time <= avg_response_time, f"平均响应时间 {{avg_time:.3f}}s 超过阈值 {{avg_response_time}}s"
+    assert max_time <= max_response_time, f"最大响应时间 {{max_time:.3f}}s 超过阈值 {{max_response_time}}s"
     
-    # 断言业务响应码
-    assert data.get('code') == 200, f"业务响应码错误: {{data.get('msg', 'Unknown error')}}"
-    
-    # 断言性能要求
-    assert response_time < {max_response_time}, "响应时间超过限制"
+    # 打印性能报告
+    print(f"性能测试报告:")
+    print(f"  请求数量: {{num_requests}}")
+    print(f"  平均响应时间: {{avg_time:.3f}}s")
+    print(f"  最大响应时间: {{max_time:.3f}}s")
+    print(f"  最小响应时间: {{min_time:.3f}}s")
+    print(f"  P95响应时间: {{p95_time:.3f}}s")
 """
         }
     
@@ -407,21 +437,46 @@ def test_{endpoint_name}_positive():
             from config.settings import settings
             login_perf_template = """
 @pytest.mark.performance
+@pytest.mark.slow
 def test_{endpoint_name}_performance():
-    \"\"\"测试 {method} {path} - 性能测试\"\"\"
+    \"\"\"测试 {method} {path} - 性能测试用例\"\"\"
+    import time
+    import statistics
+    import requests
     
     # 准备测试数据
     test_data = {test_data}
     
-    # 登录接口使用独立请求，避免认证header冲突
-    import time
-    import requests
-    start_time = time.time()
-    response = requests.{method}('{base_url}{path}', json={test_data_str})
-    end_time = time.time()
-    response_time = end_time - start_time
+    # 性能测试配置
+    num_requests = 10  # 请求数量
+    max_response_time = 2.0  # 最大响应时间（秒）
+    avg_response_time = 1.0  # 平均响应时间（秒）
     
-    # 存储响应结果用于报告
+    # 记录响应时间
+    response_times = []
+    
+    for i in range(num_requests):
+        start_time = time.time()
+        
+        # 登录接口使用独立请求，避免认证header冲突
+        response = requests.{method}('{base_url}{path}', json={test_data_str})
+        
+        end_time = time.time()
+        response_time = end_time - start_time
+        response_times.append(response_time)
+        
+        # 验证响应
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get('code') == 200
+    
+    # 计算性能指标
+    avg_time = statistics.mean(response_times)
+    max_time = max(response_times)
+    min_time = min(response_times)
+    p95_time = statistics.quantiles(response_times, n=20)[18]  # 95th percentile
+    
+    # 存储性能数据
     try:
         resp_json = response.json()
     except:
@@ -430,18 +485,24 @@ def test_{endpoint_name}_performance():
         'status_code': response.status_code,
         'response': resp_json,
         'request_params': {test_data},
-        'response_time': response_time
+        'avg_response_time': avg_time,
+        'max_response_time': max_time,
+        'min_response_time': min_time,
+        'p95_response_time': p95_time,
+        'num_requests': num_requests
     }})
     
-    # 验证响应
-    assert response.status_code == 200, f"HTTP状态码错误: {{response.status_code}}"
-    data = response.json()
+    # 验证性能指标
+    assert avg_time <= avg_response_time, f"平均响应时间 {{avg_time:.3f}}s 超过阈值 {{avg_response_time}}s"
+    assert max_time <= max_response_time, f"最大响应时间 {{max_time:.3f}}s 超过阈值 {{max_response_time}}s"
     
-    # 断言业务响应码
-    assert data.get('code') == 200, f"业务响应码错误: {{data.get('msg', 'Unknown error')}}"
-    
-    # 断言性能要求
-    assert response_time < 1.0, "响应时间超过限制"
+    # 打印性能报告
+    print(f"性能测试报告:")
+    print(f"  请求数量: {{num_requests}}")
+    print(f"  平均响应时间: {{avg_time:.3f}}s")
+    print(f"  最大响应时间: {{max_time:.3f}}s")
+    print(f"  最小响应时间: {{min_time:.3f}}s")
+    print(f"  P95响应时间: {{p95_time:.3f}}s")
 """
             return login_perf_template.format(
                 endpoint_name=endpoint_name,
@@ -459,9 +520,7 @@ def test_{endpoint_name}_performance():
             method=method_lower,
             path=path,
             test_data=test_data_str,
-            params=params_str + data_str,
-            expected_status=200,
-            max_response_time=1.0
+            params=params_str + data_str
         )
     
     def _get_negative_scenarios(self, method: str, path: str) -> Dict[str, Dict[str, Any]]:
@@ -552,7 +611,7 @@ def setup_authentication():
     if RESPONSE_FILE.exists():
         os.remove(RESPONSE_FILE)
     
-    api_client.login(username="admin", password="admin123")
+    api_client.login()
     yield
     api_client.clear_auth()
 

@@ -1,178 +1,610 @@
-# 增强版代码变更影响分析系统
+# 增强版代码变更影响分析系统 - 完整规则文档
 
-## 概述
-
-本系统是一个基于Spoon框架思想的增强版代码变更影响分析系统，用于精确识别Java代码变更对API端点的影响范围。系统采用AST（抽象语法树）级别的分析，能够准确识别方法调用链、依赖关系和API端点影响。
-
-## 系统架构
-
-### 核心模块
+## ⚠️ 核心流程（重要：每次修改前必读）
 
 ```
-pytestjava/utils/
-├── spoon_analyzer.py              # Spoon集成模块（AST解析基础）
-├── code_change_detector.py        # 代码变更检测器
-├── impact_analyzer.py             # 影响传播分析器
-├── api_endpoint_analyzer.py       # API端点影响分析器
-└── enhanced_impact_analyzer.py    # 增强版影响分析器（主入口）
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          完整分析流程                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   本地Git仓库 (已clone)                                                      │
+│          ↓                                                                  │
+│   分析 HEAD~1..HEAD 提交范围                                                 │
+│          ↓                                                                  │
+│   ┌─────────────────────────────────────┐                                   │
+│   │  步骤1: JCCIAnalyzer (AST解析器)    │                                   │
+│   │  - 扫描所有Java文件                  │                                   │
+│   │  - 使用javalang解析AST结构           │                                   │
+│   │  - 提取类、方法、字段、注解信息       │                                   │
+│   │  - 识别Controller/Service/Repository │                                   │
+│   │  - 构建完整调用图                    │                                   │
+│   └─────────────────────────────────────┘                                   │
+│          ↓                                                                  │
+│   ┌─────────────────────────────────────┐                                   │
+│   │  步骤2: ImpactAnalyzer (影响分析器)  │                                   │
+│   │  - 从JCCI获取调用图                  │                                   │
+│   │  - 构建方法依赖关系                  │                                   │
+│   │  - 构建反向依赖索引                  │                                   │
+│   └─────────────────────────────────────┘                                   │
+│          ↓                                                                  │
+│   ┌─────────────────────────────────────┐                                   │
+│   │  步骤3: APIEndpointAnalyzer (端点)   │                                   │
+│   │  - 从JCCI获取Controller类           │                                   │
+│   │  - 提取API端点信息                   │                                   │
+│   │  - 分析Controller-Service依赖        │                                   │
+│   └─────────────────────────────────────┘                                   │
+│          ↓                                                                  │
+│   ┌─────────────────────────────────────┐                                   │
+│   │  步骤4: CodeChangeDetector (变更)    │                                   │
+│   │  - 检测Git提交变更文件               │                                   │
+│   │  - 解析Java签名                     │                                   │
+│   │  - 识别变更的方法/字段/类            │                                   │
+│   └─────────────────────────────────────┘                                   │
+│          ↓                                                                  │
+│   ┌─────────────────────────────────────┐                                   │
+│   │  步骤5: 影响传播分析                 │                                   │
+│   │  - 查找变更方法的调用者              │                                   │
+│   │  - 查找变更方法的被调用者            │                                   │
+│   │  - 查找相关Controller文件            │                                   │
+│   │  - 计算影响置信度                    │                                   │
+│   └─────────────────────────────────────┘                                   │
+│          ↓                                                                  │
+│   ┌─────────────────────────────────────┐                                   │
+│   │  步骤6: 生成受影响端点列表           │                                   │
+│   │  - 变更Controller中的所有接口        │                                   │
+│   │  - 调用链上的所有接口                │                                   │
+│   │  - 调用变更方法的所有接口            │                                   │
+│   └─────────────────────────────────────┘                                   │
+│          ↓                                                                  │
+│   ┌─────────────────────────────────────┐                                   │
+│   │  步骤7: 合并失败测试用例             │                                   │
+│   │  - 加载上次失败的测试用例            │                                   │
+│   │  - 与当前受影响端点合并              │                                   │
+│   │  - 去重处理                         │                                   │
+│   └─────────────────────────────────────┘                                   │
+│          ↓                                                                  │
+│   ┌─────────────────────────────────────┐                                   │
+│   │  步骤8: 生成测试用例                 │                                   │
+│   │  - 正向测试用例 (positive)           │                                   │
+│   │  - 负向测试用例 (negative)           │                                   │
+│   │  - 性能测试用例 (performance)        │                                   │
+│   └─────────────────────────────────────┘                                   │
+│          ↓                                                                  │
+│   ┌─────────────────────────────────────┐                                   │
+│   │  步骤9: 执行测试                     │                                   │
+│   │  - 运行pytest                        │                                   │
+│   │  - 解析测试结果                      │                                   │
+│   │  - 保存失败测试用例                  │                                   │
+│   └─────────────────────────────────────┘                                   │
+│          ↓                                                                  │
+│   ┌─────────────────────────────────────┐                                   │
+│   │  步骤10: 生成报告和通知              │                                   │
+│   │  - 生成HTML测试报告                  │                                   │
+│   │  - 发送企业微信通知                  │                                   │
+│   │  - 保存分析报告                      │                                   │
+│   └─────────────────────────────────────┘                                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 模块说明
+---
 
-#### 1. spoon_analyzer.py - Spoon集成模块
+## 核心组件对应文件
 
-**功能**：
-- 提供Java代码AST解析基础功能
-- 定义核心数据结构（JavaElement、CodeChange、APIEndpoint等）
-- 提取API端点信息
+| 组件 | 文件路径 | 功能 |
+|------|----------|------|
+| JCCIAnalyzer | `utils/jcci_analyzer.py` | 基于javalang的AST解析Java代码结构 |
+| ImpactAnalyzer | `utils/impact_analyzer.py` | 构建调用图，分析影响传播 |
+| APIEndpointAnalyzer | `utils/api_endpoint_analyzer.py` | 关联API端点与变更 |
+| CodeChangeDetector | `utils/code_change_detector.py` | 检测Git提交变更，解析Java签名 |
+| EnhancedImpactAnalyzer | `utils/enhanced_impact_analyzer.py` | 整合所有分析组件（主入口） |
+| TestCaseGenerator | `utils/test_generator.py` | 生成pytest测试用例 |
+| TestRunner | `run_tests.py` | 测试执行主入口 |
 
-**核心类**：
+---
+
+## 规则详解
+
+### 规则1：初始化扫描规则
+
+**位置**：`utils/jcci_analyzer.py::JCCIAnalyzer.initialize()`
+
+**规则内容**：
+```
+初始化时必须扫描所有Java文件，构建完整的调用图
+```
+
+**实现细节**：
 ```python
-class SpoonAnalyzer:
-    def analyze_project() -> Dict[str, Any]
-    def extract_api_endpoints(controller_file: Path) -> List[APIEndpoint]
-    def analyze_method_calls(java_file: Path) -> Dict[str, List[str]]
-    def find_field_usages(java_file: Path, field_name: str) -> List[Dict]
+def initialize(self, incremental: bool = False, changed_files: List[str] = None):
+    # 始终扫描所有文件，不使用增量模式
+    logger.info(f"[JCCIAnalyzer] 开始扫描 {len(java_files)} 个Java文件")
+    self._scan_java_files()
+    self._build_call_graph()
 ```
 
-**数据结构**：
+**日志输出**：
+```
+[JCCIAnalyzer] 开始扫描 183 个Java文件
+[JCCIAnalyzer] AST解析完成: 144 个类 (Controllers: 12, Services: 35, Repositories: 8)
+[JCCIAnalyzer] 调用图构建完成: 566 个方法, 1234 个调用关系
+```
+
+---
+
+### 规则2：调用图构建规则
+
+**位置**：`utils/jcci_analyzer.py::JCCIAnalyzer._build_call_graph()`
+
+**规则内容**：
+```
+调用图必须包含所有方法及其调用关系
+```
+
+**实现细节**：
 ```python
-@dataclass
-class JavaElement:
-    element_type: str          # class, method, field
-    name: str
-    qualified_name: str
-    file_path: str
-    line_number: int
-    signature: str
-    annotations: List[str]
-
-@dataclass
-class CodeChange:
-    change_type: ChangeType    # ADDED, MODIFIED, DELETED
-    element: JavaElement
-    old_element: Optional[JavaElement]
-    diff_content: str
-
-@dataclass
-class APIEndpoint:
-    method: str
-    path: str
-    http_method: str
-    controller_class: str
-    method_name: str
-    file_path: str
-    line_number: int
-    parameters: List[Dict]
-    return_type: str
-    annotations: List[str]
+def _build_call_graph(self):
+    for class_name, class_info in self.java_classes.items():
+        for method_name, method_info in class_info.methods.items():
+            method_key = f"{class_name}.{method_name}"
+            for called in method_info.called_methods:
+                self.call_graph[method_key].add(called)
+                self.reverse_call_graph[called].add(method_key)
 ```
 
-#### 2. code_change_detector.py - 代码变更检测器
+---
 
-**功能**：
-- 检测Git提交中的代码变更
-- 解析Java类、方法、字段的签名
-- 识别新增、修改、删除的代码元素
+### 规则3：影响分析器初始化规则
 
-**核心类**：
+**位置**：`utils/impact_analyzer.py::ImpactAnalyzer.initialize()`
+
+**规则内容**：
+```
+从JCCI获取调用图，构建方法依赖关系和反向依赖索引
+```
+
+**实现细节**：
 ```python
-class CodeChangeDetector:
-    def get_changed_files(commit_range: str) -> List[str]
-    def get_file_diff(file_path: str, commit_range: str) -> Tuple[str, str]
-    def parse_java_class(content: str) -> Optional[ClassSignature]
-    def detect_changes(file_path: str, old_content: str, new_content: str) -> List[CodeChange]
-    def analyze_all_changes(commit_range: str) -> Dict[str, List[CodeChange]]
-    def get_change_summary(commit_range: str) -> Dict
+def initialize(self):
+    self._build_from_jcci()
+    self._build_reverse_dependencies()
 ```
 
-**解析能力**：
-- 类级别：类名、注解、继承关系
-- 方法级别：方法名、返回类型、参数列表、注解、方法体
-- 字段级别：字段名、类型、注解
+**日志输出**：
+```
+[ImpactAnalyzer] 从JCCI构建调用图...
+[ImpactAnalyzer] 调用图构建完成: 566 个方法, 1234 个依赖关系
+[ImpactAnalyzer] 初始化完成: 566 个方法节点, 144 个类, 1234 个依赖关系
+```
 
-#### 3. impact_analyzer.py - 影响传播分析器
+---
 
-**功能**：
-- 构建项目调用图（Call Graph）
-- 分析方法调用链和依赖关系
-- 追踪影响传播路径
+### 规则4：端点分析器初始化规则
 
-**核心类**：
+**位置**：`utils/api_endpoint_analyzer.py::APIEndpointAnalyzer.initialize()`
+
+**规则内容**：
+```
+从JCCI获取Controller类，提取API端点信息
+```
+
+**实现细节**：
 ```python
-class ImpactAnalyzer:
-    def find_callers(method_key: str, depth: int) -> List[Tuple[str, int]]
-    def find_callees(method_key: str, depth: int) -> List[Tuple[str, int]]
-    def analyze_impact(changes: List[CodeChange], max_depth: int) -> List[ImpactPath]
-    def get_impact_summary(impact_paths: List[ImpactPath]) -> Dict
-    def find_affected_controllers(impact_paths: List[ImpactPath]) -> List[str]
+def initialize(self):
+    self._build_from_jcci()
 ```
 
-**调用图构建**：
-- 扫描所有Java文件
-- 提取方法调用关系
-- 构建正向依赖图和反向依赖图
-- 支持BFS遍历查找调用链
+**日志输出**：
+```
+[APIEndpointAnalyzer] 从JCCI构建端点分析...
+[APIEndpointAnalyzer] 端点分析完成: 12 个Controller类, 56 个API端点, 89 个Service调用
+[APIEndpointAnalyzer] 初始化完成: 56 个Controller方法, 12 个Controller类, 89 个Service调用关系
+```
 
-#### 4. api_endpoint_analyzer.py - API端点影响分析器
+---
 
-**功能**：
-- 扫描所有Controller类
-- 提取API端点信息（路径、方法、参数等）
-- 分析Controller与Service的依赖关系
-- 识别受影响的API端点
+### 规则5：扫描范围规则
 
-**核心类**：
+**位置**：`utils/enhanced_impact_analyzer.py::get_affected_endpoints_for_testing()`
+
+**规则内容**：
+```
+扫描文件 = 变更文件 + 所有和变更文件有依赖关系的Controller文件
+```
+
+**实现细节**：
 ```python
-class APIEndpointAnalyzer:
-    def find_affected_endpoints(
-        changes: List[CodeChange],
-        impact_paths: List[ImpactPath]
-    ) -> List[EndpointImpact]
-    def get_all_endpoints() -> List[APIEndpoint]
-    def get_endpoint_summary(affected_endpoints: List[EndpointImpact]) -> Dict
+# 1. 获取变更文件中的Controller文件
+for file_path in analysis_result.changed_files:
+    if 'Controller' in file_path:
+        changed_controller_files.add(normalized_path)
+
+# 2. 获取相关Controller文件
+related_controllers = self.jcci_analyzer._find_related_controllers(analysis_result.changed_files)
+for controller_file in related_controllers:
+    changed_controller_files.add(normalized_path)
 ```
 
-**影响类型**：
-- `direct_modification`: 直接修改的Controller方法
-- `indirect_impact`: 通过调用链间接影响
-- `service_dependency`: Service层变更影响Controller
+---
 
-#### 5. enhanced_impact_analyzer.py - 增强版影响分析器（主入口）
+### 规则6：受影响接口识别规则
 
-**功能**：
-- 整合所有分析模块
-- 提供统一的分析接口
-- 生成详细的分析报告
+**位置**：`utils/enhanced_impact_analyzer.py::get_affected_endpoints_for_testing()`
 
-**核心类**：
+**规则内容**：
+```
+受影响接口 = 
+    1. 变更相互依赖的Controller文件中的所有接口
+    2. 变更方法调用链上的所有接口
+    3. 调用变更方法的所有接口
+```
+
+**实现细节**：
+
+**第一层：变更Controller文件中的所有接口**
 ```python
-class EnhancedImpactAnalyzer:
-    def analyze(commit_range: str, max_impact_depth: int) -> AnalysisResult
-    def get_affected_endpoints_for_testing(commit_range: str) -> List[Dict[str, str]]
-    def get_change_summary(commit_range: str) -> Dict
-    def get_all_api_endpoints() -> List[Dict[str, str]]
-    def save_analysis_report(output_path: str, commit_range: str)
-    def print_summary(commit_range: str)
+for controller_file in changed_controller_files:
+    controller_methods = self.api_endpoint_analyzer.get_controller_methods_in_file(controller_file)
+    for controller_method in controller_methods:
+        # 添加所有Controller方法
 ```
 
-**分析结果**：
+**第二层：变更方法调用链上的所有接口**
 ```python
-@dataclass
-class AnalysisResult:
-    timestamp: str
-    commit_range: str
-    changed_files: List[str]
-    code_changes: List[Dict]
-    impact_summary: Dict
-    affected_endpoints: List[Dict]
-    endpoint_summary: Dict
-    analysis_metadata: Dict
+for modified_method in directly_modified_methods:
+    callees = self._find_all_callees(modified_method, max_depth=5)
+    affected_methods.update(callees)
 ```
+
+**第三层：调用变更方法的所有接口**
+```python
+for modified_method in directly_modified_methods:
+    callers = self._find_all_callers(modified_method, max_depth=5)
+    affected_methods.update(callers)
+```
+
+---
+
+### 规则7：置信度计算规则
+
+**位置**：`utils/enhanced_impact_analyzer.py::get_affected_endpoints_for_testing()`
+
+**规则内容**：
+```
+置信度基于影响类型和调用链深度计算
+```
+
+**置信度对照表**：
+
+| 影响类型 | 置信度 | 说明 |
+|---------|--------|------|
+| direct_impact | 1.0 | 直接修改的Controller方法 |
+| service_dependency | 0.9 | Controller调用的Service被修改 |
+| method_dependency | 0.85 | 方法直接调用依赖 |
+| indirect_impact | 0.5-0.7 | 间接影响（基于深度） |
+
+**实现细节**：
+```python
+if controller_key in directly_modified_methods:
+    impact_type = 'direct_impact'
+    confidence = 1.0
+elif impact_type == 'service_dependency':
+    confidence = 0.9
+elif impact_type == 'indirect_impact':
+    confidence = max(0.5, 0.8 - depth * 0.1)
+```
+
+---
+
+### 规则8：失败测试用例重试规则
+
+**位置**：`run_tests.py::TestRunner`
+
+**规则内容**：
+```
+失败测试用例会在下次运行时自动重试
+```
+
+**实现细节**：
+
+**加载失败测试用例**：
+```python
+def _load_failed_tests(self) -> list:
+    if not self.failed_tests_file.exists():
+        return []
+    
+    with open(self.failed_tests_file, 'r', encoding='utf-8') as f:
+        failed_tests = json.load(f)
+    logger.info(f"Loaded {len(failed_tests)} failed test cases from last run")
+    return failed_tests
+```
+
+**合并测试用例**：
+```python
+def generate_tests(self, endpoints: list) -> str:
+    # 加载上次失败的测试用例
+    failed_endpoints = self._load_failed_tests()
+    
+    # 合并当前端点和失败端点（去重）
+    all_endpoints = []
+    endpoint_set = set()
+    
+    for endpoint in endpoints:
+        endpoint_key = f"{endpoint['method']}_{endpoint['path']}"
+        if endpoint_key not in endpoint_set:
+            endpoint_set.add(endpoint_key)
+            all_endpoints.append(endpoint)
+    
+    for endpoint in failed_endpoints:
+        endpoint_key = f"{endpoint['method']}_{endpoint['path']}"
+        if endpoint_key not in endpoint_set:
+            endpoint_set.add(endpoint_key)
+            all_endpoints.append(endpoint)
+```
+
+**保存失败测试用例**：
+```python
+def _save_failed_tests(self, test_results: dict):
+    failed_endpoints = []
+    for fail in test_results.get('failed_details', []):
+        method = fail.get('method', 'GET')
+        path = fail.get('path', '/')
+        failed_endpoints.append({
+            'method': method,
+            'path': path,
+            'full_endpoint': f"{method} {path}",
+            'test_name': test_name
+        })
+    
+    with open(self.failed_tests_file, 'w', encoding='utf-8') as f:
+        json.dump(failed_endpoints, f, ensure_ascii=False, indent=2)
+```
+
+---
+
+### 规则9：测试用例生成规则
+
+**位置**：`utils/test_generator.py::TestCaseGenerator`
+
+**规则内容**：
+```
+每个受影响接口生成三类测试用例：
+1. 正向测试用例（positive）
+2. 负向测试用例（negative）
+3. 性能测试用例（performance）
+```
+
+**测试用例命名规范**：
+```
+test_{endpoint_path}_{test_type}
+
+示例：
+- test_system_menu_treeselect_positive
+- test_system_menu_treeselect_negative_invalid_params
+- test_system_menu_treeselect_performance
+```
+
+**正向测试用例**：
+```python
+@pytest.mark.positive
+@pytest.mark.smoke
+def test_{endpoint_name}_positive():
+    """测试 {method} {path} - 正向测试用例"""
+    
+    # 准备测试数据
+    test_data = {test_data}
+    
+    # 发起API请求
+    response = api_client.{method}('{path}', params={params})
+    
+    # 存储响应结果
+    save_response('test_{endpoint_name}_positive', {
+        'status_code': response.status_code,
+        'response': response.json()
+    })
+    
+    # 验证响应
+    assert response.status_code == 200
+    data = response.json()
+    assert data.get('code') == 200
+```
+
+**负向测试用例**：
+```python
+@pytest.mark.negative
+@pytest.mark.regression
+def test_{endpoint_name}_negative_{scenario}():
+    """测试 {method} {path} - 负向测试用例: {scenario}"""
+    
+    # 准备无效测试数据
+    test_data = {invalid_data}
+    
+    # 发起API请求
+    response = api_client.{method}('{path}', data=test_data)
+    
+    # 验证错误响应
+    assert response.status_code == {expected_status}
+    error_data = response.json()
+    assert 'errorCode' in error_data
+```
+
+**性能测试用例**：
+```python
+@pytest.mark.performance
+@pytest.mark.slow
+def test_{endpoint_name}_performance():
+    """测试 {method} {path} - 性能测试用例"""
+    import time
+    import statistics
+    
+    # 性能测试配置
+    num_requests = 10
+    max_response_time = 2.0
+    avg_response_time = 1.0
+    
+    # 记录响应时间
+    response_times = []
+    
+    for i in range(num_requests):
+        start_time = time.time()
+        response = api_client.{method}('{path}', params={params})
+        end_time = time.time()
+        response_times.append(end_time - start_time)
+        
+        assert response.status_code == 200
+    
+    # 计算性能指标
+    avg_time = statistics.mean(response_times)
+    max_time = max(response_times)
+    p95_time = statistics.quantiles(response_times, n=20)[18]
+    
+    # 验证性能指标
+    assert avg_time <= avg_response_time
+    assert max_time <= max_response_time
+```
+
+---
+
+### 规则10：API端点路径提取规则
+
+**位置**：`utils/jcci_analyzer.py`
+
+**规则内容**：
+```
+路径拼接规则：
+- Controller类上的 @RequestMapping 提供基础路径
+- 方法上的 @GetMapping/@PostMapping 等提供方法路径
+- 最终路径 = 基础路径 + 方法路径
+```
+
+**示例**：
+```java
+@RestController
+@RequestMapping("/system/menu")  // base_path
+public class SysMenuController {
+    
+    @DeleteMapping("/{menuId}")  // method_path
+    public R remove(@PathVariable Long menuId) {
+        // 最终路径: DELETE /system/menu/{menuId}
+    }
+}
+```
+
+---
+
+### 规则11：身份认证规则
+
+**位置**：`utils/api_client.py`
+
+**规则内容**：
+```
+所有API请求必须携带有效的认证Token
+```
+
+**认证流程**：
+```
+1. 调用登录接口获取Token
+2. 将Token存储到session
+3. 后续请求自动携带Token
+```
+
+**实现细节**：
+```python
+def authenticate(self):
+    # 调用登录接口
+    login_data = {
+        "username": settings.username,
+        "password": settings.password
+    }
+    response = self.session.post(f"{self.base_url}/login", json=login_data)
+    
+    # 提取Token
+    token = response.json().get('token')
+    
+    # 设置Authorization header
+    self.session.headers.update({
+        'Authorization': f'Bearer {token}'
+    })
+```
+
+---
+
+### 规则12：测试报告生成规则
+
+**位置**：`run_tests.py::TestRunner.generate_html_report()`
+
+**规则内容**：
+```
+测试报告必须包含以下内容：
+1. 测试概览（总数、通过、失败、跳过）
+2. 影响分析详情
+3. 文件变更详情
+4. 测试用例详情
+5. 失败用例详情
+```
+
+---
+
+### 规则13：企业微信通知规则
+
+**位置**：`utils/wechat_notifier.py`
+
+**规则内容**：
+```
+测试完成后发送企业微信通知，包含：
+1. 测试概览
+2. 失败用例列表
+3. 测试报告链接
+```
+
+---
+
+## 日志输出规范
+
+### 初始化阶段日志
+
+```
+[EnhancedImpactAnalyzer] ========== 开始初始化分析器 ==========
+[EnhancedImpactAnalyzer] 步骤1: 初始化 JCCIAnalyzer (AST解析器)
+[JCCIAnalyzer] 开始扫描 183 个Java文件
+[JCCIAnalyzer] AST解析完成: 144 个类 (Controllers: 12, Services: 35, Repositories: 8)
+[JCCIAnalyzer] 调用图构建完成: 566 个方法, 1234 个调用关系
+[EnhancedImpactAnalyzer] 步骤2: 初始化 ImpactAnalyzer (影响分析器)
+[ImpactAnalyzer] 从JCCI构建调用图...
+[ImpactAnalyzer] 调用图构建完成: 566 个方法, 1234 个依赖关系
+[EnhancedImpactAnalyzer] 步骤3: 初始化 APIEndpointAnalyzer (端点分析器)
+[APIEndpointAnalyzer] 从JCCI构建端点分析...
+[APIEndpointAnalyzer] 端点分析完成: 12 个Controller类, 56 个API端点, 89 个Service调用
+[EnhancedImpactAnalyzer] ========== 初始化完成 ==========
+[EnhancedImpactAnalyzer] 汇总: 144 个类, 566 个方法节点, 56 个Controller方法
+```
+
+### 影响分析阶段日志
+
+```
+[EnhancedImpactAnalyzer] ========== 开始影响分析 ==========
+[EnhancedImpactAnalyzer] 提交范围: HEAD~1..HEAD, 最大影响深度: 5
+[EnhancedImpactAnalyzer] 步骤4: 检测变更文件
+[EnhancedImpactAnalyzer] 发现 2 个变更的Java文件
+[EnhancedImpactAnalyzer] 步骤5: 分析代码变更详情
+[EnhancedImpactAnalyzer] 检测到 3 个代码变更
+[EnhancedImpactAnalyzer] 步骤6: 分析影响传播路径
+[EnhancedImpactAnalyzer] 发现 5 条影响路径
+[EnhancedImpactAnalyzer] 步骤7: 识别受影响的API端点
+[EnhancedImpactAnalyzer] 发现 8 个受影响的API端点
+[EnhancedImpactAnalyzer] ========== 影响分析完成 ==========
+[EnhancedImpactAnalyzer] 变更的Controller文件: 1 个
+[EnhancedImpactAnalyzer] 直接修改的方法: 2 个
+[EnhancedImpactAnalyzer] 受影响的方法总数: 15 个
+[EnhancedImpactAnalyzer] 相关Controller文件总数: 3 个
+Total endpoints for testing: 8 (from 3 changed controller files, 15 affected methods)
+```
+
+---
 
 ## 使用方法
 
-### 1. 基本使用
+### 基本使用
 
 ```python
 from utils.enhanced_impact_analyzer import EnhancedImpactAnalyzer
@@ -183,107 +615,34 @@ analyzer = EnhancedImpactAnalyzer(
     project_path="/path/to/java/project"
 )
 
-# 执行完整分析
-result = analyzer.analyze("HEAD~1..HEAD", max_impact_depth=5)
-
 # 获取受影响的API端点
 endpoints = analyzer.get_affected_endpoints_for_testing("HEAD~1..HEAD")
 
+# 执行完整分析
+result = analyzer.analyze("HEAD~1..HEAD")
+
 # 保存分析报告
 analyzer.save_analysis_report("impact_analysis.json", "HEAD~1..HEAD")
-
-# 打印详细摘要
-analyzer.print_summary("HEAD~1..HEAD")
 ```
 
-### 2. 集成到测试流程
+### 命令行执行
 
-系统已集成到 `run_tests.py` 中，会自动使用增强版分析器：
+```bash
+# 执行测试
+python run_tests.py --commit-range HEAD~1..HEAD
 
-```python
-class TestRunner:
-    def __init__(self, git_repo_path: str = None):
-        # 初始化增强版影响分析器
-        self.enhanced_analyzer = EnhancedImpactAnalyzer(repo_path, repo_path)
-    
-    def detect_changes(self, commit_range: str) -> dict:
-        # 优先使用增强版分析器
-        if self.enhanced_analyzer:
-            affected_endpoints = self.enhanced_analyzer.get_affected_endpoints_for_testing(commit_range)
-            change_summary = self.enhanced_analyzer.get_change_summary(commit_range)
-            # ...
+# 指定Git仓库路径
+python run_tests.py --git-repo-path /path/to/repo
+
+# 指定配置文件
+python run_tests.py --config .env
 ```
 
-### 3. 测试报告增强
+---
 
-测试报告中新增了影响分析详情部分：
+## 故障排查
 
-- **影响分析详情**：显示变更文件数、新增/修改/删除方法数
-- **文件变更详情**：列出每个文件的具体变更
-- **变更接口**：显示受影响的API端点、影响类型和置信度
-
-## 分析能力
-
-### 1. 代码变更检测
-
-- ✅ 识别新增、修改、删除的方法
-- ✅ 识别新增、修改、删除的字段
-- ✅ 识别新增、删除的类
-- ✅ 提取方法签名和注解信息
-
-### 2. 影响传播分析
-
-- ✅ 构建方法调用图
-- ✅ 追踪直接调用者（深度1）
-- ✅ 追踪间接调用者（深度2-5）
-- ✅ 计算影响置信度
-
-### 3. API端点影响分析
-
-- ✅ 识别所有Controller类
-- ✅ 提取API端点信息（路径、方法、参数）
-- ✅ 分析Controller与Service的依赖关系
-- ✅ 识别三种影响类型：
-  - 直接修改（confidence: 1.0）
-  - 服务依赖（confidence: 0.9）
-  - 间接影响（confidence: 0.5-0.8）
-
-### 4. Spring MVC注解支持
-
-- ✅ @RestController / @Controller
-- ✅ @RequestMapping
-- ✅ @GetMapping / @PostMapping / @PutMapping / @DeleteMapping / @PatchMapping
-- ✅ @Autowired
-- ✅ @PreAuthorize
-- ✅ @PathVariable / @RequestBody / @RequestParam
-
-## 测试结果
-
-### 测试场景1：类解析测试
-
-```
-✅ 类解析成功:
-   - 类名: SysMenuController
-   - 方法数: 5
-   - 字段数: 5
-   - 注解: ['@RestController', '@RequestMapping("/system/menu")', ...]
-```
-
-### 测试场景2：变更检测测试
-
-```
-✅ 检测到 2 个变更:
-   - modified: method list
-   - added: method delete
-```
-
-### 测试场景3：API端点提取测试
-
-```
-✅ 找到 68 个API端点
-✅ 找到 68 个Controller方法
-✅ 构建了 626 个调用图节点
-```
+---
 
 ## 性能指标
 
@@ -292,92 +651,14 @@ class TestRunner:
 - **单次分析时间**：<1秒
 - **内存占用**：适中（调用图缓存）
 
-## 优势对比
+---
 
-### 与旧版git_detector对比
+## 依赖安装
 
-| 特性 | 旧版git_detector | 增强版analyzer |
-|------|-----------------|----------------|
-| 变更检测 | 正则表达式匹配 | AST级别解析 |
-| 影响分析 | 仅检测Controller文件 | 全项目调用链分析 |
-| 置信度 | 无 | 提供影响置信度 |
-| 影响类型 | 无 | 3种影响类型 |
-| 调用链追踪 | 无 | 支持深度1-5 |
-| Service层分析 | 无 | 支持 |
-| 误报率 | 较高 | 较低 |
-| 漏报率 | 较高 | 较低 |
-
-## 未来增强方向
-
-### 1. 完整Spoon集成
-
-当前实现使用了Spoon的设计思想，未来可以集成完整的Spoon JAR包：
-
-```xml
-<dependency>
-    <groupId>fr.inria.gforge.spoon</groupId>
-    <artifactId>spoon-core</artifactId>
-    <version>10.4.2</version>
-</dependency>
+```bash
+pip install javalang==0.13.0
+pip install unidiff==0.7.5
+pip install pytest
+pip install requests
+pip install python-dotenv
 ```
-
-### 2. 增强功能
-
-- 支持Lambda表达式分析
-- 支持Stream API调用链分析
-- 支持注解处理器的自定义逻辑
-- 支持多模块项目分析
-- 支持增量分析（只分析变更部分）
-
-### 3. 可视化
-
-- 生成调用图可视化
-- 生成影响传播图
-- 生成依赖关系图
-
-## 故障排查
-
-### 问题1：未检测到变更
-
-**可能原因**：
-1. Git提交范围不正确
-2. 变更不是方法级别的（如仅添加空行）
-3. 文件编码问题
-
-**解决方案**：
-```python
-# 检查Git提交历史
-git log --oneline -5
-
-# 检查具体变更
-git diff HEAD~1 HEAD
-
-# 使用更大的提交范围
-analyzer.analyze("HEAD~5..HEAD")
-```
-
-### 问题2：初始化时间过长
-
-**可能原因**：
-1. 项目Java文件过多
-2. 文件内容过大
-
-**解决方案**：
-```python
-# 只分析特定目录
-analyzer = EnhancedImpactAnalyzer(
-    repo_path="/path/to/project",
-    project_path="/path/to/project/src/main/java"
-)
-```
-
-## 总结
-
-增强版影响分析系统通过AST级别的代码分析，实现了精确的代码变更影响追踪。系统能够：
-
-1. **精确识别**代码变更（方法、字段、类级别）
-2. **全面分析**影响传播路径（调用链深度可达5层）
-3. **智能评估**影响置信度（0-1之间）
-4. **准确识别**受影响的API端点
-
-相比旧版的正则表达式匹配，新系统提供了更精确、更全面的影响分析能力，大大降低了误报和漏报率，为自动化测试提供了可靠的基础。

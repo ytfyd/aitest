@@ -12,15 +12,18 @@ import logging
 import subprocess
 from datetime import datetime
 from pathlib import Path
+from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from utils.git_detector import GitChangeDetector
+load_dotenv(Path(__file__).parent / ".env")
+
 from utils.test_generator import TestCaseGenerator
 from utils.wechat_notifier import WeChatWorkNotifier
 from utils.swagger_client import swagger_client
 from config.settings import settings
 from utils.enhanced_impact_analyzer import EnhancedImpactAnalyzer
+from utils.code_change_detector import CodeChangeDetector
 
 
 logging.basicConfig(
@@ -34,20 +37,21 @@ class TestRunner:
     """Main test runner class"""
     
     def __init__(self, git_repo_path: str = None):
-        repo_path = git_repo_path or settings.git_repo_path
-        self.git_detector = GitChangeDetector(repo_path)
+        repo_path = git_repo_path or os.getenv("GIT_REPO_PATH", ".")
         self.test_generator = TestCaseGenerator()
         self.wechat_notifier = WeChatWorkNotifier()
         self.test_results = {}
         self.failed_tests_file = Path(__file__).parent / "test-reports" / "failed_tests.json"
         
-        # Initialize enhanced impact analyzer
+        # Initialize enhanced impact analyzer with JCCI
         try:
             self.enhanced_analyzer = EnhancedImpactAnalyzer(repo_path, repo_path)
-            logger.info("Enhanced impact analyzer initialized successfully")
+            self.code_change_detector = CodeChangeDetector(repo_path, repo_path)
+            logger.info("Enhanced impact analyzer initialized successfully with JCCI framework")
         except Exception as e:
-            logger.warning(f"Failed to initialize enhanced analyzer, falling back to basic detection: {e}")
+            logger.warning(f"Failed to initialize enhanced analyzer: {e}")
             self.enhanced_analyzer = None
+            self.code_change_detector = None
     
     def run(self, commit_range: str = "HEAD~1..HEAD") -> bool:
         """Run the complete testing workflow"""
@@ -88,11 +92,10 @@ class TestRunner:
             return False
     
     def detect_changes(self, commit_range: str) -> dict:
-        """Detect API changes in the specified commit range using enhanced analyzer"""
-        # Try to use enhanced analyzer first
+        """Detect API changes in the specified commit range using JCCI enhanced analyzer"""
         if self.enhanced_analyzer:
             try:
-                logger.info("Using enhanced impact analyzer with Spoon framework")
+                logger.info("Using enhanced impact analyzer with JCCI framework")
                 
                 # Get affected endpoints from enhanced analyzer
                 affected_endpoints = self.enhanced_analyzer.get_affected_endpoints_for_testing(commit_range)
@@ -100,12 +103,14 @@ class TestRunner:
                 # Get change summary
                 change_summary = self.enhanced_analyzer.get_change_summary(commit_range)
                 
-                # Get changed files
-                changed_files = self.git_detector.get_changed_files(commit_range)
+                # Get changed files from code change detector
+                changed_files = []
+                if self.code_change_detector:
+                    changed_files = self.code_change_detector.get_changed_files(commit_range)
                 
-                logger.info(f"Enhanced analysis detected {len(affected_endpoints)} affected endpoints")
+                logger.info(f"JCCI analysis detected {len(affected_endpoints)} affected endpoints")
                 for endpoint in affected_endpoints:
-                    logger.info(f"  - {endpoint['full_endpoint']} (impact: {endpoint['impact_type']}, confidence: {endpoint['confidence']:.2f})")
+                    logger.info(f"  - {endpoint['method']} {endpoint['path']} (impact: {endpoint['impact_type']}, confidence: {endpoint['confidence']:.2f})")
                 
                 # Save detailed analysis report
                 try:
@@ -123,19 +128,19 @@ class TestRunner:
                     'change_summary': change_summary
                 }
             except Exception as e:
-                logger.warning(f"Enhanced analyzer failed, falling back to basic detection: {e}")
+                logger.error(f"Enhanced analyzer failed: {e}")
+                return {
+                    'changed_files': [],
+                    'affected_endpoints': [],
+                    'change_summary': {}
+                }
         
-        # Fallback to basic git detector
-        logger.info("Using basic git change detector")
-        changes = self.git_detector.detect_api_changes(commit_range)
-        
-        logger.info(f"Detected {len(changes['changed_files'])} changed Java files")
-        logger.info(f"Affected endpoints: {len(changes['affected_endpoints'])}")
-        
-        for endpoint in changes['affected_endpoints']:
-            logger.info(f"  - {endpoint['full_endpoint']}")
-        
-        return changes
+        logger.warning("Enhanced analyzer not available")
+        return {
+            'changed_files': [],
+            'affected_endpoints': [],
+            'change_summary': {}
+        }
     
     def generate_tests(self, endpoints: list) -> str:
         """Generate test cases for affected endpoints"""
@@ -291,6 +296,15 @@ class TestRunner:
                                 'method': test_info.get('method', 'N/A'),
                                 'path': test_info.get('path', 'N/A')
                             }
+                            # Also add to test_details_dict
+                            test_details_dict[test_name] = {
+                                'name': test_name,
+                                'status': 'FAILED',
+                                'request_params': test_info.get('request_params', 'N/A'),
+                                'response': test_info.get('response', 'N/A'),
+                                'method': test_info.get('method', 'N/A'),
+                                'path': test_info.get('path', 'N/A')
+                            }
                             in_error = True
                             error_buffer = []
             # Capture error details from assertion errors (lines starting with 'E ')
@@ -322,6 +336,15 @@ class TestRunner:
                         failed_details_dict[test_name] = {
                             'name': test_name,
                             'error': '',
+                            'request_params': test_info.get('request_params', 'N/A'),
+                            'response': test_info.get('response', 'N/A'),
+                            'method': test_info.get('method', 'N/A'),
+                            'path': test_info.get('path', 'N/A')
+                        }
+                        # Also add to test_details_dict
+                        test_details_dict[test_name] = {
+                            'name': test_name,
+                            'status': 'FAILED',
                             'request_params': test_info.get('request_params', 'N/A'),
                             'response': test_info.get('response', 'N/A'),
                             'method': test_info.get('method', 'N/A'),
@@ -393,6 +416,26 @@ class TestRunner:
         test_details = list(test_details_dict.values())
         failed_details = list(failed_details_dict.values())
         passed_details = list(passed_details_dict.values())
+        
+        # Use actual counts from parsed details instead of summary line
+        actual_total = len(test_details)
+        actual_passed = len(passed_details)
+        actual_failed = len(failed_details)
+        actual_skipped = total_tests - actual_passed - actual_failed if total_tests > 0 else 0
+        
+        # If no details were parsed but we have counts from summary, use summary counts
+        if actual_total == 0 and total_tests > 0:
+            logger.warning("No test details parsed, using summary counts")
+            actual_total = total_tests
+            actual_passed = passed_tests
+            actual_failed = failed_tests
+            actual_skipped = skipped_tests
+        else:
+            # Use actual parsed counts
+            total_tests = actual_total
+            passed_tests = actual_passed
+            failed_tests = actual_failed
+            skipped_tests = actual_skipped
         
         return {
             'total_tests': total_tests,
@@ -578,17 +621,6 @@ class TestRunner:
             return re.sub(r'\{[^}]+\}', '1', path)
         
         endpoint_rows = ""
-        for ep in changes.get('affected_endpoints', []):
-            real_path = get_real_path_from_swagger(ep['path'], ep['method'])
-            endpoint_rows += f"""
-                <tr>
-                    <td><span class="method-badge method-{ep['method'].lower()}">{ep['method']}</span></td>
-                    <td>{real_path}</td>
-                </tr>
-            """
-        
-        if not endpoint_rows:
-            endpoint_rows = "<tr><td colspan='2' style='text-align:center;color:#888;'>暂无变更接口</td></tr>"
         
         # Generate impact analysis section
         impact_analysis_html = ""
@@ -659,12 +691,28 @@ class TestRunner:
         
         # Generate endpoint impact details
         endpoint_impact_html = ""
+        processed_endpoints = set()
         for ep in changes.get('affected_endpoints', []):
+            endpoint_key = f"{ep['method']} {ep['path']}"
+            if endpoint_key in processed_endpoints:
+                continue
+            processed_endpoints.add(endpoint_key)
+            
             impact_type = ep.get('impact_type', 'unknown')
             confidence = ep.get('confidence', 0)
             
-            impact_color = "#10b981" if impact_type == 'direct_modification' else "#f59e0b" if impact_type == 'service_dependency' else "#8b5cf6"
-            impact_text = "直接修改" if impact_type == 'direct_modification' else "服务依赖" if impact_type == 'service_dependency' else "间接影响"
+            if impact_type == 'direct_impact':
+                impact_color = "#10b981"
+                impact_text = "直接影响"
+            elif impact_type == 'service_dependency':
+                impact_color = "#f59e0b"
+                impact_text = "服务依赖"
+            elif impact_type == 'method_or_class_dependency':
+                impact_color = "#3b82f6"
+                impact_text = "方法或类依赖"
+            else:
+                impact_color = "#8b5cf6"
+                impact_text = "间接影响"
             
             real_path = get_real_path_from_swagger(ep['path'], ep['method'])
             endpoint_rows += f"""
@@ -1138,23 +1186,24 @@ class TestRunner:
     def _save_failed_tests(self, test_results: dict):
         """Save failed test cases for next run"""
         failed_endpoints = []
+        endpoint_set = set()
         
-        # Extract endpoint info from failed test names
         for fail in test_results.get('failed_details', []):
             test_name = fail.get('name', '')
             method = fail.get('method', 'GET')
             path = fail.get('path', '/')
             
-            # Only save if we have valid endpoint info
             if method != 'N/A' and path != 'N/A':
-                failed_endpoints.append({
-                    'method': method,
-                    'path': path,
-                    'full_endpoint': f"{method} {path}",
-                    'test_name': test_name
-                })
+                endpoint_key = f"{method}_{path}"
+                if endpoint_key not in endpoint_set:
+                    endpoint_set.add(endpoint_key)
+                    failed_endpoints.append({
+                        'method': method,
+                        'path': path,
+                        'full_endpoint': f"{method} {path}",
+                        'test_name': test_name
+                    })
         
-        # Save to file
         try:
             self.failed_tests_file.parent.mkdir(parents=True, exist_ok=True)
             with open(self.failed_tests_file, 'w', encoding='utf-8') as f:

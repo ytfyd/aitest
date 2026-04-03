@@ -1,31 +1,4 @@
 {
-  "test_login_positive": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "token": "eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6ImE5NmY4OGYyLTM2YWEtNGIwMy1hOTdhLTdhYWM1OTE0Y2ExNyJ9.6G1KHyVTE1kDEgmUUJssYy5AeaXfg_sSpeoum-EY4iPpj12GRlTsYzkHCeNgrYEOzxbk4_SJWlPtL3dxkx5aeQ"
-    },
-    "request_params": {
-      "username": "admin",
-      "password": "admin123"
-    }
-  },
-  "test_system_menu_1_positive": {
-    "status_code": 200,
-    "response": {
-      "msg": "存在子菜单,不允许删除",
-      "code": 500
-    },
-    "request_params": {}
-  },
-  "test_register_positive": {
-    "status_code": 403,
-    "response": {
-      "raw_text": ""
-    },
-    "request_params": {}
-  },
   "test_system_menu_list_positive": {
     "status_code": 200,
     "response": {
@@ -56,6 +29,37 @@
       "updateUser": 1,
       "visible": "test"
     }
+  },
+  "test_system_menu_1_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": {
+        "createTime": "2022-10-05 15:28:43",
+        "createUser": null,
+        "updateTime": "2022-11-14 14:41:50",
+        "updateUser": 1,
+        "menuId": 1,
+        "menuName": "系统管理",
+        "parentName": null,
+        "parentId": 0,
+        "orderNum": 1,
+        "path": "system",
+        "component": null,
+        "query": "",
+        "isFrame": "1",
+        "isCache": "0",
+        "menuType": "M",
+        "visible": "0",
+        "status": "0",
+        "perms": "",
+        "icon": "system",
+        "remark": "系统管理目录",
+        "children": []
+      }
+    },
+    "request_params": {}
   },
   "test_system_menu_treeselect_positive": {
     "status_code": 200,
@@ -88,248 +92,13 @@
       "visible": "test"
     }
   },
-  "test_system_menu_positive": {
-    "status_code": 200,
+  "test_system_menu_system_menu_positive": {
+    "status_code": 404,
     "response": {
-      "msg": "\r\n### Error updating database.  Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1\r\n### The error may exist in com/oddfar/campus/framework/mapper/SysMenuMapper.java (best guess)\r\n### The error may involve com.oddfar.campus.framework.mapper.SysMenuMapper.insert-Inline\r\n### The error occurred while setting parameters\r\n### SQL: INSERT INTO sys_menu  ( menu_id, menu_name,  order_num,      menu_type,      create_time, create_user,   del_flag )  VALUES (  ?, ?,  ?,      ?,      ?, ?,   ?  )\r\n### Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1\n; Data truncation: Data too long for column 'menu_type' at row 1; nested exception is com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1",
-      "code": 500
-    },
-    "request_params": {
-      "menuName": "test_name",
-      "menuType": "test_type",
-      "orderNum": 1
-    }
-  },
-  "test_getinfo_positive": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "permissions": [
-        "*:*:*"
-      ],
-      "roles": [
-        "admin"
-      ],
-      "user": {
-        "createTime": "2022-10-05 15:28:43",
-        "createUser": 0,
-        "updateTime": null,
-        "updateUser": null,
-        "userId": 1,
-        "userName": "admin",
-        "nickName": "admin",
-        "email": "oddfar@163.com",
-        "phonenumber": "15888888888",
-        "sex": "0",
-        "avatar": "https://img0.baidu.com/it/u=1183896628,1403534286&fm=253&fmt=auto&app=138&f=PNG",
-        "password": "$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2",
-        "status": "0",
-        "loginIp": "127.0.0.1",
-        "loginDate": "2026-03-26 21:35:36",
-        "remark": "管理员",
-        "roles": [
-          {
-            "createTime": "2022-10-05 15:28:43",
-            "createUser": 0,
-            "updateTime": null,
-            "updateUser": null,
-            "roleId": 1,
-            "roleName": "超级管理员",
-            "roleKey": "admin",
-            "roleSort": "1",
-            "menuCheckStrictly": false,
-            "status": "0",
-            "flag": false,
-            "menuIds": null,
-            "permissions": null,
-            "remark": "管理员",
-            "admin": true
-          }
-        ],
-        "roleIds": null,
-        "postIds": null,
-        "roleId": 1,
-        "admin": true
-      }
-    },
-    "request_params": {}
-  },
-  "test_getrouters_positive": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "data": [
-        {
-          "name": "System",
-          "path": "/system",
-          "hidden": false,
-          "redirect": "noRedirect",
-          "component": "Layout",
-          "alwaysShow": true,
-          "meta": {
-            "title": "系统管理",
-            "icon": "system",
-            "noCache": false,
-            "link": null
-          },
-          "children": [
-            {
-              "name": "User",
-              "path": "user",
-              "hidden": false,
-              "component": "system/user/index",
-              "meta": {
-                "title": "用户管理",
-                "icon": "user",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Role",
-              "path": "role",
-              "hidden": false,
-              "component": "system/role/index",
-              "meta": {
-                "title": "角色管理",
-                "icon": "peoples",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Menu",
-              "path": "menu",
-              "hidden": false,
-              "component": "system/menu/index",
-              "meta": {
-                "title": "菜单管理",
-                "icon": "tree-table",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Dict",
-              "path": "dict",
-              "hidden": false,
-              "component": "system/dict/index",
-              "meta": {
-                "title": "字典管理",
-                "icon": "dict",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Config",
-              "path": "config",
-              "hidden": false,
-              "component": "system/config/index",
-              "meta": {
-                "title": "参数设置",
-                "icon": "edit",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Log",
-              "path": "log",
-              "hidden": false,
-              "redirect": "noRedirect",
-              "component": "ParentView",
-              "alwaysShow": true,
-              "meta": {
-                "title": "日志管理",
-                "icon": "log",
-                "noCache": false,
-                "link": null
-              },
-              "children": [
-                {
-                  "name": "Operlog",
-                  "path": "operlog",
-                  "hidden": false,
-                  "component": "monitor/operlog/index",
-                  "meta": {
-                    "title": "操作日志",
-                    "icon": "form",
-                    "noCache": false,
-                    "link": null
-                  }
-                },
-                {
-                  "name": "Logininfor",
-                  "path": "logininfor",
-                  "hidden": false,
-                  "component": "monitor/logininfor/index",
-                  "meta": {
-                    "title": "登录日志",
-                    "icon": "logininfor",
-                    "noCache": false,
-                    "link": null
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Tool",
-          "path": "/tool",
-          "hidden": false,
-          "redirect": "noRedirect",
-          "component": "Layout",
-          "alwaysShow": true,
-          "meta": {
-            "title": "系统工具",
-            "icon": "tool",
-            "noCache": false,
-            "link": null
-          },
-          "children": [
-            {
-              "name": "Build",
-              "path": "build",
-              "hidden": false,
-              "component": "tool/build/index",
-              "meta": {
-                "title": "表单构建",
-                "icon": "build",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Swagger",
-              "path": "swagger",
-              "hidden": false,
-              "component": "tool/swagger/index",
-              "meta": {
-                "title": "系统接口",
-                "icon": "swagger",
-                "noCache": false,
-                "link": null
-              }
-            }
-          ]
-        },
-        {
-          "name": "Http://github.com/oddfar/campus",
-          "path": "http://github.com/oddfar/campus",
-          "hidden": false,
-          "component": "Layout",
-          "meta": {
-            "title": "源码地址",
-            "icon": "guide",
-            "noCache": false,
-            "link": "http://github.com/oddfar/campus"
-          }
-        }
-      ]
+      "timestamp": "2026-03-27 23:26:36",
+      "status": 404,
+      "error": "Not Found",
+      "path": "/system/menu/system/menu"
     },
     "request_params": {}
   },
@@ -548,25 +317,63 @@
     },
     "request_params": {}
   },
-  "test_login_negative_missing_required_fields": {
-    "status_code": 403,
+  "test_monitor_logininfor_1_positive": {
+    "status_code": 200,
     "response": {
-      "raw_text": ""
+      "msg": "success",
+      "code": 200,
+      "data": 0
     },
     "request_params": {}
   },
-  "test_system_menu_1_negative_unauthorized": {
+  "test_monitor_operlog_1_positive": {
     "status_code": 200,
     "response": {
-      "msg": "存在子菜单,不允许删除",
+      "msg": "success",
+      "code": 200,
+      "data": 0
+    },
+    "request_params": {}
+  },
+  "test_system_config_configkey_test_key_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "",
+      "code": 200
+    },
+    "request_params": {}
+  },
+  "test_system_dict_data_test_code_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long[]'; nested exception is java.lang.NumberFormatException: For input string: \"test_code\"",
       "code": 500
     },
     "request_params": {}
   },
-  "test_register_negative_missing_required_fields": {
-    "status_code": 403,
+  "test_system_dict_type_1_positive": {
+    "status_code": 200,
     "response": {
-      "raw_text": ""
+      "msg": "用户性别已分配,不能删除",
+      "code": 500
+    },
+    "request_params": {}
+  },
+  "test_system_role_1_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "不允许操作超级管理员角色",
+      "code": 500
+    },
+    "request_params": {}
+  },
+  "test_system_user_system_user_positive": {
+    "status_code": 404,
+    "response": {
+      "timestamp": "2026-03-27 23:26:37",
+      "status": 404,
+      "error": "Not Found",
+      "path": "/system/user/system/user"
     },
     "request_params": {}
   },
@@ -1640,6 +1447,39 @@
       "invalid_param": "invalid_value"
     }
   },
+  "test_system_menu_1_negative_invalid_params": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": {
+        "createTime": "2022-10-05 15:28:43",
+        "createUser": null,
+        "updateTime": "2022-11-14 14:41:50",
+        "updateUser": 1,
+        "menuId": 1,
+        "menuName": "系统管理",
+        "parentName": null,
+        "parentId": 0,
+        "orderNum": 1,
+        "path": "system",
+        "component": null,
+        "query": "",
+        "isFrame": "1",
+        "isCache": "0",
+        "menuType": "M",
+        "visible": "0",
+        "status": "0",
+        "perms": "",
+        "icon": "system",
+        "remark": "系统管理目录",
+        "children": []
+      }
+    },
+    "request_params": {
+      "invalid_param": "invalid_value"
+    }
+  },
   "test_system_menu_treeselect_negative_invalid_params": {
     "status_code": 200,
     "response": {
@@ -1856,250 +1696,15 @@
       "invalid_param": "invalid_value"
     }
   },
-  "test_system_menu_negative_missing_required_fields": {
-    "status_code": 200,
+  "test_system_menu_system_menu_negative_missing_required_fields": {
+    "status_code": 404,
     "response": {
-      "msg": "Required request body is missing: public com.oddfar.campus.common.domain.R com.oddfar.campus.admin.controller.system.SysMenuController.add(com.oddfar.campus.common.domain.entity.SysMenuEntity)",
-      "code": 500
+      "timestamp": "2026-03-27 23:26:37",
+      "status": 404,
+      "error": "Not Found",
+      "path": "/system/menu/system/menu"
     },
     "request_params": {}
-  },
-  "test_getinfo_negative_invalid_params": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "permissions": [
-        "*:*:*"
-      ],
-      "roles": [
-        "admin"
-      ],
-      "user": {
-        "createTime": "2022-10-05 15:28:43",
-        "createUser": 0,
-        "updateTime": null,
-        "updateUser": null,
-        "userId": 1,
-        "userName": "admin",
-        "nickName": "admin",
-        "email": "oddfar@163.com",
-        "phonenumber": "15888888888",
-        "sex": "0",
-        "avatar": "https://img0.baidu.com/it/u=1183896628,1403534286&fm=253&fmt=auto&app=138&f=PNG",
-        "password": "$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2",
-        "status": "0",
-        "loginIp": "127.0.0.1",
-        "loginDate": "2026-03-26 21:35:36",
-        "remark": "管理员",
-        "roles": [
-          {
-            "createTime": "2022-10-05 15:28:43",
-            "createUser": 0,
-            "updateTime": null,
-            "updateUser": null,
-            "roleId": 1,
-            "roleName": "超级管理员",
-            "roleKey": "admin",
-            "roleSort": "1",
-            "menuCheckStrictly": false,
-            "status": "0",
-            "flag": false,
-            "menuIds": null,
-            "permissions": null,
-            "remark": "管理员",
-            "admin": true
-          }
-        ],
-        "roleIds": null,
-        "postIds": null,
-        "roleId": 1,
-        "admin": true
-      }
-    },
-    "request_params": {
-      "invalid_param": "invalid_value"
-    }
-  },
-  "test_getrouters_negative_invalid_params": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "data": [
-        {
-          "name": "System",
-          "path": "/system",
-          "hidden": false,
-          "redirect": "noRedirect",
-          "component": "Layout",
-          "alwaysShow": true,
-          "meta": {
-            "title": "系统管理",
-            "icon": "system",
-            "noCache": false,
-            "link": null
-          },
-          "children": [
-            {
-              "name": "User",
-              "path": "user",
-              "hidden": false,
-              "component": "system/user/index",
-              "meta": {
-                "title": "用户管理",
-                "icon": "user",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Role",
-              "path": "role",
-              "hidden": false,
-              "component": "system/role/index",
-              "meta": {
-                "title": "角色管理",
-                "icon": "peoples",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Menu",
-              "path": "menu",
-              "hidden": false,
-              "component": "system/menu/index",
-              "meta": {
-                "title": "菜单管理",
-                "icon": "tree-table",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Dict",
-              "path": "dict",
-              "hidden": false,
-              "component": "system/dict/index",
-              "meta": {
-                "title": "字典管理",
-                "icon": "dict",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Config",
-              "path": "config",
-              "hidden": false,
-              "component": "system/config/index",
-              "meta": {
-                "title": "参数设置",
-                "icon": "edit",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Log",
-              "path": "log",
-              "hidden": false,
-              "redirect": "noRedirect",
-              "component": "ParentView",
-              "alwaysShow": true,
-              "meta": {
-                "title": "日志管理",
-                "icon": "log",
-                "noCache": false,
-                "link": null
-              },
-              "children": [
-                {
-                  "name": "Operlog",
-                  "path": "operlog",
-                  "hidden": false,
-                  "component": "monitor/operlog/index",
-                  "meta": {
-                    "title": "操作日志",
-                    "icon": "form",
-                    "noCache": false,
-                    "link": null
-                  }
-                },
-                {
-                  "name": "Logininfor",
-                  "path": "logininfor",
-                  "hidden": false,
-                  "component": "monitor/logininfor/index",
-                  "meta": {
-                    "title": "登录日志",
-                    "icon": "logininfor",
-                    "noCache": false,
-                    "link": null
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Tool",
-          "path": "/tool",
-          "hidden": false,
-          "redirect": "noRedirect",
-          "component": "Layout",
-          "alwaysShow": true,
-          "meta": {
-            "title": "系统工具",
-            "icon": "tool",
-            "noCache": false,
-            "link": null
-          },
-          "children": [
-            {
-              "name": "Build",
-              "path": "build",
-              "hidden": false,
-              "component": "tool/build/index",
-              "meta": {
-                "title": "表单构建",
-                "icon": "build",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Swagger",
-              "path": "swagger",
-              "hidden": false,
-              "component": "tool/swagger/index",
-              "meta": {
-                "title": "系统接口",
-                "icon": "swagger",
-                "noCache": false,
-                "link": null
-              }
-            }
-          ]
-        },
-        {
-          "name": "Http://github.com/oddfar/campus",
-          "path": "http://github.com/oddfar/campus",
-          "hidden": false,
-          "component": "Layout",
-          "meta": {
-            "title": "源码地址",
-            "icon": "guide",
-            "noCache": false,
-            "link": "http://github.com/oddfar/campus"
-          }
-        }
-      ]
-    },
-    "request_params": {
-      "invalid_param": "invalid_value"
-    }
   },
   "test_system_menu_rolemenutreeselect_1_negative_invalid_params": {
     "status_code": 200,
@@ -2318,347 +1923,111 @@
       "invalid_param": "invalid_value"
     }
   },
-  "test_login_performance": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "token": "eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6IjM0MzE1NzhhLTcyMmEtNGRhMi1iNzhhLTg1YWY2NWQyM2JhNSJ9.a-85CHx7458TCpOaxD-ubyHSAuYmO3UEyQJUiR8dYdQgiSK4YL7ptgZqGsJjvngWojSnnQwVP0kFoKUj3yxTAw"
-    },
-    "request_params": {
-      "username": "admin",
-      "password": "admin123"
-    },
-    "response_time": 0.15396666526794434
-  },
-  "test_system_menu_1_performance": {
+  "test_system_menu_1_negative_unauthorized": {
     "status_code": 200,
     "response": {
       "msg": "存在子菜单,不允许删除",
       "code": 500
     },
-    "request_params": {},
-    "response_time": 0.004685878753662109
+    "request_params": {}
   },
-  "test_register_performance": {
-    "status_code": 403,
-    "response": {
-      "raw_text": ""
-    },
-    "request_params": {},
-    "response_time": 0.0031213760375976562
-  },
-  "test_system_menu_list_performance": {
-    "status_code": 200,
-    "response": {
-      "msg": "Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'createTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.baomidou.mybatisplus.annotation.TableField java.util.Date] for value [2024-01-01T00:00:00]; nested exception is java.lang.IllegalArgumentException",
-      "code": 500
-    },
-    "request_params": {
-      "component": "test",
-      "createTime": "2024-01-01T00:00:00",
-      "createUser": 1,
-      "delFlag": 1,
-      "icon": "test",
-      "isCache": "test",
-      "isFrame": "test",
-      "menuId": 1,
-      "menuName": "test_name",
-      "menuType": "test_type",
-      "orderNum": 1,
-      "params": {},
-      "parentId": 1,
-      "parentName": "test_name",
-      "path": "test",
-      "perms": "test",
-      "query": "test",
-      "remark": "test",
-      "status": "0",
-      "updateTime": "2024-01-01T00:00:00",
-      "updateUser": 1,
-      "visible": "test"
-    },
-    "response_time": 0.017207860946655273
-  },
-  "test_system_menu_treeselect_performance": {
-    "status_code": 200,
-    "response": {
-      "msg": "Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'createTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.baomidou.mybatisplus.annotation.TableField java.util.Date] for value [2024-01-01T00:00:00]; nested exception is java.lang.IllegalArgumentException",
-      "code": 500
-    },
-    "request_params": {
-      "component": "test",
-      "createTime": "2024-01-01T00:00:00",
-      "createUser": 1,
-      "delFlag": 1,
-      "icon": "test",
-      "isCache": "test",
-      "isFrame": "test",
-      "menuId": 1,
-      "menuName": "test_name",
-      "menuType": "test_type",
-      "orderNum": 1,
-      "params": {},
-      "parentId": 1,
-      "parentName": "test_name",
-      "path": "test",
-      "perms": "test",
-      "query": "test",
-      "remark": "test",
-      "status": "0",
-      "updateTime": "2024-01-01T00:00:00",
-      "updateUser": 1,
-      "visible": "test"
-    },
-    "response_time": 0.0053119659423828125
-  },
-  "test_system_menu_performance": {
-    "status_code": 200,
-    "response": {
-      "msg": "\r\n### Error updating database.  Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1\r\n### The error may exist in com/oddfar/campus/framework/mapper/SysMenuMapper.java (best guess)\r\n### The error may involve com.oddfar.campus.framework.mapper.SysMenuMapper.insert-Inline\r\n### The error occurred while setting parameters\r\n### SQL: INSERT INTO sys_menu  ( menu_id, menu_name,  order_num,      menu_type,      create_time, create_user,   del_flag )  VALUES (  ?, ?,  ?,      ?,      ?, ?,   ?  )\r\n### Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1\n; Data truncation: Data too long for column 'menu_type' at row 1; nested exception is com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'menu_type' at row 1",
-      "code": 500
-    },
-    "request_params": {
-      "menuName": "test_name",
-      "menuType": "test_type",
-      "orderNum": 1
-    },
-    "response_time": 0.007657766342163086
-  },
-  "test_getinfo_performance": {
+  "test_monitor_logininfor_1_negative_unauthorized": {
     "status_code": 200,
     "response": {
       "msg": "success",
       "code": 200,
-      "permissions": [
-        "*:*:*"
-      ],
-      "roles": [
-        "admin"
-      ],
-      "user": {
+      "data": 0
+    },
+    "request_params": {}
+  },
+  "test_monitor_operlog_1_negative_unauthorized": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": 0
+    },
+    "request_params": {}
+  },
+  "test_system_config_configkey_test_key_negative_invalid_params": {
+    "status_code": 200,
+    "response": {
+      "msg": "",
+      "code": 200
+    },
+    "request_params": {
+      "invalid_param": "invalid_value"
+    }
+  },
+  "test_system_dict_data_test_code_negative_unauthorized": {
+    "status_code": 200,
+    "response": {
+      "msg": "Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long[]'; nested exception is java.lang.NumberFormatException: For input string: \"test_code\"",
+      "code": 500
+    },
+    "request_params": {}
+  },
+  "test_system_dict_type_1_negative_unauthorized": {
+    "status_code": 200,
+    "response": {
+      "msg": "用户性别已分配,不能删除",
+      "code": 500
+    },
+    "request_params": {}
+  },
+  "test_system_role_1_negative_unauthorized": {
+    "status_code": 200,
+    "response": {
+      "msg": "不允许操作超级管理员角色",
+      "code": 500
+    },
+    "request_params": {}
+  },
+  "test_system_user_system_user_negative_missing_required_fields": {
+    "status_code": 404,
+    "response": {
+      "timestamp": "2026-03-27 23:26:37",
+      "status": 404,
+      "error": "Not Found",
+      "path": "/system/user/system/user"
+    },
+    "request_params": {}
+  },
+  "test_system_menu_1_performance": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": {
         "createTime": "2022-10-05 15:28:43",
-        "createUser": 0,
-        "updateTime": null,
-        "updateUser": null,
-        "userId": 1,
-        "userName": "admin",
-        "nickName": "admin",
-        "email": "oddfar@163.com",
-        "phonenumber": "15888888888",
-        "sex": "0",
-        "avatar": "https://img0.baidu.com/it/u=1183896628,1403534286&fm=253&fmt=auto&app=138&f=PNG",
-        "password": "$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2",
+        "createUser": null,
+        "updateTime": "2022-11-14 14:41:50",
+        "updateUser": 1,
+        "menuId": 1,
+        "menuName": "系统管理",
+        "parentName": null,
+        "parentId": 0,
+        "orderNum": 1,
+        "path": "system",
+        "component": null,
+        "query": "",
+        "isFrame": "1",
+        "isCache": "0",
+        "menuType": "M",
+        "visible": "0",
         "status": "0",
-        "loginIp": "127.0.0.1",
-        "loginDate": "2026-03-26 21:35:36",
-        "remark": "管理员",
-        "roles": [
-          {
-            "createTime": "2022-10-05 15:28:43",
-            "createUser": 0,
-            "updateTime": null,
-            "updateUser": null,
-            "roleId": 1,
-            "roleName": "超级管理员",
-            "roleKey": "admin",
-            "roleSort": "1",
-            "menuCheckStrictly": false,
-            "status": "0",
-            "flag": false,
-            "menuIds": null,
-            "permissions": null,
-            "remark": "管理员",
-            "admin": true
-          }
-        ],
-        "roleIds": null,
-        "postIds": null,
-        "roleId": 1,
-        "admin": true
+        "perms": "",
+        "icon": "system",
+        "remark": "系统管理目录",
+        "children": []
       }
     },
     "request_params": {},
-    "response_time": 0.003088712692260742
-  },
-  "test_getrouters_performance": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "data": [
-        {
-          "name": "System",
-          "path": "/system",
-          "hidden": false,
-          "redirect": "noRedirect",
-          "component": "Layout",
-          "alwaysShow": true,
-          "meta": {
-            "title": "系统管理",
-            "icon": "system",
-            "noCache": false,
-            "link": null
-          },
-          "children": [
-            {
-              "name": "User",
-              "path": "user",
-              "hidden": false,
-              "component": "system/user/index",
-              "meta": {
-                "title": "用户管理",
-                "icon": "user",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Role",
-              "path": "role",
-              "hidden": false,
-              "component": "system/role/index",
-              "meta": {
-                "title": "角色管理",
-                "icon": "peoples",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Menu",
-              "path": "menu",
-              "hidden": false,
-              "component": "system/menu/index",
-              "meta": {
-                "title": "菜单管理",
-                "icon": "tree-table",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Dict",
-              "path": "dict",
-              "hidden": false,
-              "component": "system/dict/index",
-              "meta": {
-                "title": "字典管理",
-                "icon": "dict",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Config",
-              "path": "config",
-              "hidden": false,
-              "component": "system/config/index",
-              "meta": {
-                "title": "参数设置",
-                "icon": "edit",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Log",
-              "path": "log",
-              "hidden": false,
-              "redirect": "noRedirect",
-              "component": "ParentView",
-              "alwaysShow": true,
-              "meta": {
-                "title": "日志管理",
-                "icon": "log",
-                "noCache": false,
-                "link": null
-              },
-              "children": [
-                {
-                  "name": "Operlog",
-                  "path": "operlog",
-                  "hidden": false,
-                  "component": "monitor/operlog/index",
-                  "meta": {
-                    "title": "操作日志",
-                    "icon": "form",
-                    "noCache": false,
-                    "link": null
-                  }
-                },
-                {
-                  "name": "Logininfor",
-                  "path": "logininfor",
-                  "hidden": false,
-                  "component": "monitor/logininfor/index",
-                  "meta": {
-                    "title": "登录日志",
-                    "icon": "logininfor",
-                    "noCache": false,
-                    "link": null
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Tool",
-          "path": "/tool",
-          "hidden": false,
-          "redirect": "noRedirect",
-          "component": "Layout",
-          "alwaysShow": true,
-          "meta": {
-            "title": "系统工具",
-            "icon": "tool",
-            "noCache": false,
-            "link": null
-          },
-          "children": [
-            {
-              "name": "Build",
-              "path": "build",
-              "hidden": false,
-              "component": "tool/build/index",
-              "meta": {
-                "title": "表单构建",
-                "icon": "build",
-                "noCache": false,
-                "link": null
-              }
-            },
-            {
-              "name": "Swagger",
-              "path": "swagger",
-              "hidden": false,
-              "component": "tool/swagger/index",
-              "meta": {
-                "title": "系统接口",
-                "icon": "swagger",
-                "noCache": false,
-                "link": null
-              }
-            }
-          ]
-        },
-        {
-          "name": "Http://github.com/oddfar/campus",
-          "path": "http://github.com/oddfar/campus",
-          "hidden": false,
-          "component": "Layout",
-          "meta": {
-            "title": "源码地址",
-            "icon": "guide",
-            "noCache": false,
-            "link": "http://github.com/oddfar/campus"
-          }
-        }
-      ]
-    },
-    "request_params": {},
-    "response_time": 0.004701375961303711
+    "avg_response_time": 0.004374551773071289,
+    "max_response_time": 0.006319999694824219,
+    "min_response_time": 0.0030524730682373047,
+    "p95_response_time": 0.006338775157928467,
+    "num_requests": 10
   },
   "test_system_menu_rolemenutreeselect_1_performance": {
     "status_code": 200,
@@ -2874,6 +2243,37 @@
       "checkedKeys": []
     },
     "request_params": {},
-    "response_time": 0.014472723007202148
+    "avg_response_time": 0.008107185363769531,
+    "max_response_time": 0.010990619659423828,
+    "min_response_time": 0.0061795711517333984,
+    "p95_response_time": 0.011691641807556153,
+    "num_requests": 10
+  },
+  "test_monitor_operlog_1_performance": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": 0
+    },
+    "request_params": {},
+    "avg_response_time": 0.003879237174987793,
+    "max_response_time": 0.004769802093505859,
+    "min_response_time": 0.0030679702758789062,
+    "p95_response_time": 0.004820549488067627,
+    "num_requests": 10
+  },
+  "test_system_config_configkey_test_key_performance": {
+    "status_code": 200,
+    "response": {
+      "msg": "",
+      "code": 200
+    },
+    "request_params": {},
+    "avg_response_time": 0.005029535293579102,
+    "max_response_time": 0.006691932678222656,
+    "min_response_time": 0.003656625747680664,
+    "p95_response_time": 0.007019054889678955,
+    "num_requests": 10
   }
 }
