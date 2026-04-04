@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-27T23:26:35.499250",
-  "commit_range": "HEAD~1..HEAD",
+  "timestamp": "2026-04-04T15:35:25.261334",
+  "commit_range": "origin/main..origin/test-feature",
   "changed_files": [
     "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysMenuController.java"
   ],
@@ -18,7 +18,7 @@
           "@DeleteMapping(value = \"/{menuId}\", name = \"菜单管理-删除\")"
         ]
       },
-      "diff_content": "-             return R.error(\"存在子菜单,不允许删除。\");\n-             return R.error(\"菜单已分配,不允许删除。\");\n+             return R.error(\"存在子菜单,不允许删除.\");\n+             return R.error(\"菜单已分配,不允许删除.\");",
+      "diff_content": "-             return R.error(\"存在子菜单,不允许删除.\");\n-             return R.error(\"菜单已分配,不允许删除.\");\n+             return R.error(\"存在子菜单,不允许删除..\");\n+             return R.error(\"菜单已分配,不允许删除..\");",
       "old_element": {
         "element_type": "method",
         "name": "remove",

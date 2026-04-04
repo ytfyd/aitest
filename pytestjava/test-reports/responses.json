@@ -95,7 +95,7 @@
   "test_system_menu_system_menu_positive": {
     "status_code": 404,
     "response": {
-      "timestamp": "2026-03-27 23:26:36",
+      "timestamp": "2026-04-04 15:35:39",
       "status": 404,
       "error": "Not Found",
       "path": "/system/menu/system/menu"
@@ -370,7 +370,7 @@
   "test_system_user_system_user_positive": {
     "status_code": 404,
     "response": {
-      "timestamp": "2026-03-27 23:26:37",
+      "timestamp": "2026-04-04 15:35:39",
       "status": 404,
       "error": "Not Found",
       "path": "/system/user/system/user"
@@ -1699,7 +1699,7 @@
   "test_system_menu_system_menu_negative_missing_required_fields": {
     "status_code": 404,
     "response": {
-      "timestamp": "2026-03-27 23:26:37",
+      "timestamp": "2026-04-04 15:35:40",
       "status": 404,
       "error": "Not Found",
       "path": "/system/menu/system/menu"
@@ -1986,7 +1986,7 @@
   "test_system_user_system_user_negative_missing_required_fields": {
     "status_code": 404,
     "response": {
-      "timestamp": "2026-03-27 23:26:37",
+      "timestamp": "2026-04-04 15:35:40",
       "status": 404,
       "error": "Not Found",
       "path": "/system/user/system/user"
@@ -2023,10 +2023,10 @@
       }
     },
     "request_params": {},
-    "avg_response_time": 0.004374551773071289,
-    "max_response_time": 0.006319999694824219,
-    "min_response_time": 0.0030524730682373047,
-    "p95_response_time": 0.006338775157928467,
+    "avg_response_time": 0.008629274368286134,
+    "max_response_time": 0.014130115509033203,
+    "min_response_time": 0.006108760833740234,
+    "p95_response_time": 0.016169774532318115,
     "num_requests": 10
   },
   "test_system_menu_rolemenutreeselect_1_performance": {
@@ -2243,10 +2243,10 @@
       "checkedKeys": []
     },
     "request_params": {},
-    "avg_response_time": 0.008107185363769531,
-    "max_response_time": 0.010990619659423828,
-    "min_response_time": 0.0061795711517333984,
-    "p95_response_time": 0.011691641807556153,
+    "avg_response_time": 0.010848236083984376,
+    "max_response_time": 0.015191316604614258,
+    "min_response_time": 0.007184028625488281,
+    "p95_response_time": 0.015668964385986327,
     "num_requests": 10
   },
   "test_monitor_operlog_1_performance": {
@@ -2257,10 +2257,10 @@
       "data": 0
     },
     "request_params": {},
-    "avg_response_time": 0.003879237174987793,
-    "max_response_time": 0.004769802093505859,
-    "min_response_time": 0.0030679702758789062,
-    "p95_response_time": 0.004820549488067627,
+    "avg_response_time": 0.005544853210449219,
+    "max_response_time": 0.006310701370239258,
+    "min_response_time": 0.004579782485961914,
+    "p95_response_time": 0.006355655193328857,
     "num_requests": 10
   },
   "test_system_config_configkey_test_key_performance": {
@@ -2270,10 +2270,10 @@
       "code": 200
     },
     "request_params": {},
-    "avg_response_time": 0.005029535293579102,
-    "max_response_time": 0.006691932678222656,
-    "min_response_time": 0.003656625747680664,
-    "p95_response_time": 0.007019054889678955,
+    "avg_response_time": 0.0068459749221801754,
+    "max_response_time": 0.015705108642578125,
+    "min_response_time": 0.004609346389770508,
+    "p95_response_time": 0.01953047513961792,
     "num_requests": 10
   }
 }
