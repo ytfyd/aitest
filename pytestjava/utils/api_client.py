@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class ResponseStore:
-    """测试响应的全局存储"""
+    """Global store for test responses"""
     _instance = None
     _responses: Dict[str, Dict[str, Any]] = {}
     
@@ -29,19 +29,19 @@ class ResponseStore:
         return cls._instance
     
     def store_response(self, test_name: str, response_data: Dict[str, Any]):
-        """存储测试的响应数据"""
+        """Store response data for a test"""
         self._responses[test_name] = response_data
     
     def get_response(self, test_name: str) -> Optional[Dict[str, Any]]:
-        """获取测试的存储响应"""
+        """Get stored response for a test"""
         return self._responses.get(test_name)
     
     def get_all_responses(self) -> Dict[str, Dict[str, Any]]:
-        """获取所有存储的响应"""
+        """Get all stored responses"""
         return self._responses.copy()
     
     def clear(self):
-        """清除所有存储的响应"""
+        """Clear all stored responses"""
         self._responses.clear()
 
 
@@ -49,7 +49,7 @@ response_store = ResponseStore.get_instance()
 
 
 class APIClient:
-    """用于API测试的HTTP客户端，支持重试和超时"""
+    """HTTP client for API testing with retry and timeout support"""
     
     def __init__(self):
         self.session = Session()
@@ -58,7 +58,7 @@ class APIClient:
         else:
             self.base_url = settings.api_base_url
         
-        # 配置重试策略
+        # Configure retry strategy
         retry_strategy = Retry(
             total=settings.max_retries,
             backoff_factor=settings.retry_delay,
@@ -69,23 +69,23 @@ class APIClient:
         self.session.mount("http://", adapter)
         self.session.mount("https://", adapter)
         
-        # 设置默认请求头
+        # Set default headers
         self.session.headers.update({
             "Content-Type": "application/json",
             "User-Agent": "API-Test-Framework/1.0"
         })
         
-        # 存储最后一次响应用于报告
+        # Store last response for reporting
         self.last_response: Optional[Dict[str, Any]] = None
         self.auth_token: Optional[str] = None
     
     def login(self, username: Optional[str] = None, password: Optional[str] = None) -> bool:
-        """登录并获取认证令牌"""
+        """Login and get authentication token"""
         username = username or os.getenv("USERNAME")
         password = password or os.getenv("PASSWORD")
         
         if not username or not password:
-            logger.error("用户名和密码必须在.env文件中配置")
+            logger.error("Username and password must be configured in .env file")
             return False
         
         try:
@@ -103,49 +103,49 @@ class APIClient:
                     self.session.headers.update({
                         "Authorization": self.auth_token
                     })
-                    logger.info(f"登录成功，已获取令牌")
+                    logger.info(f"Login successful, token obtained")
                     return True
                 else:
-                    logger.warning(f"登录失败: {data.get('msg', '未知错误')}")
+                    logger.warning(f"Login failed: {data.get('msg', 'Unknown error')}")
                     return False
             else:
-                logger.warning(f"登录请求失败，状态码: {response.status_code}")
+                logger.warning(f"Login request failed with status {response.status_code}")
                 return False
         except Exception as e:
-            logger.error(f"登录错误: {str(e)}")
+            logger.error(f"Login error: {str(e)}")
             return False
     
     def set_auth_token(self, token: str):
-        """为后续请求设置授权令牌"""
+        """Set authorization token for subsequent requests"""
         self.auth_token = f"Bearer {token}"
         self.session.headers.update({
             "Authorization": self.auth_token
         })
     
     def clear_auth(self):
-        """清除授权令牌"""
+        """Clear authorization token"""
         self.auth_token = None
         if "Authorization" in self.session.headers:
             del self.session.headers["Authorization"]
     
     def _request(self, method: str, endpoint: str, **kwargs) -> Response:
-        """执行HTTP请求，包含日志记录和错误处理"""
+        """Make HTTP request with logging and error handling"""
         url = f"{self.base_url}{endpoint}"
         
         if "timeout" not in kwargs:
             kwargs["timeout"] = (3, 5)
         
-        logger.info(f"正在发送 {method} 请求到 {url}")
+        logger.info(f"Making {method} request to {url}")
         
         try:
             response = self.session.request(method, url, **kwargs)
-            logger.info(f"响应状态码: {response.status_code}")
+            logger.info(f"Response status: {response.status_code}")
             
             if response.text:
                 body_preview = response.text[:500] + "..." if len(response.text) > 500 else response.text
-                logger.debug(f"响应内容: {body_preview}")
+                logger.debug(f"Response body: {body_preview}")
             
-            # 存储最后一次响应用于报告
+            # Store last response for reporting
             try:
                 response_json = response.json()
             except:
@@ -162,7 +162,7 @@ class APIClient:
             return response
             
         except Exception as e:
-            logger.error(f"请求失败: {str(e)}")
+            logger.error(f"Request failed: {str(e)}")
             raise
     
     def get(self, endpoint: str, **kwargs) -> Response:
@@ -182,21 +182,21 @@ class APIClient:
         return self._request("DELETE", endpoint, **kwargs)
     
     def validate_response(self, response: Response, expected_status: int = 200) -> Dict[str, Any]:
-        """验证响应状态并返回JSON数据"""
+        """Validate response status and return JSON data"""
         assert response.status_code == expected_status, (
-            f"期望状态码 {expected_status}，实际得到 {response.status_code}"
+            f"Expected status {expected_status}, got {response.status_code}"
         )
         
         try:
             return response.json()
         except json.JSONDecodeError as e:
-            logger.error(f"解析JSON响应失败: {e}")
+            logger.error(f"Failed to parse JSON response: {e}")
             raise
     
     def close(self):
-        """关闭会话"""
+        """Close the session"""
         self.session.close()
 
 
-# 全局API客户端实例
+# Global API client instance
 api_client = APIClient()

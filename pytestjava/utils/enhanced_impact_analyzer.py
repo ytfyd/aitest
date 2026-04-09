@@ -35,13 +35,13 @@ class AnalysisResult:
 
 
 class EnhancedImpactAnalyzer:
-    """使用JCCI框架的增强版影响分析器，用于全面分析
+    """Enhanced impact analyzer using JCCI framework for comprehensive analysis
     
-    基于JCCI（Java代码提交影响）方法论:
-    - 使用javalang进行Java AST解析
-    - 使用unidiff进行Git差异解析
-    - 构建调用图用于影响传播
-    - 从变更代码追踪影响到Controller层
+    Based on JCCI (Java Code Commit Impact) methodology:
+    - Uses javalang for Java AST parsing
+    - Uses unidiff for Git diff parsing
+    - Builds call graph for impact propagation
+    - Traces impact from changed code to Controller layer
     """
     
     def __init__(self, repo_path: str, project_path: str = None):
@@ -85,15 +85,7 @@ class EnhancedImpactAnalyzer:
     
     def analyze(self, commit_range: str = "HEAD~1..HEAD", max_impact_depth: int = 5) -> AnalysisResult:
         logger.info(f"[EnhancedImpactAnalyzer] ========== 开始影响分析 ==========")
-        
-        is_branch_mode = '..' in commit_range and not commit_range.startswith('HEAD')
-        if is_branch_mode:
-            parts = commit_range.split('..')
-            target_branch = parts[0] if len(parts) > 0 else 'unknown'
-            source_branch = parts[1] if len(parts) > 1 else 'unknown'
-            logger.info(f"[EnhancedImpactAnalyzer] 分支对比模式: {source_branch} vs {target_branch}")
-        else:
-            logger.info(f"[EnhancedImpactAnalyzer] 提交范围: {commit_range}, 最大影响深度: {max_impact_depth}")
+        logger.info(f"[EnhancedImpactAnalyzer] 提交范围: {commit_range}, 最大影响深度: {max_impact_depth}")
         
         self.initialize()
         

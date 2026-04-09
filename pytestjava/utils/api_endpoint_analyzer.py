@@ -63,13 +63,13 @@ class EndpointImpact:
 
 
 class APIEndpointAnalyzer:
-    """使用JCCI分析的增强版API端点分析器
+    """Enhanced API endpoint analyzer using JCCI analysis
     
-    通过以下方式分析API接口及其与变更代码的关系:
-    - Controller方法提取
-    - 服务依赖追踪
-    - 调用链分析
-    - 影响置信度计算
+    Analyzes API endpoints and their relationships with changed code through:
+    - Controller method extraction
+    - Service dependency tracking
+    - Call chain analysis
+    - Impact confidence calculation
     """
     
     def __init__(self, project_path: str, jcci_analyzer=None):

@@ -1,5 +1,4 @@
 secrets.ini
-.env.*
 .env
 .env.local
 .env.*.local

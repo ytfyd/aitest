@@ -150,7 +150,7 @@ def test_{endpoint_name}_performance():
     def generate_test_cases(self, endpoints: List[Dict[str, str]]) -> Dict[str, List[str]]:
         test_cases = {"positive": [], "negative": [], "performance": []}
         
-        # 跟踪已生成的测试名称以避免重复
+        # Track generated test names to avoid duplicates
         generated_tests = set()
         
         for endpoint in endpoints:
@@ -170,7 +170,7 @@ def test_{endpoint_name}_performance():
             
             endpoint_name = self._sanitize_endpoint_name(final_path)
             
-            # 生成正向测试
+            # Generate positive test
             positive_test_name = f"test_{endpoint_name}_positive"
             if positive_test_name not in generated_tests:
                 positive_test = self._generate_positive_test(
@@ -180,12 +180,12 @@ def test_{endpoint_name}_performance():
                     test_cases["positive"].append(positive_test)
                     generated_tests.add(positive_test_name)
             
-            # 生成负向测试
+            # Generate negative tests
             negative_tests = self._generate_negative_tests(
                 endpoint_name, method, final_path, test_data
             )
             for test in negative_tests:
-                # 从测试代码中提取测试名称
+                # Extract test name from test code
                 import re
                 test_name_match = re.search(r'def\s+(test_\w+)\s*\(', test)
                 if test_name_match:
@@ -194,7 +194,7 @@ def test_{endpoint_name}_performance():
                         test_cases["negative"].append(test)
                         generated_tests.add(test_name)
             
-            # 生成性能测试
+            # Generate performance test
             performance_test_name = f"test_{endpoint_name}_performance"
             if performance_test_name not in generated_tests:
                 performance_test = self._generate_performance_test(
@@ -320,24 +320,24 @@ def test_{endpoint_name}_performance():
                                  test_data: Dict, query_params: Dict) -> Optional[str]:
         method_lower = method.lower() if isinstance(method, str) else str(method).lower()
         
-        # 为查询参数或请求体数据构建参数字符串
+        # Build params string for query parameters or body data
         params_str = ""
         if query_params:
             params_str = f", params={json.dumps(query_params)}"
         
-        # 对于POST/PUT方法，添加data参数
+        # For POST/PUT methods with body data, add data parameter
         data_str = ""
         if test_data and method_lower in ['post', 'put', 'patch']:
             data_str = f", data={json.dumps(test_data)}"
         
         test_data_str = json.dumps(test_data) if test_data else "{}"
         
-        # 检查是否是登录接口 - 需要特殊处理
-        # 只匹配精确的 /login 接口，而不是任何包含 'login' 的接口
+        # Check if this is a login endpoint - needs special handling
+        # Only match exact /login endpoint, not any endpoint containing 'login'
         is_login_endpoint = path.lower() == '/login' or path.lower().endswith('/login')
         
         if is_login_endpoint:
-            # 登录接口使用独立请求，避免认证header冲突
+            # Use a separate session for login endpoint to avoid auth header conflicts
             login_template = """
 @pytest.mark.positive
 @pytest.mark.smoke
@@ -417,23 +417,23 @@ def test_{endpoint_name}_positive():
                                    test_data: Dict, query_params: Dict) -> Optional[str]:
         method_lower = method.lower() if isinstance(method, str) else str(method).lower()
         
-        # 为查询参数或请求体数据构建参数字符串
+        # Build params string for query parameters or body data
         params_str = ""
         if query_params:
             params_str = f", params={json.dumps(query_params)}"
         
-        # 对于POST/PUT方法，添加data参数
+        # For POST/PUT methods with body data, add data parameter
         data_str = ""
         if test_data and method_lower in ['post', 'put', 'patch']:
             data_str = f", data={json.dumps(test_data)}"
         
         test_data_str = json.dumps(test_data) if test_data else "{}"
         
-        # 检查是否是登录接口 - 需要特殊处理
+        # Check if this is a login endpoint - needs special handling
         is_login_endpoint = '/login' in path.lower()
         
         if is_login_endpoint:
-            # 登录接口使用独立请求，避免认证header冲突
+            # Use a separate session for login endpoint to avoid auth header conflicts
             from config.settings import settings
             login_perf_template = """
 @pytest.mark.performance
@@ -534,28 +534,28 @@ def test_{endpoint_name}_performance():
                 }
             }
         else:
-            # 对于POST/PUT/PATCH接口 - 测试缺少必填字段
+            # For POST/PUT/PATCH endpoints - test missing required fields
             if method.upper() in ['POST', 'PUT', 'PATCH']:
                 scenarios["missing_required_fields"] = {
                     "data": "{}",
                     "status": 400
                 }
             
-            # 对于GET接口 - 测试无效参数
+            # For GET endpoints - test invalid parameters
             if method.upper() == 'GET':
                 scenarios["invalid_params"] = {
                     "data": '{"invalid_param": "invalid_value"}',
                     "status": 400
                 }
             
-            # 对于DELETE接口 - 测试无效ID或未授权访问
+            # For DELETE endpoints - test invalid ID or unauthorized access
             if method.upper() == 'DELETE':
                 scenarios["unauthorized"] = {
                     "data": "{}",
                     "status": 403
                 }
             
-            # 对于包含路径参数的接口 - 测试无效ID
+            # For endpoints with path parameters - test invalid ID
             if '{' in path and '}' in path:
                 scenarios["invalid_id"] = {
                     "data": "{}",

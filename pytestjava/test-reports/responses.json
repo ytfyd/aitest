@@ -95,7 +95,7 @@
   "test_system_menu_system_menu_positive": {
     "status_code": 404,
     "response": {
-      "timestamp": "2026-04-04 17:51:57",
+      "timestamp": "2026-03-27 23:26:36",
       "status": 404,
       "error": "Not Found",
       "path": "/system/menu/system/menu"
@@ -317,6 +317,32 @@
     },
     "request_params": {}
   },
+  "test_monitor_logininfor_1_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": 0
+    },
+    "request_params": {}
+  },
+  "test_monitor_operlog_1_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": 0
+    },
+    "request_params": {}
+  },
+  "test_system_config_configkey_test_key_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "",
+      "code": 200
+    },
+    "request_params": {}
+  },
   "test_system_dict_data_test_code_positive": {
     "status_code": 200,
     "response": {
@@ -344,36 +370,10 @@
   "test_system_user_system_user_positive": {
     "status_code": 404,
     "response": {
-      "timestamp": "2026-04-04 17:51:57",
+      "timestamp": "2026-03-27 23:26:37",
       "status": 404,
       "error": "Not Found",
       "path": "/system/user/system/user"
-    },
-    "request_params": {}
-  },
-  "test_monitor_logininfor_1_positive": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "data": 0
-    },
-    "request_params": {}
-  },
-  "test_monitor_operlog_1_positive": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "data": 0
-    },
-    "request_params": {}
-  },
-  "test_system_config_configkey_test_key_positive": {
-    "status_code": 200,
-    "response": {
-      "msg": "",
-      "code": 200
     },
     "request_params": {}
   },
@@ -1699,7 +1699,7 @@
   "test_system_menu_system_menu_negative_missing_required_fields": {
     "status_code": 404,
     "response": {
-      "timestamp": "2026-04-04 17:51:57",
+      "timestamp": "2026-03-27 23:26:37",
       "status": 404,
       "error": "Not Found",
       "path": "/system/menu/system/menu"
@@ -1931,40 +1931,6 @@
     },
     "request_params": {}
   },
-  "test_system_dict_data_test_code_negative_unauthorized": {
-    "status_code": 200,
-    "response": {
-      "msg": "Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long[]'; nested exception is java.lang.NumberFormatException: For input string: \"test_code\"",
-      "code": 500
-    },
-    "request_params": {}
-  },
-  "test_system_dict_type_1_negative_unauthorized": {
-    "status_code": 200,
-    "response": {
-      "msg": "用户性别已分配,不能删除",
-      "code": 500
-    },
-    "request_params": {}
-  },
-  "test_system_role_1_negative_unauthorized": {
-    "status_code": 200,
-    "response": {
-      "msg": "不允许操作超级管理员角色",
-      "code": 500
-    },
-    "request_params": {}
-  },
-  "test_system_user_system_user_negative_missing_required_fields": {
-    "status_code": 404,
-    "response": {
-      "timestamp": "2026-04-04 17:51:57",
-      "status": 404,
-      "error": "Not Found",
-      "path": "/system/user/system/user"
-    },
-    "request_params": {}
-  },
   "test_monitor_logininfor_1_negative_unauthorized": {
     "status_code": 200,
     "response": {
@@ -1992,6 +1958,40 @@
     "request_params": {
       "invalid_param": "invalid_value"
     }
+  },
+  "test_system_dict_data_test_code_negative_unauthorized": {
+    "status_code": 200,
+    "response": {
+      "msg": "Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long[]'; nested exception is java.lang.NumberFormatException: For input string: \"test_code\"",
+      "code": 500
+    },
+    "request_params": {}
+  },
+  "test_system_dict_type_1_negative_unauthorized": {
+    "status_code": 200,
+    "response": {
+      "msg": "用户性别已分配,不能删除",
+      "code": 500
+    },
+    "request_params": {}
+  },
+  "test_system_role_1_negative_unauthorized": {
+    "status_code": 200,
+    "response": {
+      "msg": "不允许操作超级管理员角色",
+      "code": 500
+    },
+    "request_params": {}
+  },
+  "test_system_user_system_user_negative_missing_required_fields": {
+    "status_code": 404,
+    "response": {
+      "timestamp": "2026-03-27 23:26:37",
+      "status": 404,
+      "error": "Not Found",
+      "path": "/system/user/system/user"
+    },
+    "request_params": {}
   },
   "test_system_menu_1_performance": {
     "status_code": 200,
@@ -2023,10 +2023,10 @@
       }
     },
     "request_params": {},
-    "avg_response_time": 0.0061419010162353516,
-    "max_response_time": 0.01103663444519043,
-    "min_response_time": 0.0031642913818359375,
-    "p95_response_time": 0.011700427532196045,
+    "avg_response_time": 0.004374551773071289,
+    "max_response_time": 0.006319999694824219,
+    "min_response_time": 0.0030524730682373047,
+    "p95_response_time": 0.006338775157928467,
     "num_requests": 10
   },
   "test_system_menu_rolemenutreeselect_1_performance": {
@@ -2243,10 +2243,10 @@
       "checkedKeys": []
     },
     "request_params": {},
-    "avg_response_time": 0.009687376022338868,
-    "max_response_time": 0.017403364181518555,
-    "min_response_time": 0.006131887435913086,
-    "p95_response_time": 0.019527029991149903,
+    "avg_response_time": 0.008107185363769531,
+    "max_response_time": 0.010990619659423828,
+    "min_response_time": 0.0061795711517333984,
+    "p95_response_time": 0.011691641807556153,
     "num_requests": 10
   },
   "test_monitor_operlog_1_performance": {
@@ -2257,10 +2257,10 @@
       "data": 0
     },
     "request_params": {},
-    "avg_response_time": 0.0037192821502685545,
-    "max_response_time": 0.004778623580932617,
-    "min_response_time": 0.00304412841796875,
-    "p95_response_time": 0.00478581190109253,
+    "avg_response_time": 0.003879237174987793,
+    "max_response_time": 0.004769802093505859,
+    "min_response_time": 0.0030679702758789062,
+    "p95_response_time": 0.004820549488067627,
     "num_requests": 10
   },
   "test_system_config_configkey_test_key_performance": {
@@ -2270,10 +2270,10 @@
       "code": 200
     },
     "request_params": {},
-    "avg_response_time": 0.008208870887756348,
-    "max_response_time": 0.01734137535095215,
-    "min_response_time": 0.0030930042266845703,
-    "p95_response_time": 0.020131301879882813,
+    "avg_response_time": 0.005029535293579102,
+    "max_response_time": 0.006691932678222656,
+    "min_response_time": 0.003656625747680664,
+    "p95_response_time": 0.007019054889678955,
     "num_requests": 10
   }
 }

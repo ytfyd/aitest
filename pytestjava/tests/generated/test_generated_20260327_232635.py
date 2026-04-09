@@ -203,6 +203,96 @@ def test_system_menu_rolemenutreeselect_1_positive():
 
 @pytest.mark.positive
 @pytest.mark.smoke
+def test_monitor_logininfor_1_positive():
+    """测试 delete /monitor/logininfor/1 - 正向测试用例"""
+    
+    # 准备测试数据
+    test_data = {}
+    
+    # 发起API请求
+    response = api_client.delete('/monitor/logininfor/1')
+    
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_monitor_logininfor_1_positive', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {}
+    })
+    
+    # 验证响应
+    data = api_client.validate_response(response, 200)
+    
+    # 断言响应结构 - 检查业务响应码
+    assert data.get('code') == 200, f"业务响应码错误: {data.get('msg', 'Unknown error')}"
+    
+
+
+@pytest.mark.positive
+@pytest.mark.smoke
+def test_monitor_operlog_1_positive():
+    """测试 delete /monitor/operlog/1 - 正向测试用例"""
+    
+    # 准备测试数据
+    test_data = {}
+    
+    # 发起API请求
+    response = api_client.delete('/monitor/operlog/1')
+    
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_monitor_operlog_1_positive', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {}
+    })
+    
+    # 验证响应
+    data = api_client.validate_response(response, 200)
+    
+    # 断言响应结构 - 检查业务响应码
+    assert data.get('code') == 200, f"业务响应码错误: {data.get('msg', 'Unknown error')}"
+    
+
+
+@pytest.mark.positive
+@pytest.mark.smoke
+def test_system_config_configkey_test_key_positive():
+    """测试 get /system/config/configKey/test_key - 正向测试用例"""
+    
+    # 准备测试数据
+    test_data = {}
+    
+    # 发起API请求
+    response = api_client.get('/system/config/configKey/test_key')
+    
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_system_config_configkey_test_key_positive', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {}
+    })
+    
+    # 验证响应
+    data = api_client.validate_response(response, 200)
+    
+    # 断言响应结构 - 检查业务响应码
+    assert data.get('code') == 200, f"业务响应码错误: {data.get('msg', 'Unknown error')}"
+    
+
+
+@pytest.mark.positive
+@pytest.mark.smoke
 def test_system_dict_data_test_code_positive():
     """测试 delete /system/dict/data/test_code - 正向测试用例"""
     
@@ -308,96 +398,6 @@ def test_system_user_system_user_positive():
     except:
         resp_json = {"raw_text": response.text}
     save_response('test_system_user_system_user_positive', {
-        'status_code': response.status_code,
-        'response': resp_json,
-        'request_params': {}
-    })
-    
-    # 验证响应
-    data = api_client.validate_response(response, 200)
-    
-    # 断言响应结构 - 检查业务响应码
-    assert data.get('code') == 200, f"业务响应码错误: {data.get('msg', 'Unknown error')}"
-    
-
-
-@pytest.mark.positive
-@pytest.mark.smoke
-def test_monitor_logininfor_1_positive():
-    """测试 delete /monitor/logininfor/1 - 正向测试用例"""
-    
-    # 准备测试数据
-    test_data = {}
-    
-    # 发起API请求
-    response = api_client.delete('/monitor/logininfor/1')
-    
-    # 存储响应结果用于报告
-    try:
-        resp_json = response.json()
-    except:
-        resp_json = {"raw_text": response.text}
-    save_response('test_monitor_logininfor_1_positive', {
-        'status_code': response.status_code,
-        'response': resp_json,
-        'request_params': {}
-    })
-    
-    # 验证响应
-    data = api_client.validate_response(response, 200)
-    
-    # 断言响应结构 - 检查业务响应码
-    assert data.get('code') == 200, f"业务响应码错误: {data.get('msg', 'Unknown error')}"
-    
-
-
-@pytest.mark.positive
-@pytest.mark.smoke
-def test_monitor_operlog_1_positive():
-    """测试 delete /monitor/operlog/1 - 正向测试用例"""
-    
-    # 准备测试数据
-    test_data = {}
-    
-    # 发起API请求
-    response = api_client.delete('/monitor/operlog/1')
-    
-    # 存储响应结果用于报告
-    try:
-        resp_json = response.json()
-    except:
-        resp_json = {"raw_text": response.text}
-    save_response('test_monitor_operlog_1_positive', {
-        'status_code': response.status_code,
-        'response': resp_json,
-        'request_params': {}
-    })
-    
-    # 验证响应
-    data = api_client.validate_response(response, 200)
-    
-    # 断言响应结构 - 检查业务响应码
-    assert data.get('code') == 200, f"业务响应码错误: {data.get('msg', 'Unknown error')}"
-    
-
-
-@pytest.mark.positive
-@pytest.mark.smoke
-def test_system_config_configkey_test_key_positive():
-    """测试 get /system/config/configKey/test_key - 正向测试用例"""
-    
-    # 准备测试数据
-    test_data = {}
-    
-    # 发起API请求
-    response = api_client.get('/system/config/configKey/test_key')
-    
-    # 存储响应结果用于报告
-    try:
-        resp_json = response.json()
-    except:
-        resp_json = {"raw_text": response.text}
-    save_response('test_system_config_configkey_test_key_positive', {
         'status_code': response.status_code,
         'response': resp_json,
         'request_params': {}
@@ -601,6 +601,99 @@ def test_system_menu_1_negative_unauthorized():
 
 @pytest.mark.negative
 @pytest.mark.regression
+def test_monitor_logininfor_1_negative_unauthorized():
+    """测试 delete /monitor/logininfor/1 - 负向测试用例: unauthorized"""
+    
+    # 准备无效的测试数据
+    test_data = {}
+    
+    # 发起API请求
+    response = api_client.delete('/monitor/logininfor/1', data=test_data)
+    
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_monitor_logininfor_1_negative_unauthorized', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {}
+    })
+    
+    # 验证错误响应
+    assert response.status_code == 403
+    
+    # 断言错误结构
+    error_data = response.json()
+    assert 'errorCode' in error_data
+    assert 'message' in error_data
+
+
+@pytest.mark.negative
+@pytest.mark.regression
+def test_monitor_operlog_1_negative_unauthorized():
+    """测试 delete /monitor/operlog/1 - 负向测试用例: unauthorized"""
+    
+    # 准备无效的测试数据
+    test_data = {}
+    
+    # 发起API请求
+    response = api_client.delete('/monitor/operlog/1', data=test_data)
+    
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_monitor_operlog_1_negative_unauthorized', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {}
+    })
+    
+    # 验证错误响应
+    assert response.status_code == 403
+    
+    # 断言错误结构
+    error_data = response.json()
+    assert 'errorCode' in error_data
+    assert 'message' in error_data
+
+
+@pytest.mark.negative
+@pytest.mark.regression
+def test_system_config_configkey_test_key_negative_invalid_params():
+    """测试 get /system/config/configKey/test_key - 负向测试用例: invalid_params"""
+    
+    # 准备无效的测试数据
+    test_data = {"invalid_param": "invalid_value"}
+    
+    # 发起API请求
+    response = api_client.get('/system/config/configKey/test_key', data=test_data)
+    
+    # 存储响应结果用于报告
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_system_config_configkey_test_key_negative_invalid_params', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {"invalid_param": "invalid_value"}
+    })
+    
+    # 验证错误响应
+    assert response.status_code == 400
+    
+    # 断言错误结构
+    error_data = response.json()
+    assert 'errorCode' in error_data
+    assert 'message' in error_data
+
+
+@pytest.mark.negative
+@pytest.mark.regression
 def test_system_dict_data_test_code_negative_unauthorized():
     """测试 delete /system/dict/data/test_code - 负向测试用例: unauthorized"""
     
@@ -712,99 +805,6 @@ def test_system_user_system_user_negative_missing_required_fields():
         'status_code': response.status_code,
         'response': resp_json,
         'request_params': {}
-    })
-    
-    # 验证错误响应
-    assert response.status_code == 400
-    
-    # 断言错误结构
-    error_data = response.json()
-    assert 'errorCode' in error_data
-    assert 'message' in error_data
-
-
-@pytest.mark.negative
-@pytest.mark.regression
-def test_monitor_logininfor_1_negative_unauthorized():
-    """测试 delete /monitor/logininfor/1 - 负向测试用例: unauthorized"""
-    
-    # 准备无效的测试数据
-    test_data = {}
-    
-    # 发起API请求
-    response = api_client.delete('/monitor/logininfor/1', data=test_data)
-    
-    # 存储响应结果用于报告
-    try:
-        resp_json = response.json()
-    except:
-        resp_json = {"raw_text": response.text}
-    save_response('test_monitor_logininfor_1_negative_unauthorized', {
-        'status_code': response.status_code,
-        'response': resp_json,
-        'request_params': {}
-    })
-    
-    # 验证错误响应
-    assert response.status_code == 403
-    
-    # 断言错误结构
-    error_data = response.json()
-    assert 'errorCode' in error_data
-    assert 'message' in error_data
-
-
-@pytest.mark.negative
-@pytest.mark.regression
-def test_monitor_operlog_1_negative_unauthorized():
-    """测试 delete /monitor/operlog/1 - 负向测试用例: unauthorized"""
-    
-    # 准备无效的测试数据
-    test_data = {}
-    
-    # 发起API请求
-    response = api_client.delete('/monitor/operlog/1', data=test_data)
-    
-    # 存储响应结果用于报告
-    try:
-        resp_json = response.json()
-    except:
-        resp_json = {"raw_text": response.text}
-    save_response('test_monitor_operlog_1_negative_unauthorized', {
-        'status_code': response.status_code,
-        'response': resp_json,
-        'request_params': {}
-    })
-    
-    # 验证错误响应
-    assert response.status_code == 403
-    
-    # 断言错误结构
-    error_data = response.json()
-    assert 'errorCode' in error_data
-    assert 'message' in error_data
-
-
-@pytest.mark.negative
-@pytest.mark.regression
-def test_system_config_configkey_test_key_negative_invalid_params():
-    """测试 get /system/config/configKey/test_key - 负向测试用例: invalid_params"""
-    
-    # 准备无效的测试数据
-    test_data = {"invalid_param": "invalid_value"}
-    
-    # 发起API请求
-    response = api_client.get('/system/config/configKey/test_key', data=test_data)
-    
-    # 存储响应结果用于报告
-    try:
-        resp_json = response.json()
-    except:
-        resp_json = {"raw_text": response.text}
-    save_response('test_system_config_configkey_test_key_negative_invalid_params', {
-        'status_code': response.status_code,
-        'response': resp_json,
-        'request_params': {"invalid_param": "invalid_value"}
     })
     
     # 验证错误响应
@@ -1160,6 +1160,211 @@ def test_system_menu_rolemenutreeselect_1_performance():
 
 @pytest.mark.performance
 @pytest.mark.slow
+def test_monitor_logininfor_1_performance():
+    """测试 delete /monitor/logininfor/1 - 性能测试用例"""
+    import time
+    import statistics
+    import requests
+    
+    # 准备测试数据
+    test_data = {}
+    
+    # 性能测试配置
+    num_requests = 10  # 请求数量
+    max_response_time = 2.0  # 最大响应时间（秒）
+    avg_response_time = 1.0  # 平均响应时间（秒）
+    
+    # 记录响应时间
+    response_times = []
+    
+    for i in range(num_requests):
+        start_time = time.time()
+        
+        # 登录接口使用独立请求，避免认证header冲突
+        response = requests.delete('http://localhost:8160/monitor/logininfor/1', json={})
+        
+        end_time = time.time()
+        response_time = end_time - start_time
+        response_times.append(response_time)
+        
+        # 验证响应
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get('code') == 200
+    
+    # 计算性能指标
+    avg_time = statistics.mean(response_times)
+    max_time = max(response_times)
+    min_time = min(response_times)
+    p95_time = statistics.quantiles(response_times, n=20)[18]  # 95th percentile
+    
+    # 存储性能数据
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_monitor_logininfor_1_performance', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {},
+        'avg_response_time': avg_time,
+        'max_response_time': max_time,
+        'min_response_time': min_time,
+        'p95_response_time': p95_time,
+        'num_requests': num_requests
+    })
+    
+    # 验证性能指标
+    assert avg_time <= avg_response_time, f"平均响应时间 {avg_time:.3f}s 超过阈值 {avg_response_time}s"
+    assert max_time <= max_response_time, f"最大响应时间 {max_time:.3f}s 超过阈值 {max_response_time}s"
+    
+    # 打印性能报告
+    print(f"性能测试报告:")
+    print(f"  请求数量: {num_requests}")
+    print(f"  平均响应时间: {avg_time:.3f}s")
+    print(f"  最大响应时间: {max_time:.3f}s")
+    print(f"  最小响应时间: {min_time:.3f}s")
+    print(f"  P95响应时间: {p95_time:.3f}s")
+
+
+@pytest.mark.performance
+@pytest.mark.slow
+def test_monitor_operlog_1_performance():
+    """测试 delete /monitor/operlog/1 - 性能测试用例"""
+    import time
+    import statistics
+    
+    # 准备测试数据
+    test_data = {}
+    
+    # 性能测试配置
+    num_requests = 10  # 请求数量
+    max_response_time = 2.0  # 最大响应时间（秒）
+    avg_response_time = 1.0  # 平均响应时间（秒）
+    
+    # 记录响应时间
+    response_times = []
+    
+    for i in range(num_requests):
+        start_time = time.time()
+        
+        # 发起API请求
+        response = api_client.delete('/monitor/operlog/1')
+        
+        end_time = time.time()
+        response_time = end_time - start_time
+        response_times.append(response_time)
+        
+        # 验证响应
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get('code') == 200
+    
+    # 计算性能指标
+    avg_time = statistics.mean(response_times)
+    max_time = max(response_times)
+    min_time = min(response_times)
+    p95_time = statistics.quantiles(response_times, n=20)[18]  # 95th percentile
+    
+    # 存储性能数据
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_monitor_operlog_1_performance', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {},
+        'avg_response_time': avg_time,
+        'max_response_time': max_time,
+        'min_response_time': min_time,
+        'p95_response_time': p95_time,
+        'num_requests': num_requests
+    })
+    
+    # 验证性能指标
+    assert avg_time <= avg_response_time, f"平均响应时间 {avg_time:.3f}s 超过阈值 {avg_response_time}s"
+    assert max_time <= max_response_time, f"最大响应时间 {max_time:.3f}s 超过阈值 {max_response_time}s"
+    
+    # 打印性能报告
+    print(f"性能测试报告:")
+    print(f"  请求数量: {num_requests}")
+    print(f"  平均响应时间: {avg_time:.3f}s")
+    print(f"  最大响应时间: {max_time:.3f}s")
+    print(f"  最小响应时间: {min_time:.3f}s")
+    print(f"  P95响应时间: {p95_time:.3f}s")
+
+
+@pytest.mark.performance
+@pytest.mark.slow
+def test_system_config_configkey_test_key_performance():
+    """测试 get /system/config/configKey/test_key - 性能测试用例"""
+    import time
+    import statistics
+    
+    # 准备测试数据
+    test_data = {}
+    
+    # 性能测试配置
+    num_requests = 10  # 请求数量
+    max_response_time = 2.0  # 最大响应时间（秒）
+    avg_response_time = 1.0  # 平均响应时间（秒）
+    
+    # 记录响应时间
+    response_times = []
+    
+    for i in range(num_requests):
+        start_time = time.time()
+        
+        # 发起API请求
+        response = api_client.get('/system/config/configKey/test_key')
+        
+        end_time = time.time()
+        response_time = end_time - start_time
+        response_times.append(response_time)
+        
+        # 验证响应
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get('code') == 200
+    
+    # 计算性能指标
+    avg_time = statistics.mean(response_times)
+    max_time = max(response_times)
+    min_time = min(response_times)
+    p95_time = statistics.quantiles(response_times, n=20)[18]  # 95th percentile
+    
+    # 存储性能数据
+    try:
+        resp_json = response.json()
+    except:
+        resp_json = {"raw_text": response.text}
+    save_response('test_system_config_configkey_test_key_performance', {
+        'status_code': response.status_code,
+        'response': resp_json,
+        'request_params': {},
+        'avg_response_time': avg_time,
+        'max_response_time': max_time,
+        'min_response_time': min_time,
+        'p95_response_time': p95_time,
+        'num_requests': num_requests
+    })
+    
+    # 验证性能指标
+    assert avg_time <= avg_response_time, f"平均响应时间 {avg_time:.3f}s 超过阈值 {avg_response_time}s"
+    assert max_time <= max_response_time, f"最大响应时间 {max_time:.3f}s 超过阈值 {max_response_time}s"
+    
+    # 打印性能报告
+    print(f"性能测试报告:")
+    print(f"  请求数量: {num_requests}")
+    print(f"  平均响应时间: {avg_time:.3f}s")
+    print(f"  最大响应时间: {max_time:.3f}s")
+    print(f"  最小响应时间: {min_time:.3f}s")
+    print(f"  P95响应时间: {p95_time:.3f}s")
+
+
+@pytest.mark.performance
+@pytest.mark.slow
 def test_system_dict_data_test_code_performance():
     """测试 delete /system/dict/data/test_code - 性能测试用例"""
     import time
@@ -1407,211 +1612,6 @@ def test_system_user_system_user_performance():
     except:
         resp_json = {"raw_text": response.text}
     save_response('test_system_user_system_user_performance', {
-        'status_code': response.status_code,
-        'response': resp_json,
-        'request_params': {},
-        'avg_response_time': avg_time,
-        'max_response_time': max_time,
-        'min_response_time': min_time,
-        'p95_response_time': p95_time,
-        'num_requests': num_requests
-    })
-    
-    # 验证性能指标
-    assert avg_time <= avg_response_time, f"平均响应时间 {avg_time:.3f}s 超过阈值 {avg_response_time}s"
-    assert max_time <= max_response_time, f"最大响应时间 {max_time:.3f}s 超过阈值 {max_response_time}s"
-    
-    # 打印性能报告
-    print(f"性能测试报告:")
-    print(f"  请求数量: {num_requests}")
-    print(f"  平均响应时间: {avg_time:.3f}s")
-    print(f"  最大响应时间: {max_time:.3f}s")
-    print(f"  最小响应时间: {min_time:.3f}s")
-    print(f"  P95响应时间: {p95_time:.3f}s")
-
-
-@pytest.mark.performance
-@pytest.mark.slow
-def test_monitor_logininfor_1_performance():
-    """测试 delete /monitor/logininfor/1 - 性能测试用例"""
-    import time
-    import statistics
-    import requests
-    
-    # 准备测试数据
-    test_data = {}
-    
-    # 性能测试配置
-    num_requests = 10  # 请求数量
-    max_response_time = 2.0  # 最大响应时间（秒）
-    avg_response_time = 1.0  # 平均响应时间（秒）
-    
-    # 记录响应时间
-    response_times = []
-    
-    for i in range(num_requests):
-        start_time = time.time()
-        
-        # 登录接口使用独立请求，避免认证header冲突
-        response = requests.delete('http://localhost:8160/monitor/logininfor/1', json={})
-        
-        end_time = time.time()
-        response_time = end_time - start_time
-        response_times.append(response_time)
-        
-        # 验证响应
-        assert response.status_code == 200
-        data = response.json()
-        assert data.get('code') == 200
-    
-    # 计算性能指标
-    avg_time = statistics.mean(response_times)
-    max_time = max(response_times)
-    min_time = min(response_times)
-    p95_time = statistics.quantiles(response_times, n=20)[18]  # 95th percentile
-    
-    # 存储性能数据
-    try:
-        resp_json = response.json()
-    except:
-        resp_json = {"raw_text": response.text}
-    save_response('test_monitor_logininfor_1_performance', {
-        'status_code': response.status_code,
-        'response': resp_json,
-        'request_params': {},
-        'avg_response_time': avg_time,
-        'max_response_time': max_time,
-        'min_response_time': min_time,
-        'p95_response_time': p95_time,
-        'num_requests': num_requests
-    })
-    
-    # 验证性能指标
-    assert avg_time <= avg_response_time, f"平均响应时间 {avg_time:.3f}s 超过阈值 {avg_response_time}s"
-    assert max_time <= max_response_time, f"最大响应时间 {max_time:.3f}s 超过阈值 {max_response_time}s"
-    
-    # 打印性能报告
-    print(f"性能测试报告:")
-    print(f"  请求数量: {num_requests}")
-    print(f"  平均响应时间: {avg_time:.3f}s")
-    print(f"  最大响应时间: {max_time:.3f}s")
-    print(f"  最小响应时间: {min_time:.3f}s")
-    print(f"  P95响应时间: {p95_time:.3f}s")
-
-
-@pytest.mark.performance
-@pytest.mark.slow
-def test_monitor_operlog_1_performance():
-    """测试 delete /monitor/operlog/1 - 性能测试用例"""
-    import time
-    import statistics
-    
-    # 准备测试数据
-    test_data = {}
-    
-    # 性能测试配置
-    num_requests = 10  # 请求数量
-    max_response_time = 2.0  # 最大响应时间（秒）
-    avg_response_time = 1.0  # 平均响应时间（秒）
-    
-    # 记录响应时间
-    response_times = []
-    
-    for i in range(num_requests):
-        start_time = time.time()
-        
-        # 发起API请求
-        response = api_client.delete('/monitor/operlog/1')
-        
-        end_time = time.time()
-        response_time = end_time - start_time
-        response_times.append(response_time)
-        
-        # 验证响应
-        assert response.status_code == 200
-        data = response.json()
-        assert data.get('code') == 200
-    
-    # 计算性能指标
-    avg_time = statistics.mean(response_times)
-    max_time = max(response_times)
-    min_time = min(response_times)
-    p95_time = statistics.quantiles(response_times, n=20)[18]  # 95th percentile
-    
-    # 存储性能数据
-    try:
-        resp_json = response.json()
-    except:
-        resp_json = {"raw_text": response.text}
-    save_response('test_monitor_operlog_1_performance', {
-        'status_code': response.status_code,
-        'response': resp_json,
-        'request_params': {},
-        'avg_response_time': avg_time,
-        'max_response_time': max_time,
-        'min_response_time': min_time,
-        'p95_response_time': p95_time,
-        'num_requests': num_requests
-    })
-    
-    # 验证性能指标
-    assert avg_time <= avg_response_time, f"平均响应时间 {avg_time:.3f}s 超过阈值 {avg_response_time}s"
-    assert max_time <= max_response_time, f"最大响应时间 {max_time:.3f}s 超过阈值 {max_response_time}s"
-    
-    # 打印性能报告
-    print(f"性能测试报告:")
-    print(f"  请求数量: {num_requests}")
-    print(f"  平均响应时间: {avg_time:.3f}s")
-    print(f"  最大响应时间: {max_time:.3f}s")
-    print(f"  最小响应时间: {min_time:.3f}s")
-    print(f"  P95响应时间: {p95_time:.3f}s")
-
-
-@pytest.mark.performance
-@pytest.mark.slow
-def test_system_config_configkey_test_key_performance():
-    """测试 get /system/config/configKey/test_key - 性能测试用例"""
-    import time
-    import statistics
-    
-    # 准备测试数据
-    test_data = {}
-    
-    # 性能测试配置
-    num_requests = 10  # 请求数量
-    max_response_time = 2.0  # 最大响应时间（秒）
-    avg_response_time = 1.0  # 平均响应时间（秒）
-    
-    # 记录响应时间
-    response_times = []
-    
-    for i in range(num_requests):
-        start_time = time.time()
-        
-        # 发起API请求
-        response = api_client.get('/system/config/configKey/test_key')
-        
-        end_time = time.time()
-        response_time = end_time - start_time
-        response_times.append(response_time)
-        
-        # 验证响应
-        assert response.status_code == 200
-        data = response.json()
-        assert data.get('code') == 200
-    
-    # 计算性能指标
-    avg_time = statistics.mean(response_times)
-    max_time = max(response_times)
-    min_time = min(response_times)
-    p95_time = statistics.quantiles(response_times, n=20)[18]  # 95th percentile
-    
-    # 存储性能数据
-    try:
-        resp_json = response.json()
-    except:
-        resp_json = {"raw_text": response.text}
-    save_response('test_system_config_configkey_test_key_performance', {
         'status_code': response.status_code,
         'response': resp_json,
         'request_params': {},
