@@ -70,12 +70,12 @@ class ImpactPath:
 
 
 class ImpactAnalyzer:
-    """Enhanced impact analyzer using JCCI call graph analysis
+    """使用JCCI调用图分析的增强版影响分析器
     
-    Analyzes code change impact propagation through:
-    - Call graph traversal
-    - Dependency chain tracking
-    - Confidence calculation based on depth
+    通过以下方式分析代码变更影响的传播:
+    - 调用图遍历
+    - 依赖链追踪
+    - 基于深度的置信度计算
     """
     
     def __init__(self, project_path: str, jcci_analyzer=None):

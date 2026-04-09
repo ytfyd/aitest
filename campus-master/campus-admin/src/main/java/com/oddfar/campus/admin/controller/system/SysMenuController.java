@@ -101,10 +101,10 @@ public class SysMenuController {
     @DeleteMapping(value = "/{menuId}", name = "菜单管理-删除")
     public R remove(@PathVariable("menuId") Long menuId) {
         if (menuService.hasChildByMenuId(menuId)) {
-            return R.error("存在子菜单,不允许删除.");
+            return R.error("存在子菜单,不允许删除..");
         }
         if (menuService.checkMenuExistRole(menuId)) {
-            return R.error("菜单已分配,不允许删除.");
+            return R.error("菜单已分配,不允许删除..");
         }
         return R.ok(menuService.deleteMenuById(menuId));
     }

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Main test execution script for API testing framework
-Automatically detects API changes, generates tests, executes them, and sends reports
+API自动化测试框架主程序
+自动检测API变更、生成测试用例、执行测试并发送报告
 """
 
 import os
@@ -21,9 +21,11 @@ load_dotenv(Path(__file__).parent / ".env")
 from utils.test_generator import TestCaseGenerator
 from utils.wechat_notifier import WeChatWorkNotifier
 from utils.swagger_client import swagger_client
+from utils.html_report_generator import HTMLReportGenerator
 from config.settings import settings
 from utils.enhanced_impact_analyzer import EnhancedImpactAnalyzer
 from utils.code_change_detector import CodeChangeDetector
+from utils.git_manager import GitManager, get_git_manager
 
 
 logging.basicConfig(
@@ -34,57 +36,84 @@ logger = logging.getLogger(__name__)
 
 
 class TestRunner:
-    """Main test runner class"""
+    """测试运行器主类"""
     
-    def __init__(self, git_repo_path: str = None):
+    def __init__(self, git_repo_path: str = None, auto_pull: bool = None, environment: str = None):
         repo_path = git_repo_path or os.getenv("GIT_REPO_PATH", ".")
         self.test_generator = TestCaseGenerator()
         self.wechat_notifier = WeChatWorkNotifier()
+        self.html_report_generator = HTMLReportGenerator()
         self.test_results = {}
         self.failed_tests_file = Path(__file__).parent / "test-reports" / "failed_tests.json"
         
-        # Initialize enhanced impact analyzer with JCCI
+        # 初始化Git管理器（新增）
+        try:
+            self.git_manager = GitManager(
+                repo_path=repo_path,
+                environment=environment or os.getenv("ENVIRONMENT", "test")
+            )
+            logger.info(f"Git管理器初始化成功 (环境: {self.git_manager.environment.value})")
+            
+            # 如果启用自动拉取或通过参数指定，则执行自动拉取
+            should_auto_pull = auto_pull if auto_pull is not None else (
+                os.getenv("GIT_AUTO_PULL", "false").lower() == "true"
+            )
+            
+            if should_auto_pull:
+                logger.info("🤖 检测到自动拉取模式，开始执行...")
+                success, message = self.git_manager.auto_pull_if_configured()
+                if not success:
+                    logger.warning(f"⚠️ 自动拉取部分失败:\n{message}")
+                    # 不阻塞测试流程，仅记录警告
+                else:
+                    logger.info(f"✅ 自动拉取成功完成")
+                    
+        except Exception as e:
+            logger.warning(f"Git管理器初始化失败: {e}，将使用基础Git功能")
+            self.git_manager = None
+        
+        # 初始化增强版影响分析器（基于JCCI框架）
         try:
             self.enhanced_analyzer = EnhancedImpactAnalyzer(repo_path, repo_path)
             self.code_change_detector = CodeChangeDetector(repo_path, repo_path)
-            logger.info("Enhanced impact analyzer initialized successfully with JCCI framework")
+            logger.info("增强版影响分析器初始化成功（基于JCCI框架）")
         except Exception as e:
-            logger.warning(f"Failed to initialize enhanced analyzer: {e}")
+            logger.warning(f"增强版分析器初始化失败: {e}")
             self.enhanced_analyzer = None
             self.code_change_detector = None
     
     def run(self, commit_range: str = "HEAD~1..HEAD") -> bool:
-        """Run the complete testing workflow"""
-        logger.info("Starting API testing workflow")
+        """执行完整的测试工作流程"""
+        logger.info("开始API自动化测试工作流程")
         
         try:
-            logger.info("Step 1: Detecting API changes")
+            logger.info("步骤1: 检测API变更")
             changes = self.detect_changes(commit_range)
             
             if not changes['affected_endpoints']:
-                logger.info("No API changes detected, skipping test generation")
+                logger.info("未检测到API接口变更，跳过测试生成")
                 self.wechat_notifier.send_simple_message(
                     "API测试报告",
                     "✅ 本次提交未检测到API接口变更，跳过冒烟测试"
                 )
                 return True
             
-            logger.info("Step 2: Generating test cases")
+            logger.info("步骤2: 生成测试用例")
             test_file = self.generate_tests(changes['affected_endpoints'])
             
-            logger.info("Step 3: Executing tests")
+            logger.info("步骤3: 执行测试")
             test_results = self.execute_tests(test_file)
             
-            logger.info("Step 4: Generating reports")
+            logger.info("步骤4: 生成报告")
             self.generate_html_report(test_results, changes)
             
-            logger.info("Step 5: Sending notifications")
+            logger.info("步骤5: 发送通知")
             self.send_notifications(test_results, changes)
             
             return test_results.get('failed_tests', 0) == 0
             
         except Exception as e:
-            logger.error(f"Test workflow failed: {e}")
+            logger.error(f"测试工作流程执行失败: {e}")
             self.wechat_notifier.send_simple_message(
                 "API测试报告 - 执行失败",
                 f"❌ 测试执行失败: {str(e)}"
@@ -92,35 +121,35 @@ class TestRunner:
             return False
     
     def detect_changes(self, commit_range: str) -> dict:
-        """Detect API changes in the specified commit range using JCCI enhanced analyzer"""
+        """使用JCCI增强版分析器检测指定提交范围内的API变更"""
         if self.enhanced_analyzer:
             try:
-                logger.info("Using enhanced impact analyzer with JCCI framework")
+                logger.info("使用JCCI增强版影响分析器进行变更检测")
                 
-                # Get affected endpoints from enhanced analyzer
+                # 从增强版分析器获取受影响的接口
                 affected_endpoints = self.enhanced_analyzer.get_affected_endpoints_for_testing(commit_range)
                 
-                # Get change summary
+                # 获取变更摘要
                 change_summary = self.enhanced_analyzer.get_change_summary(commit_range)
                 
-                # Get changed files from code change detector
+                # 从代码变更检测器获取变更文件列表
                 changed_files = []
                 if self.code_change_detector:
                     changed_files = self.code_change_detector.get_changed_files(commit_range)
                 
-                logger.info(f"JCCI analysis detected {len(affected_endpoints)} affected endpoints")
+                logger.info(f"JCCI分析检测到 {len(affected_endpoints)} 个受影响的接口")
                 for endpoint in affected_endpoints:
-                    logger.info(f"  - {endpoint['method']} {endpoint['path']} (impact: {endpoint['impact_type']}, confidence: {endpoint['confidence']:.2f})")
+                    logger.info(f"  - {endpoint['method']} {endpoint['path']} (影响类型: {endpoint['impact_type']}, 置信度: {endpoint['confidence']:.2f})")
                 
-                # Save detailed analysis report
+                # 保存详细分析报告
                 try:
                     reports_dir = Path(__file__).parent / "test-reports"
                     reports_dir.mkdir(parents=True, exist_ok=True)
                     analysis_file = reports_dir / "impact_analysis.json"
                     self.enhanced_analyzer.save_analysis_report(str(analysis_file), commit_range)
-                    logger.info(f"Detailed analysis saved to {analysis_file}")
+                    logger.info(f"详细分析报告已保存至 {analysis_file}")
                 except Exception as e:
-                    logger.warning(f"Failed to save analysis report: {e}")
+                    logger.warning(f"保存分析报告失败: {e}")
                 
                 return {
                     'changed_files': changed_files,
@@ -128,14 +157,14 @@ class TestRunner:
                     'change_summary': change_summary
                 }
             except Exception as e:
-                logger.error(f"Enhanced analyzer failed: {e}")
+                logger.error(f"增强版分析器执行失败: {e}")
                 return {
                     'changed_files': [],
                     'affected_endpoints': [],
                     'change_summary': {}
                 }
         
-        logger.warning("Enhanced analyzer not available")
+        logger.warning("增强版分析器不可用")
         return {
             'changed_files': [],
             'affected_endpoints': [],
@@ -143,17 +172,17 @@ class TestRunner:
         }
     
     def generate_tests(self, endpoints: list) -> str:
-        """Generate test cases for affected endpoints"""
+        """为受影响的接口生成测试用例"""
         tests_dir = Path(__file__).parent / "tests" / "generated"
         tests_dir.mkdir(parents=True, exist_ok=True)
         
-        # Clean old test files
+        # 清理旧的测试文件
         self._clean_old_test_files(tests_dir)
         
-        # Load failed test cases from last run
+        # 加载上次运行失败的测试用例
         failed_endpoints = self._load_failed_tests()
         
-        # Merge current endpoints with failed endpoints (avoid duplicates)
+        # 合并当前接口与失败接口（去重）
         all_endpoints = []
         endpoint_set = set()
         
@@ -169,7 +198,7 @@ class TestRunner:
                 endpoint_set.add(endpoint_key)
                 all_endpoints.append(endpoint)
         
-        logger.info(f"Generating tests for {len(endpoints)} new endpoints + {len(failed_endpoints)} failed endpoints = {len(all_endpoints)} total")
+        logger.info(f"正在为 {len(endpoints)} 个新接口 + {len(failed_endpoints)} 个失败接口 = 共 {len(all_endpoints)} 个接口生成测试")
         
         test_cases = self.test_generator.generate_test_cases(all_endpoints)
         
@@ -181,7 +210,7 @@ class TestRunner:
         return str(test_file)
     
     def execute_tests(self, test_file: str) -> dict:
-        """Execute the generated tests using pytest"""
+        """使用pytest执行生成的测试"""
         cmd = [
             "pytest",
             test_file,
@@ -189,36 +218,36 @@ class TestRunner:
             "--tb=long"
         ]
         
-        logger.info(f"Executing: {' '.join(cmd)}")
+        logger.info(f"执行命令: {' '.join(cmd)}")
         
         try:
             result = subprocess.run(cmd, capture_output=True, text=True)
             test_results = self._parse_test_results(result)
             
-            logger.info(f"Test execution completed:")
-            logger.info(f"  - Total: {test_results['total_tests']}")
-            logger.info(f"  - Passed: {test_results['passed_tests']}")
-            logger.info(f"  - Failed: {test_results['failed_tests']}")
-            logger.info(f"  - Skipped: {test_results['skipped_tests']}")
+            logger.info(f"测试执行完成:")
+            logger.info(f"  - 总数: {test_results['total_tests']}")
+            logger.info(f"  - 通过: {test_results['passed_tests']}")
+            logger.info(f"  - 失败: {test_results['failed_tests']}")
+            logger.info(f"  - 跳过: {test_results['skipped_tests']}")
             
-            # Save failed test cases for next run
+            # 保存失败的测试用例供下次运行使用
             self._save_failed_tests(test_results)
             
             return test_results
             
         except Exception as e:
-            logger.error(f"Test execution failed: {e}")
+            logger.error(f"测试执行失败: {e}")
             return {
                 'total_tests': 0,
                 'passed_tests': 0,
                 'failed_tests': 0,
                 'skipped_tests': 0,
-                'failed_details': [{'name': 'Execution Error', 'error': str(e)}],
+                'failed_details': [{'name': '执行错误', 'error': str(e)}],
                 'test_details': []
             }
     
     def _parse_test_results(self, result: subprocess.CompletedProcess) -> dict:
-        """Parse pytest output to extract test results with detailed info"""
+        """解析pytest输出，提取详细的测试结果"""
         output = result.stdout + result.stderr
         
         total_tests = 0
@@ -226,15 +255,15 @@ class TestRunner:
         failed_tests = 0
         skipped_tests = 0
         
-        # Use dict to avoid duplicates
+        # 使用字典避免重复
         test_details_dict = {}
         failed_details_dict = {}
         passed_details_dict = {}
         
-        # Extract test data from test file for request parameters
+        # 从测试文件中提取请求数据用于获取请求参数
         test_data_map = self._extract_test_data_from_file()
         
-        # Parse summary from output
+        # 从输出中解析汇总信息
         lines = output.split('\n')
         for line in lines:
             if 'passed' in line.lower() or 'failed' in line.lower() or 'skipped' in line.lower():
@@ -351,7 +380,7 @@ class TestRunner:
                             'path': test_info.get('path', 'N/A')
                         }
             
-            # Detect passed/failed tests from test session output (like tests/file.py::test_name PASSED)
+            # 从测试会话输出中检测通过/失败的测试（如 tests/file.py::test_name PASSED）
             if (' PASSED' in line or ' FAILED' in line) and '::' in line and 'test_' in line:
                 parts = line.split('::')
                 if len(parts) >= 2:
@@ -371,14 +400,14 @@ class TestRunner:
                     if status == 'PASSED':
                         passed_details_dict[test_name] = test_detail
         
-        # Assign error messages to failed tests
+        # 为失败的测试分配错误信息
         for test_name, fail in failed_details_dict.items():
             if test_name in error_messages:
                 fail['error'] = error_messages[test_name]
             elif not fail['error']:
                 fail['error'] = '连接超时或服务器未响应'
         
-        # Load stored responses from file
+        # 从文件加载存储的响应数据
         responses_file = Path(__file__).parent / "test-reports" / "responses.json"
         stored_responses = {}
         if responses_file.exists():
@@ -388,7 +417,7 @@ class TestRunner:
             except Exception as e:
                 logger.warning(f"Failed to load responses: {e}")
         
-        # Update test details with actual responses
+        # 用实际响应数据更新测试详情
         for test_name, detail in test_details_dict.items():
             if test_name in stored_responses:
                 resp_data = stored_responses[test_name]
@@ -396,7 +425,7 @@ class TestRunner:
                 if 'request_params' in resp_data:
                     detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
         
-        # Update passed details with actual responses
+        # 用实际响应数据更新通过的测试详情
         for test_name, detail in passed_details_dict.items():
             if test_name in stored_responses:
                 resp_data = stored_responses[test_name]
@@ -404,7 +433,7 @@ class TestRunner:
                 if 'request_params' in resp_data:
                     detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
         
-        # Update failed details with actual responses
+        # 用实际响应数据更新失败的测试详情
         for test_name, detail in failed_details_dict.items():
             if test_name in stored_responses:
                 resp_data = stored_responses[test_name]
@@ -412,18 +441,18 @@ class TestRunner:
                 if 'request_params' in resp_data:
                     detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
         
-        # Convert dicts to lists
+        # 将字典转换为列表
         test_details = list(test_details_dict.values())
         failed_details = list(failed_details_dict.values())
         passed_details = list(passed_details_dict.values())
         
-        # Use actual counts from parsed details instead of summary line
+        # 使用从解析详情中获取的实际数量，而不是汇总行
         actual_total = len(test_details)
         actual_passed = len(passed_details)
         actual_failed = len(failed_details)
         actual_skipped = total_tests - actual_passed - actual_failed if total_tests > 0 else 0
         
-        # If no details were parsed but we have counts from summary, use summary counts
+        # 如果没有解析到详情但有汇总数量，则使用汇总数量
         if actual_total == 0 and total_tests > 0:
             logger.warning("No test details parsed, using summary counts")
             actual_total = total_tests
@@ -431,7 +460,7 @@ class TestRunner:
             actual_failed = failed_tests
             actual_skipped = skipped_tests
         else:
-            # Use actual parsed counts
+            # 使用实际解析的数量
             total_tests = actual_total
             passed_tests = actual_passed
             failed_tests = actual_failed
@@ -449,11 +478,11 @@ class TestRunner:
         }
     
     def _extract_test_data_from_file(self) -> dict:
-        """Extract test data from the generated test file"""
+        """从生成的测试文件中提取测试数据"""
         test_data_map = {}
         
         try:
-            # Find the latest generated test file
+            # 查找最新生成的测试文件
             tests_dir = Path(__file__).parent / "tests" / "generated"
             test_files = list(tests_dir.glob("test_generated_*.py"))
             
@@ -465,15 +494,15 @@ class TestRunner:
             with open(latest_file, 'r', encoding='utf-8') as f:
                 content = f.read()
             
-            # Parse test functions to extract request data
+            # 解析测试函数以提取请求数据
             import re
             
-            # Find all test functions - improved pattern
+            # 查找所有测试函数 - 改进的正则表达式模式
             test_pattern = r'def\s+(test_\w+)\s*\(\s*\)\s*:\s*"""(.*?)"""(.*?)\n\n\n|def\s+(test_\w+)\s*\(\s*\)\s*:\s*"""(.*?)"""(.*?)\Z'
             matches = re.findall(test_pattern, content, re.DOTALL)
             
             for match in matches:
-                # Handle both pattern groups
+                # 处理两种模式匹配组
                 if match[0]:  # First pattern matched
                     test_name = match[0]
                     docstring = match[1]
@@ -483,18 +512,18 @@ class TestRunner:
                     docstring = match[4]
                     func_body = match[5]
                 
-                # Extract method and path from docstring
+                # 从文档字符串中提取方法和路径
                 method_match = re.search(r'(get|post|put|delete|patch).*?(/\S+)', docstring.lower())
                 method = method_match.group(1).upper() if method_match else 'GET'
                 path = method_match.group(2) if method_match else '/'
                 
-                # Extract data parameter from api_client call
-                # Look for data={...} in the function body
+                # 从api_client调用中提取data参数
+                # 在函数体中查找 data={...}
                 data_match = re.search(r'api_client\.\w+\s*\(\s*[\'"][^\'"]+[\'"]\s*,\s*data\s*=\s*(\{[^}]+\})', func_body)
                 if data_match:
                     request_params = data_match.group(1)
                 else:
-                    # Fallback to test_data variable
+                    # 回退到test_data变量
                     test_data_match = re.search(r'test_data\s*=\s*(\{[^}]*\})', func_body)
                     request_params = test_data_match.group(1) if test_data_match else '{}'
                 
@@ -502,7 +531,7 @@ class TestRunner:
                     'method': method,
                     'path': path,
                     'request_params': request_params,
-                    'response': '待获取'  # Will be populated during actual test execution
+                    'response': '待获取'  # 将在实际测试执行时填充
                 }
         
         except Exception as e:
@@ -510,640 +539,69 @@ class TestRunner:
         
         return test_data_map
     
-    def generate_html_report(self, test_results: dict, changes: dict):
-        """Generate a beautiful HTML test report"""
-        reports_dir = Path(__file__).parent / "test-reports"
-        reports_dir.mkdir(parents=True, exist_ok=True)
-        report_path = reports_dir / "test-report.html"
+    def generate_html_report(self, test_results: dict, changes: dict) -> str:
+        """生成美观的HTML测试报告"""
+        return self.html_report_generator.generate(test_results, changes)
+    
+    def _generate_report_image(self, report_path: str = None) -> str:
+        """将HTML报告转换为图片用于企业微信通知
         
-        pass_rate = 0
-        if test_results['total_tests'] > 0:
-            pass_rate = (test_results['passed_tests'] / test_results['total_tests']) * 100
-        
-        status_color = "#10b981" if test_results['failed_tests'] == 0 else "#ef4444"
-        status_text = "✅ 全部通过" if test_results['failed_tests'] == 0 else "❌ 存在失败"
-        
-        test_details_rows = ""
-        for detail in test_results.get('test_details', []):
-            row_status = "passed" if detail['status'] == 'PASSED' else "failed"
-            row_icon = "✅" if detail['status'] == 'PASSED' else "❌"
-            method = detail.get('method', 'N/A')
-            method_class = f"method-{method.lower()}" if method != 'N/A' else ""
-            test_details_rows += f"""
-                <tr class="{row_status}">
-                    <td>{row_icon}</td>
-                    <td>{detail['name']}</td>
-                    <td><span class="method-badge {method_class}">{method}</span></td>
-                    <td class="status-{row_status}">{detail['status']}</td>
-                </tr>
-            """
-        
-        if not test_details_rows:
-            test_details_rows = "<tr><td colspan='4' style='text-align:center;color:#888;'>暂无测试详情</td></tr>"
-        
-        # Generate failed details with request/response info
-        failed_rows = ""
-        for idx, fail in enumerate(test_results.get('failed_details', [])):
-            error_msg = fail.get('error', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
-            request_params = fail.get('request_params', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
-            response = fail.get('response', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
-            method = fail.get('method', 'N/A')
-            path = fail.get('path', 'N/A')
-            method_class = f"method-{method.lower()}" if method != 'N/A' else ""
+        参数:
+            report_path: HTML报告文件路径（可选，未提供时使用默认值）
             
-            failed_rows += f"""
-                <tr class="failed-detail">
-                    <td>❌</td>
-                    <td>
-                        <div><strong>{fail['name']}</strong></div>
-                        <div style="color:#888;font-size:0.85em;margin-top:5px;">{path}</div>
-                    </td>
-                    <td><span class="method-badge {method_class}">{method}</span></td>
-                    <td>
-                        <button class="error-btn" onclick="toggleError('fail-{idx}')">查看详情</button>
-                        <div id="error-fail-{idx}" class="error-detail">
-                            <div style="margin-bottom:10px;"><strong style="color:#ef4444;">❌ 错误信息:</strong></div>
-                            <div style="background:rgba(239,68,68,0.1);padding:10px;border-radius:5px;margin-bottom:15px;">{error_msg}</div>
-                            
-                            <div style="margin-bottom:10px;"><strong style="color:#00d9ff;">📤 请求参数:</strong></div>
-                            <div style="background:rgba(0,217,255,0.1);padding:10px;border-radius:5px;margin-bottom:15px;font-family:monospace;">{request_params}</div>
-                            
-                            <div style="margin-bottom:10px;"><strong style="color:#10b981;">📥 返回结果:</strong></div>
-                            <div style="background:rgba(16,185,129,0.1);padding:10px;border-radius:5px;font-family:monospace;">{response}</div>
-                        </div>
-                    </td>
-                </tr>
-            """
-        
-        if not failed_rows:
-            failed_rows = "<tr><td colspan='4' style='text-align:center;color:#10b981;'>🎉 无失败用例</td></tr>"
-        
-        # Generate passed details with request/response info
-        passed_rows = ""
-        for idx, passed in enumerate(test_results.get('passed_details', [])):
-            request_params = passed.get('request_params', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
-            response = passed.get('response', 'N/A').replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
-            method = passed.get('method', 'N/A')
-            path = passed.get('path', 'N/A')
-            method_class = f"method-{method.lower()}" if method != 'N/A' else ""
-            
-            passed_rows += f"""
-                <tr class="passed-detail">
-                    <td>✅</td>
-                    <td>
-                        <div><strong>{passed['name']}</strong></div>
-                        <div style="color:#888;font-size:0.85em;margin-top:5px;">{path}</div>
-                    </td>
-                    <td><span class="method-badge {method_class}">{method}</span></td>
-                    <td>
-                        <button class="success-btn" onclick="toggleError('pass-{idx}')">查看详情</button>
-                        <div id="error-pass-{idx}" class="success-detail">
-                            <div style="margin-bottom:10px;"><strong style="color:#00d9ff;">📤 请求参数:</strong></div>
-                            <div style="background:rgba(0,217,255,0.1);padding:10px;border-radius:5px;margin-bottom:15px;font-family:monospace;">{request_params}</div>
-                            
-                            <div style="margin-bottom:10px;"><strong style="color:#10b981;">📥 返回结果:</strong></div>
-                            <div style="background:rgba(16,185,129,0.1);padding:10px;border-radius:5px;font-family:monospace;">{response}</div>
-                        </div>
-                    </td>
-                </tr>
-            """
-        
-        if not passed_rows:
-            passed_rows = "<tr><td colspan='4' style='text-align:center;color:#888;'>暂无成功用例</td></tr>"
-        
-        def get_real_path_from_swagger(path: str, method: str) -> str:
-            real_path = swagger_client.get_real_path(path, method)
-            if real_path and real_path != path:
-                import re
-                real_path = re.sub(r'\{[^}]+\}', '1', real_path)
-                return real_path
-            import re
-            return re.sub(r'\{[^}]+\}', '1', path)
-        
-        endpoint_rows = ""
-        
-        # Generate impact analysis section
-        impact_analysis_html = ""
-        if 'change_summary' in changes:
-            summary = changes['change_summary']
-            
-            impact_analysis_html = f"""
-        <div class="section">
-            <h2>🔍 影响分析详情</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
-                <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
-                    <div style="font-size: 2em; color: #00d9ff; font-weight: bold;">{summary.get('total_files_changed', 0)}</div>
-                    <div style="color: #888; font-size: 0.9em;">变更文件</div>
-                </div>
-                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
-                    <div style="font-size: 2em; color: #10b981; font-weight: bold;">{summary.get('added_methods', 0)}</div>
-                    <div style="color: #888; font-size: 0.9em;">新增方法</div>
-                </div>
-                <div style="background: rgba(245, 158, 11, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
-                    <div style="font-size: 2em; color: #f59e0b; font-weight: bold;">{summary.get('modified_methods', 0)}</div>
-                    <div style="color: #888; font-size: 0.9em;">修改方法</div>
-                </div>
-                <div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
-                    <div style="font-size: 2em; color: #ef4444; font-weight: bold;">{summary.get('deleted_methods', 0)}</div>
-                    <div style="color: #888; font-size: 0.9em;">删除方法</div>
-                </div>
-            </div>
+        返回:
+            str: 生成的图片文件路径，如果转换失败则返回None
         """
-            
-            # Add file-level changes
-            if 'files' in summary and summary['files']:
-                impact_analysis_html += """
-            <h3 style="margin-top: 20px; margin-bottom: 15px; color: #00d9ff;">📁 文件变更详情</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>文件路径</th>
-                        <th style="width: 150px;">新增</th>
-                        <th style="width: 150px;">修改</th>
-                        <th style="width: 150px;">删除</th>
-                    </tr>
-                </thead>
-                <tbody>
-            """
-                
-                for file_path, file_changes in summary['files'].items():
-                    added = ', '.join(file_changes['added']) if file_changes['added'] else '-'
-                    modified = ', '.join(file_changes['modified']) if file_changes['modified'] else '-'
-                    deleted = ', '.join(file_changes['deleted']) if file_changes['deleted'] else '-'
-                    
-                    impact_analysis_html += f"""
-                    <tr>
-                        <td style="font-family: monospace; font-size: 0.9em;">{file_path}</td>
-                        <td style="color: #10b981;">{added}</td>
-                        <td style="color: #f59e0b;">{modified}</td>
-                        <td style="color: #ef4444;">{deleted}</td>
-                    </tr>
-                    """
-                
-                impact_analysis_html += """
-                </tbody>
-            </table>
-            """
-            
-            impact_analysis_html += """
-        </div>
-            """
+        from utils.html_to_image import HTMLToImageConverter, FallbackImageGenerator
         
-        # Generate endpoint impact details
-        endpoint_impact_html = ""
-        processed_endpoints = set()
-        for ep in changes.get('affected_endpoints', []):
-            endpoint_key = f"{ep['method']} {ep['path']}"
-            if endpoint_key in processed_endpoints:
-                continue
-            processed_endpoints.add(endpoint_key)
+        try:
+            if report_path is None:
+                report_path = self.reports_dir / "test-report.html"
             
-            impact_type = ep.get('impact_type', 'unknown')
-            confidence = ep.get('confidence', 0)
+            report_path = Path(report_path)
             
-            if impact_type == 'direct_impact':
-                impact_color = "#10b981"
-                impact_text = "直接影响"
-            elif impact_type == 'service_dependency':
-                impact_color = "#f59e0b"
-                impact_text = "服务依赖"
-            elif impact_type == 'method_or_class_dependency':
-                impact_color = "#3b82f6"
-                impact_text = "方法或类依赖"
+            if not report_path.exists():
+                logger.warning(f"HTML report not found: {report_path}")
+                return None
+            
+            # 生成截图
+            image_path = report_path.with_suffix('.png')
+            
+            converter = HTMLToImageConverter()
+            converter.convert_to_image(report_path, image_path)
+            
+            if image_path.exists():
+                logger.info(f"Report screenshot generated: {image_path}")
+                return str(image_path)
             else:
-                impact_color = "#8b5cf6"
-                impact_text = "间接影响"
+                logger.warning("截图生成失败")
+                
+                # 尝试回退方案
+                return None
+                
+        except Exception as e:
+            logger.error(f"Failed to generate report image: {e}")
             
-            real_path = get_real_path_from_swagger(ep['path'], ep['method'])
-            endpoint_rows += f"""
-                <tr>
-                    <td><span class="method-badge method-{ep['method'].lower()}">{ep['method']}</span></td>
-                    <td>{real_path}</td>
-                    <td style="color: {impact_color}; font-weight: bold;">{impact_text}</td>
-                    <td>{confidence:.0%}</td>
-                </tr>
-            """
-        
-        if not endpoint_rows:
-            endpoint_rows = "<tr><td colspan='4' style='text-align:center;color:#888;'>暂无变更接口</td></tr>"
-        
-        html_content = f"""<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API 测试报告</title>
-    <style>
-        * {{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }}
-        
-        body {{
-            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            color: #fff;
-            padding: 20px;
-        }}
-        
-        .container {{
-            max-width: 1200px;
-            margin: 0 auto;
-        }}
-        
-        .header {{
-            text-align: center;
-            padding: 40px 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }}
-        
-        .header h1 {{
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #00d9ff, #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }}
-        
-        .header .status {{
-            font-size: 1.3em;
-            color: {status_color};
-            margin-top: 15px;
-        }}
-        
-        .header .timestamp {{
-            color: #888;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }}
-        
-        .stats-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }}
-        
-        .stat-card {{
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }}
-        
-        .stat-card:hover {{
-            transform: translateY(-5px);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }}
-        
-        .stat-card .number {{
-            font-size: 3em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }}
-        
-        .stat-card .label {{
-            color: #888;
-            font-size: 1em;
-        }}
-        
-        .stat-card.total .number {{ color: #00d9ff; }}
-        .stat-card.passed .number {{ color: #10b981; }}
-        .stat-card.failed .number {{ color: #ef4444; }}
-        .stat-card.skipped .number {{ color: #f59e0b; }}
-        .stat-card.rate .number {{ color: #8b5cf6; }}
-        
-        .progress-container {{
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            height: 30px;
-            margin: 30px 0;
-            overflow: hidden;
-            position: relative;
-        }}
-        
-        .progress-bar {{
-            height: 100%;
-            background: linear-gradient(90deg, #10b981, #00ff88);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #fff;
-        }}
-        
-        .section {{
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }}
-        
-        .section h2 {{
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }}
-        
-        .section h2::before {{
-            content: '';
-            width: 4px;
-            height: 24px;
-            background: linear-gradient(180deg, #00d9ff, #00ff88);
-            border-radius: 2px;
-        }}
-        
-        table {{
-            width: 100%;
-            border-collapse: collapse;
-        }}
-        
-        th, td {{
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }}
-        
-        th {{
-            background: rgba(255,255,255,0.05);
-            font-weight: 600;
-            color: #00d9ff;
-        }}
-        
-        tr:hover {{
-            background: rgba(255,255,255,0.03);
-        }}
-        
-        .method-badge {{
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 5px;
-            font-size: 0.85em;
-            font-weight: bold;
-            text-transform: uppercase;
-        }}
-        
-        .method-get {{ background: #10b981; }}
-        .method-post {{ background: #3b82f6; }}
-        .method-put {{ background: #f59e0b; }}
-        .method-delete {{ background: #ef4444; }}
-        .method-patch {{ background: #8b5cf6; }}
-        
-        .status-PASSED {{ color: #10b981; font-weight: bold; }}
-        .status-FAILED {{ color: #ef4444; font-weight: bold; }}
-        
-        tr.passed {{ background: rgba(16, 185, 129, 0.1); }}
-        tr.failed {{ background: rgba(239, 68, 68, 0.1); }}
-        
-        .error-btn {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85em;
-            transition: all 0.3s ease;
-        }}
-        
-        .error-btn:hover {{
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }}
-        
-        .error-detail {{
-            display: none;
-            margin-top: 10px;
-            padding: 15px;
-            background: rgba(239, 68, 68, 0.1);
-            border-radius: 8px;
-            border-left: 4px solid #ef4444;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.85em;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 400px;
-            overflow-y: auto;
-        }}
-        
-        .error-detail.show {{
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }}
-        
-        .success-btn {{
-            background: linear-gradient(135deg, #10b981 0%, #00ff88 100%);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85em;
-            transition: all 0.3s ease;
-        }}
-        
-        .success-btn:hover {{
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
-        }}
-        
-        .success-detail {{
-            display: none;
-            margin-top: 10px;
-            padding: 15px;
-            background: rgba(16, 185, 129, 0.1);
-            border-radius: 8px;
-            border-left: 4px solid #10b981;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.85em;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 400px;
-            overflow-y: auto;
-        }}
-        
-        .success-detail.show {{
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }}
-        
-        tr.passed-detail {{ background: rgba(16, 185, 129, 0.05); }}
-        tr.failed-detail {{ background: rgba(239, 68, 68, 0.05); }}
-        
-        @keyframes fadeIn {{
-            from {{ opacity: 0; transform: translateY(-10px); }}
-            to {{ opacity: 1; transform: translateY(0); }}
-        }}
-        
-        .footer {{
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            font-size: 0.9em;
-        }}
-        
-        @keyframes pulse {{
-            0%, 100% {{ opacity: 1; }}
-            50% {{ opacity: 0.5; }}
-        }}
-        
-        .animate-pulse {{
-            animation: pulse 2s infinite;
-        }}
-    </style>
-    <script>
-        function toggleError(idx) {{
-            var el = document.getElementById('error-' + idx);
-            var btn = el.previousElementSibling;
-            if (el.classList.contains('show')) {{
-                el.classList.remove('show');
-                btn.textContent = '查看详情';
-            }} else {{
-                el.classList.add('show');
-                btn.textContent = '收起详情';
-            }}
-        }}
-    </script>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🚀 API 测试报告</h1>
-            <div class="status">{status_text}</div>
-            <div class="timestamp">生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>
-        </div>
-        
-        <div class="stats-grid">
-            <div class="stat-card total">
-                <div class="number">{test_results['total_tests']}</div>
-                <div class="label">📊 总用例数</div>
-            </div>
-            <div class="stat-card passed">
-                <div class="number">{test_results['passed_tests']}</div>
-                <div class="label">✅ 通过</div>
-            </div>
-            <div class="stat-card failed">
-                <div class="number">{test_results['failed_tests']}</div>
-                <div class="label">❌ 失败</div>
-            </div>
-            <div class="stat-card skipped">
-                <div class="number">{test_results['skipped_tests']}</div>
-                <div class="label">⏭️ 跳过</div>
-            </div>
-            <div class="stat-card rate">
-                <div class="number">{pass_rate:.1f}%</div>
-                <div class="label">📈 通过率</div>
-            </div>
-        </div>
-        
-        <div class="progress-container">
-            <div class="progress-bar" style="width: {pass_rate}%;">
-                {pass_rate:.1f}% 通过率
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>📋 测试详情</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 50px;">状态</th>
-                        <th>测试用例</th>
-                        <th style="width: 100px;">请求方式</th>
-                        <th style="width: 100px;">结果</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {test_details_rows}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="section">
-            <h2>✅ 成功详情</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 50px;">状态</th>
-                        <th>用例名称</th>
-                        <th style="width: 100px;">请求方式</th>
-                        <th>详情</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {passed_rows}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="section">
-            <h2>❌ 失败详情</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 50px;">状态</th>
-                        <th>用例名称</th>
-                        <th style="width: 100px;">请求方式</th>
-                        <th>详情</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {failed_rows}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="section">
-            <h2>🔗 变更接口</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 100px;">方法</th>
-                        <th>路径</th>
-                        <th style="width: 120px;">影响类型</th>
-                        <th style="width: 100px;">置信度</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {endpoint_rows}
-                </tbody>
-            </table>
-        </div>
-        
-        {impact_analysis_html}
-        
-        <div class="footer">
-            <p>Generated by API Test Framework | © 2026</p>
-        </div>
-    </div>
-</body>
-</html>"""
-        
-        with open(report_path, 'w', encoding='utf-8') as f:
-            f.write(html_content)
-        
-        logger.info(f"HTML report generated: {report_path}")
+            # 尝试基于PIL的回退方案
+            try:
+                fallback_image = self.reports_dir / "test-report-fallback.png"
+                result = FallbackImageGenerator.generate_text_report_image(
+                    getattr(self, '_last_test_results', {}), 
+                    fallback_image
+                )
+                if result:
+                    logger.info("生成了基于文本的回退报告图片")
+                    return result
+            except Exception as fallback_err:
+                logger.error(f"Fallback image generation also failed: {fallback_err}")
+            
+            return None
     
     def send_notifications(self, test_results: dict, changes: dict):
-        """Send test results to WeChat Work"""
+        """发送测试结果到企业微信（包含报告截图）"""
+        # 存储测试结果供潜在的回退使用
+        self._last_test_results = test_results.copy()
+        
         test_results.update({
             'changed_files': changes.get('changed_files', []),
             'affected_endpoints': changes.get('affected_endpoints', []),
@@ -1152,15 +610,33 @@ class TestRunner:
             'timestamp': datetime.now().isoformat()
         })
         
-        success = self.wechat_notifier.send_test_report(test_results)
+        # 尝试生成并发送带图片的通知
+        report_image_path = None
+        report_html_path = None
+        
+        # 获取报告路径（从html_report_generator或默认值）
+        reports_dir = Path(__file__).parent / "test-reports"
+        html_report_path = reports_dir / "test-report.html"
+        
+        if html_report_path.exists():
+            logger.info("正在生成报告截图用于通知...")
+            report_image_path = self._generate_report_image(html_report_path)
+            report_html_path = str(html_report_path) if html_report_path.exists() else None
+        
+        # 发送带图片和HTML文件的通知
+        success = self.wechat_notifier.send_test_report(
+            test_results, 
+            report_image_path=report_image_path,
+            report_html_path=report_html_path
+        )
         
         if success:
-            logger.info("Test report sent successfully")
+            logger.info("测试报告发送成功")
         else:
-            logger.warning("Failed to send test report")
+            logger.warning("发送测试报告失败")
     
     def _clean_old_test_files(self, tests_dir: Path):
-        """Clean old test files from previous runs"""
+        """清理之前运行的旧测试文件"""
         try:
             test_files = list(tests_dir.glob("test_generated_*.py"))
             for test_file in test_files:
@@ -1170,7 +646,7 @@ class TestRunner:
             logger.warning(f"Failed to clean old test files: {e}")
     
     def _load_failed_tests(self) -> list:
-        """Load failed test cases from last run"""
+        """加载上次运行的失败测试用例"""
         if not self.failed_tests_file.exists():
             return []
         
@@ -1184,7 +660,7 @@ class TestRunner:
             return []
     
     def _save_failed_tests(self, test_results: dict):
-        """Save failed test cases for next run"""
+        """保存失败测试用例供下次运行使用"""
         failed_endpoints = []
         endpoint_set = set()
         
@@ -1214,16 +690,45 @@ class TestRunner:
 
 
 def main():
-    """Main entry point"""
+    """主入口函数"""
     import argparse
     
-    parser = argparse.ArgumentParser(description='API Test Runner')
+    parser = argparse.ArgumentParser(description='API测试运行器', 
+                                     formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     epilog="""
+使用示例:
+  python run_tests.py                              # 分析最近一次提交
+  python run_tests.py --commit-range HEAD~5..HEAD  # 分析最近5次提交
+  python run_tests.py --branch test-feature main   # 对比test-feature与main分支
+  python run_tests.py --branch feature-xxx origin/main  # 对比本地分支与远程分支
+  
+Git管理功能（新增）:
+  python run_tests.py --auto-pull                  # 自动拉取最新代码
+  python run_tests.py --environment production      # 使用生产环境配置
+  python run_tests.py --branch origin/test-feature origin/main \\
+                   --auto-pull --git-repo-path ./campus-master
+""")
+    
     parser.add_argument('--commit-range', default='HEAD~1..HEAD', 
-                       help='Git commit range to analyze (default: HEAD~1..HEAD)')
+                       help='要分析的Git提交范围（默认: HEAD~1..HEAD）')
+    parser.add_argument('--branch', nargs=2, metavar=('SOURCE', 'TARGET'),
+                       help='比较两个分支（例如: --branch test-feature main）')
     parser.add_argument('--config', default='.env', 
-                       help='Configuration file path (default: .env)')
+                       help='配置文件路径（默认: .env）')
     parser.add_argument('--git-repo-path', default=None,
-                       help='Git repository path to analyze (overrides .env setting)')
+                       help='要分析的Git仓库路径（覆盖.env设置）')
+    
+    # 新增Git管理相关参数
+    parser.add_argument('--auto-pull', action='store_true', default=None,
+                       help='自动拉取最新代码（覆盖.env中的GIT_AUTO_PULL设置）')
+    parser.add_argument('--no-auto-pull', action='store_true',
+                       help='禁用自动拉取（即使.env中GIT_AUTO_PULL=true）')
+    parser.add_argument('--environment', choices=['development', 'test', 'production'],
+                       help='指定运行环境（加载对应的.env.{environment}配置文件）')
+    parser.add_argument('--git-status', action='store_true',
+                       help='显示Git仓库状态信息并退出')
+    parser.add_argument('--force-sync', action='store_true',
+                       help='强制同步到远程状态（git reset --hard，会丢失本地修改！）')
     
     args = parser.parse_args()
     
@@ -1233,8 +738,74 @@ def main():
     if args.git_repo_path:
         os.environ['GIT_REPO_PATH'] = args.git_repo_path
     
-    runner = TestRunner(git_repo_path=args.git_repo_path)
-    success = runner.run(args.commit_range)
+    # 设置环境模式（新增）
+    if args.environment:
+        os.environ['ENVIRONMENT'] = args.environment
+        logger.info(f"🌍 环境模式: {args.environment}")
+        
+        # 加载特定环境的配置文件
+        settings.load_environment_specific(args.environment)
+    
+    # 处理自动拉取参数（新增）
+    auto_pull = None
+    if args.auto_pull:
+        auto_pull = True
+        logger.info("✅ 已启用自动拉取（命令行参数）")
+    elif args.no_auto_pull:
+        auto_pull = False
+        logger.info("❌ 已禁用自动拉取（命令行参数）")
+    
+    # 如果只是查看Git状态，则显示后退出
+    if args.git_status:
+        repo_path = args.git_repo_path or os.getenv("GIT_REPO_PATH", ".")
+        try:
+            git_mgr = GitManager(repo_path=repo_path)
+            git_mgr.print_summary()
+            sys.exit(0)
+        except Exception as e:
+            print(f"❌ 获取Git状态失败: {e}")
+            sys.exit(1)
+    
+    # 处理强制同步参数（新增）
+    if args.force_sync:
+        os.environ['GIT_FORCE_SYNC'] = 'true'
+        logger.warning("⚠️  已启用强制同步模式（将使用git reset --hard）")
+    
+    commit_range = args.commit_range
+    if args.branch:
+        source_branch, target_branch = args.branch
+        commit_range = f"{target_branch}..{source_branch}"
+        logger.info(f"分支对比模式: {source_branch} vs {target_branch}")
+        logger.info(f"转换为提交范围: {commit_range}")
+        
+        is_remote_branch = '/' in source_branch or '/' in target_branch
+        if is_remote_branch:
+            import subprocess
+            repo_path = args.git_repo_path or os.getenv("GIT_REPO_PATH", ".")
+            logger.info(f"检测到远程分支，正在执行 'git fetch' 以更新远程引用...")
+            try:
+                fetch_result = subprocess.run(
+                    ['git', 'fetch', '--all'],
+                    cwd=repo_path,
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+                if fetch_result.returncode == 0:
+                    logger.info(f"Git fetch 执行成功")
+                else:
+                    logger.warning(f"Git fetch 警告: {fetch_result.stderr}")
+            except subprocess.TimeoutExpired:
+                logger.warning("Git fetch 超时（60秒），使用缓存的远程引用")
+            except Exception as e:
+                logger.warning(f"Git fetch 失败: {e}，使用缓存的远程引用")
+    
+    runner = TestRunner(
+        git_repo_path=args.git_repo_path,
+        auto_pull=auto_pull,
+        environment=args.environment
+    )
+    success = runner.run(commit_range)
     
     sys.exit(0 if success else 1)
 
