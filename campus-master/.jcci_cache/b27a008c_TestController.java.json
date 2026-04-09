@@ -1,0 +1,109 @@
+{
+  "file_path": "campus-modular\\src\\main\\java\\com\\oddfar\\campus\\business\\controller\\TestController.java",
+  "package_name": "com.oddfar.campus.business.controller",
+  "class_name": "TestController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.Anonymous",
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.annotation.Log",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.enums.ResBizTypeEnum",
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory",
+    "org.springframework.security.access.prepost.PreAuthorize",
+    "org.springframework.web.bind.annotation.GetMapping",
+    "org.springframework.web.bind.annotation.RequestMapping",
+    "org.springframework.web.bind.annotation.RestController"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "test1": {
+      "method_name": "test1",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 29,
+      "line_end": 34,
+      "body": "    @PreAuthorize(\"@ss.resourceAuth()\")\n    @GetMapping(value = \"/1\", name = \"测试1的接口\")\n    public R test1() {\n\n        return R.ok();\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "TestController.test1",
+        "TestController.resourceAuth",
+        "ss.resourceAuth",
+        "R.ok",
+        "TestController.PreAuthorize",
+        "TestController.ok",
+        "TestController.GetMapping"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/1",
+      "http_method": "GET"
+    },
+    "test2": {
+      "method_name": "test2",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 39,
+      "line_end": 44,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('campus:test')\")\n    @GetMapping(value = \"/2\", name = \"测试2的接口\")\n    public R test2() {\n\n        return R.ok();\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "ss.hasPermi",
+        "R.ok",
+        "TestController.PreAuthorize",
+        "TestController.hasPermi",
+        "TestController.ok",
+        "TestController.test2",
+        "TestController.GetMapping"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/2",
+      "http_method": "GET"
+    },
+    "test3": {
+      "method_name": "test3",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 50,
+      "line_end": 54,
+      "body": "    @GetMapping(value = \"/3\", name = \"测试3的接口\")\n    public R test3() {\n        LOGGER.info(\"执行了test3\");\n        return R.ok();\n    }",
+      "annotations": [
+        "GetMapping"
+      ],
+      "called_methods": [
+        "LOGGER.info",
+        "R.ok",
+        "TestController.ok",
+        "TestController.GetMapping",
+        "TestController.test3",
+        "TestController.info"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/3",
+      "http_method": "GET"
+    }
+  },
+  "annotations": [
+    "RestController",
+    "RequestMapping",
+    "ApiResource",
+    "Log"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 22,
+  "line_end": 57
+}

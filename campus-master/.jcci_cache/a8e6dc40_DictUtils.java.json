@@ -1,0 +1,257 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\DictUtils.java",
+  "package_name": "com.oddfar.campus.common.utils",
+  "class_name": "DictUtils",
+  "imports": [
+    "com.alibaba.fastjson2.JSONArray",
+    "com.oddfar.campus.common.constant.CacheConstants",
+    "com.oddfar.campus.common.core.RedisCache",
+    "com.oddfar.campus.common.domain.entity.SysDictDataEntity",
+    "java.util.Collection",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "setDictCache": {
+      "method_name": "setDictCache",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "key",
+          "annotations": []
+        },
+        {
+          "type": "List<SysDictDataEntity>",
+          "name": "dictDatas",
+          "annotations": []
+        }
+      ],
+      "line_start": 27,
+      "line_end": 29,
+      "body": "    public static void setDictCache(String key, List<SysDictDataEntity> dictDatas) {\n        SpringUtils.getBean(RedisCache.class).setCacheObject(getCacheKey(key), dictDatas);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SpringUtils.getBean",
+        "DictUtils.setDictCache",
+        "DictUtils.getCacheKey",
+        "DictUtils.getBean",
+        "DictUtils.setCacheObject"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getDictCache": {
+      "method_name": "getDictCache",
+      "return_type": "List<SysDictDataEntity>",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "key",
+          "annotations": []
+        }
+      ],
+      "line_start": 37,
+      "line_end": 43,
+      "body": "    public static List<SysDictDataEntity> getDictCache(String key) {\n        JSONArray arrayCache = SpringUtils.getBean(RedisCache.class).getCacheObject(getCacheKey(key));\n        if (StringUtils.isNotNull(arrayCache)) {\n            return arrayCache.toList(SysDictDataEntity.class);\n        }\n        return null;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SpringUtils.getBean",
+        "DictUtils.isNotNull",
+        "DictUtils.getDictCache",
+        "DictUtils.getCacheKey",
+        "DictUtils.getBean",
+        "arrayCache.toList",
+        "StringUtils.isNotNull",
+        "DictUtils.toList",
+        "DictUtils.getCacheObject"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getDictLabel": {
+      "method_name": "getDictLabel",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "dictType",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "dictValue",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "separator",
+          "annotations": []
+        }
+      ],
+      "line_start": 75,
+      "line_end": 98,
+      "body": "    public static String getDictLabel(String dictType, String dictValue, String separator) {\n        StringBuilder propertyString = new StringBuilder();\n        List<SysDictDataEntity> datas = getDictCache(dictType);\n\n        if (StringUtils.isNotNull(datas)) {\n            if (StringUtils.containsAny(separator, dictValue)) {\n                for (SysDictDataEntity dict : datas) {\n                    for (String value : dictValue.split(separator)) {\n                        if (value.equals(dict.getDictValue())) {\n                            propertyString.append(dict.getDictLabel()).append(separator);\n                            break;\n                        }\n                    }\n                }\n            } else {\n                for (SysDictDataEntity dict : datas) {\n                    if (dictValue.equals(dict.getDictValue())) {\n                        return dict.getDictLabel();\n                    }\n                }\n            }\n        }\n        return StringUtils.stripEnd(propertyString.toString(), separator);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DictUtils.getDictLabel",
+        "DictUtils.append",
+        "DictUtils.getDictCache",
+        "dictValue.equals",
+        "StringUtils.stripEnd",
+        "propertyString.append",
+        "DictUtils.equals",
+        "DictUtils.stripEnd",
+        "DictUtils.split",
+        "value.equals",
+        "DictUtils.containsAny",
+        "StringUtils.containsAny",
+        "DictUtils.toString",
+        "dict.getDictValue",
+        "dictValue.split",
+        "DictUtils.isNotNull",
+        "dict.getDictLabel",
+        "DictUtils.getDictValue",
+        "StringUtils.isNotNull",
+        "DictUtils.StringBuilder",
+        "propertyString.toString"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getDictValue": {
+      "method_name": "getDictValue",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "dictType",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "dictLabel",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "separator",
+          "annotations": []
+        }
+      ],
+      "line_start": 108,
+      "line_end": 129,
+      "body": "    public static String getDictValue(String dictType, String dictLabel, String separator) {\n        StringBuilder propertyString = new StringBuilder();\n        List<SysDictDataEntity> datas = getDictCache(dictType);\n\n        if (StringUtils.containsAny(separator, dictLabel) && StringUtils.isNotEmpty(datas)) {\n            for (SysDictDataEntity dict : datas) {\n                for (String label : dictLabel.split(separator)) {\n                    if (label.equals(dict.getDictLabel())) {\n                        propertyString.append(dict.getDictValue()).append(separator);\n                        break;\n                    }\n                }\n            }\n        } else {\n            for (SysDictDataEntity dict : datas) {\n                if (dictLabel.equals(dict.getDictLabel())) {\n                    return dict.getDictValue();\n                }\n            }\n        }\n        return StringUtils.stripEnd(propertyString.toString(), separator);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DictUtils.getDictLabel",
+        "StringUtils.isNotEmpty",
+        "DictUtils.append",
+        "dictLabel.split",
+        "DictUtils.getDictCache",
+        "dictLabel.equals",
+        "StringUtils.stripEnd",
+        "propertyString.append",
+        "DictUtils.equals",
+        "DictUtils.stripEnd",
+        "DictUtils.split",
+        "DictUtils.containsAny",
+        "DictUtils.isNotEmpty",
+        "StringUtils.containsAny",
+        "DictUtils.toString",
+        "dict.getDictValue",
+        "dict.getDictLabel",
+        "DictUtils.getDictValue",
+        "label.equals",
+        "DictUtils.StringBuilder",
+        "propertyString.toString"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "removeDictCache": {
+      "method_name": "removeDictCache",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "key",
+          "annotations": []
+        }
+      ],
+      "line_start": 136,
+      "line_end": 138,
+      "body": "    public static void removeDictCache(String key) {\n        SpringUtils.getBean(RedisCache.class).deleteObject(getCacheKey(key));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SpringUtils.getBean",
+        "DictUtils.getCacheKey",
+        "DictUtils.getBean",
+        "DictUtils.removeDictCache",
+        "DictUtils.deleteObject"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "clearDictCache": {
+      "method_name": "clearDictCache",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 143,
+      "line_end": 146,
+      "body": "    public static void clearDictCache() {\n        Collection<String> keys = SpringUtils.getBean(RedisCache.class).keys(CacheConstants.SYS_DICT_KEY + \"*\");\n        SpringUtils.getBean(RedisCache.class).deleteObject(keys);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SpringUtils.getBean",
+        "DictUtils.clearDictCache",
+        "DictUtils.getBean",
+        "DictUtils.keys",
+        "DictUtils.deleteObject"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getCacheKey": {
+      "method_name": "getCacheKey",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "configKey",
+          "annotations": []
+        }
+      ],
+      "line_start": 154,
+      "line_end": 156,
+      "body": "    public static String getCacheKey(String configKey) {\n        return CacheConstants.SYS_DICT_KEY + configKey;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DictUtils.getCacheKey"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 15,
+  "line_end": 158
+}

@@ -1,0 +1,75 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\web\\WebFrameworkUtils.java",
+  "package_name": "com.oddfar.campus.common.utils.web",
+  "class_name": "WebFrameworkUtils",
+  "imports": [
+    "javax.servlet.ServletRequest",
+    "javax.servlet.http.HttpServletRequest"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "setLoginUserId": {
+      "method_name": "setLoginUserId",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "ServletRequest",
+          "name": "request",
+          "annotations": []
+        },
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 16,
+      "line_end": 18,
+      "body": "    public static void setLoginUserId(ServletRequest request, Long userId) {\n        request.setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID, userId);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "WebFrameworkUtils.setAttribute",
+        "WebFrameworkUtils.setLoginUserId",
+        "request.setAttribute"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getLoginUserId": {
+      "method_name": "getLoginUserId",
+      "return_type": "Long",
+      "parameters": [
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 27,
+      "line_end": 32,
+      "body": "    public static Long getLoginUserId(HttpServletRequest request) {\n        if (request == null) {\n            return null;\n        }\n        return (Long) request.getAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "WebFrameworkUtils.getAttribute",
+        "request.getAttribute",
+        "WebFrameworkUtils.getLoginUserId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 12,
+  "line_end": 34
+}

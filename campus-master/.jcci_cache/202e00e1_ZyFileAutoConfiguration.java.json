@@ -1,0 +1,46 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\file\\ZyFileAutoConfiguration.java",
+  "package_name": "com.oddfar.campus.framework.api.file",
+  "class_name": "ZyFileAutoConfiguration",
+  "imports": [
+    "com.oddfar.campus.framework.api.sysconfig.ConfigExpander",
+    "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean",
+    "org.springframework.context.annotation.Bean",
+    "org.springframework.context.annotation.Configuration"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "fileOperatorApi": {
+      "method_name": "fileOperatorApi",
+      "return_type": "FileOperatorApi",
+      "parameters": [],
+      "line_start": 19,
+      "line_end": 22,
+      "body": "    @ConditionalOnMissingBean(FileOperatorApi.class)\n    public FileOperatorApi fileOperatorApi() {\n        return new LocalFileOperator(ConfigExpander.getFileProfile());\n    }",
+      "annotations": [
+        "ConditionalOnMissingBean"
+      ],
+      "called_methods": [
+        "ZyFileAutoConfiguration.ConditionalOnMissingBean",
+        "ConfigExpander.getFileProfile",
+        "ZyFileAutoConfiguration.fileOperatorApi",
+        "ZyFileAutoConfiguration.LocalFileOperator",
+        "ZyFileAutoConfiguration.getFileProfile"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Configuration"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 13,
+  "line_end": 25
+}

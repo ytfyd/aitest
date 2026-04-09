@@ -1,0 +1,162 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysRegisterController.java",
+  "package_name": "com.oddfar.campus.admin.controller.system",
+  "class_name": "SysRegisterController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.Anonymous",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.domain.model.RegisterBody",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.service.SysConfigService",
+    "com.oddfar.campus.framework.service.SysUserService",
+    "com.oddfar.campus.framework.web.service.SysRegisterService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.web.bind.annotation.GetMapping",
+    "org.springframework.web.bind.annotation.PostMapping",
+    "org.springframework.web.bind.annotation.RequestBody",
+    "org.springframework.web.bind.annotation.RestController"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "registerService": {
+      "field_name": "registerService",
+      "field_type": "SysRegisterService",
+      "line_number": 22,
+      "annotations": [
+        "RestController"
+      ]
+    },
+    "configService": {
+      "field_name": "configService",
+      "field_type": "SysConfigService",
+      "line_number": 25,
+      "annotations": [
+        "RestController",
+        "Autowired"
+      ]
+    },
+    "userService": {
+      "field_name": "userService",
+      "field_type": "SysUserService",
+      "line_number": 28,
+      "annotations": [
+        "RestController",
+        "Autowired",
+        "Autowired"
+      ]
+    }
+  },
+  "methods": {
+    "register": {
+      "method_name": "register",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "RegisterBody",
+          "name": "user",
+          "annotations": [
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 31,
+      "line_end": 38,
+      "body": "    @PostMapping(\"/register\")\n    public R register(@RequestBody RegisterBody user) {\n        if (!(\"true\".equals(configService.selectConfigByKey(\"sys.account.registerUser\")))) {\n            return R.error(\"当前系统没有开启注册功能！\");\n        }\n        String msg = registerService.register(user);\n        return StringUtils.isEmpty(msg) ? R.ok() : R.error(msg);\n    }",
+      "annotations": [
+        "PostMapping"
+      ],
+      "called_methods": [
+        "R.error",
+        "SysRegisterController.error",
+        "SysRegisterController.ok",
+        "SysRegisterService.register",
+        "R.ok",
+        "SysRegisterController.register",
+        "SysRegisterController.selectConfigByKey",
+        "SysRegisterController.equals",
+        "SysRegisterController.isEmpty",
+        "StringUtils.isEmpty",
+        "SysConfigService.selectConfigByKey",
+        "SysRegisterController.PostMapping"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/register",
+      "http_method": "POST"
+    },
+    "userNameUnique": {
+      "method_name": "userNameUnique",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "userName",
+          "annotations": []
+        }
+      ],
+      "line_start": 41,
+      "line_end": 46,
+      "body": "    @GetMapping(\"/userNameUnique\")\n    public R userNameUnique(String userName) {\n        SysUserEntity userEntity = new SysUserEntity();\n        userEntity.setUserName(userName);\n        return R.ok(userService.checkUserNameUnique(userEntity));\n    }",
+      "annotations": [
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysRegisterController.ok",
+        "R.ok",
+        "SysRegisterController.userNameUnique",
+        "SysUserService.checkUserNameUnique",
+        "SysRegisterController.setUserName",
+        "SysRegisterController.checkUserNameUnique",
+        "SysRegisterController.GetMapping",
+        "userEntity.setUserName",
+        "SysRegisterController.SysUserEntity"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/userNameUnique",
+      "http_method": "GET"
+    },
+    "emailUnique": {
+      "method_name": "emailUnique",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "email",
+          "annotations": []
+        }
+      ],
+      "line_start": 49,
+      "line_end": 54,
+      "body": "    @GetMapping(\"/emailUnique\")\n    public R emailUnique(String email) {\n        SysUserEntity userEntity = new SysUserEntity();\n        userEntity.setEmail(email);\n        return R.ok(userService.checkEmailUnique(userEntity));\n    }",
+      "annotations": [
+        "GetMapping"
+      ],
+      "called_methods": [
+        "userEntity.setEmail",
+        "SysRegisterController.ok",
+        "SysRegisterController.checkEmailUnique",
+        "R.ok",
+        "SysRegisterController.emailUnique",
+        "SysRegisterController.setEmail",
+        "SysRegisterController.GetMapping",
+        "SysRegisterController.SysUserEntity",
+        "SysUserService.checkEmailUnique"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/emailUnique",
+      "http_method": "GET"
+    }
+  },
+  "annotations": [
+    "RestController"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 21,
+  "line_end": 57
+}

@@ -1,0 +1,29 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\exception\\UtilException.java",
+  "package_name": "com.oddfar.campus.common.exception",
+  "class_name": "UtilException",
+  "imports": [],
+  "extends": "RuntimeException",
+  "implements": [],
+  "fields": {
+    "serialVersionUID": {
+      "field_name": "serialVersionUID",
+      "field_type": "long",
+      "line_number": [
+        9,
+        26
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    8,
+    8
+  ],
+  "line_end": 0
+}

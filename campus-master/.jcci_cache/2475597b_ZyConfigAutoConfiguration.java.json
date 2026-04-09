@@ -1,0 +1,45 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\sysconfig\\ZyConfigAutoConfiguration.java",
+  "package_name": "com.oddfar.campus.framework.api.sysconfig",
+  "class_name": "ZyConfigAutoConfiguration",
+  "imports": [
+    "com.oddfar.campus.framework.service.SysConfigService",
+    "com.oddfar.campus.framework.service.impl.SysConfigServiceImpl",
+    "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean",
+    "org.springframework.context.annotation.Bean",
+    "org.springframework.context.annotation.Configuration"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "configService": {
+      "method_name": "configService",
+      "return_type": "SysConfigService",
+      "parameters": [],
+      "line_start": 16,
+      "line_end": 19,
+      "body": "    @ConditionalOnMissingBean(SysConfigService.class)\n    public SysConfigService configService() {\n        return new SysConfigServiceImpl();\n    }",
+      "annotations": [
+        "ConditionalOnMissingBean"
+      ],
+      "called_methods": [
+        "ZyConfigAutoConfiguration.configService",
+        "ZyConfigAutoConfiguration.SysConfigServiceImpl",
+        "ZyConfigAutoConfiguration.ConditionalOnMissingBean"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Configuration"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 13,
+  "line_end": 21
+}

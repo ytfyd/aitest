@@ -1,0 +1,130 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\security\\properties\\PermitAllUrlProperties.java",
+  "package_name": "com.oddfar.campus.framework.security.properties",
+  "class_name": "PermitAllUrlProperties",
+  "imports": [
+    "cn.hutool.extra.spring.SpringUtil",
+    "com.oddfar.campus.common.annotation.Anonymous",
+    "org.apache.commons.lang3.RegExUtils",
+    "org.springframework.beans.factory.InitializingBean",
+    "org.springframework.core.annotation.AnnotationUtils",
+    "org.springframework.stereotype.Component",
+    "org.springframework.web.method.HandlerMethod",
+    "org.springframework.web.servlet.mvc.method.RequestMappingInfo",
+    "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping",
+    "java.util.regex.Pattern"
+  ],
+  "extends": null,
+  "implements": [
+    "InitializingBean"
+  ],
+  "fields": {
+    "urls": {
+      "field_name": "urls",
+      "field_type": "List<String>",
+      "line_number": 25,
+      "annotations": [
+        "author",
+        "Component"
+      ]
+    },
+    "ASTERISK": {
+      "field_name": "ASTERISK",
+      "field_type": "String",
+      "line_number": 27,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "afterPropertiesSet": {
+      "method_name": "afterPropertiesSet",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 30,
+      "line_end": 47,
+      "body": "    public void afterPropertiesSet() {\n        RequestMappingHandlerMapping mapping = SpringUtil.getBean(\"requestMappingHandlerMapping\", RequestMappingHandlerMapping.class);\n        Map<RequestMappingInfo, HandlerMethod> map = mapping.getHandlerMethods();\n\n        map.keySet().forEach(info -> {\n            HandlerMethod handlerMethod = map.get(info);\n\n            // 获取方法上边的注解 替代path variable 为 *\n            Anonymous method = AnnotationUtils.findAnnotation(handlerMethod.getMethod(), Anonymous.class);\n            Optional.ofNullable(method).ifPresent(anonymous -> info.getPatternsCondition().getPatterns()\n                    .forEach(url -> urls.add(RegExUtils.replaceAll(url, PATTERN, ASTERISK))));\n\n            // 获取类上边的注解, 替代path variable 为 *\n            Anonymous controller = AnnotationUtils.findAnnotation(handlerMethod.getBeanType(), Anonymous.class);\n            Optional.ofNullable(controller).ifPresent(anonymous -> info.getPatternsCondition().getPatterns()\n                    .forEach(url -> urls.add(RegExUtils.replaceAll(url, PATTERN, ASTERISK))));\n        });\n    }",
+      "annotations": [],
+      "called_methods": [
+        "map.keySet",
+        "Optional.ofNullable",
+        "PermitAllUrlProperties.getBean",
+        "PermitAllUrlProperties.getBeanType",
+        "PermitAllUrlProperties.ifPresent",
+        "PermitAllUrlProperties.getPatterns",
+        "PermitAllUrlProperties.forEach",
+        "handlerMethod.getMethod",
+        "List.add",
+        "SpringUtil.getBean",
+        "AnnotationUtils.findAnnotation",
+        "RegExUtils.replaceAll",
+        "info.getPatternsCondition",
+        "PermitAllUrlProperties.getPatternsCondition",
+        "PermitAllUrlProperties.afterPropertiesSet",
+        "mapping.getHandlerMethods",
+        "PermitAllUrlProperties.getHandlerMethods",
+        "PermitAllUrlProperties.keySet",
+        "map.get",
+        "PermitAllUrlProperties.findAnnotation",
+        "PermitAllUrlProperties.add",
+        "handlerMethod.getBeanType",
+        "PermitAllUrlProperties.ofNullable",
+        "PermitAllUrlProperties.get",
+        "PermitAllUrlProperties.replaceAll",
+        "PermitAllUrlProperties.getMethod"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getUrls": {
+      "method_name": "getUrls",
+      "return_type": "List<String>",
+      "parameters": [],
+      "line_start": 49,
+      "line_end": 51,
+      "body": "    public List<String> getUrls() {\n        return urls;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "PermitAllUrlProperties.getUrls"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setUrls": {
+      "method_name": "setUrls",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "List<String>",
+          "name": "urls",
+          "annotations": []
+        }
+      ],
+      "line_start": 53,
+      "line_end": 55,
+      "body": "    public void setUrls(List<String> urls) {\n        this.urls = urls;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "PermitAllUrlProperties.setUrls"
+      ],
+      "used_fields": [
+        "urls"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 22,
+  "line_end": 57
+}

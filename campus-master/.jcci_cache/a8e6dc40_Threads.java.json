@@ -1,0 +1,120 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\Threads.java",
+  "package_name": "com.oddfar.campus.common.utils",
+  "class_name": "Threads",
+  "imports": [
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "sleep": {
+      "method_name": "sleep",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "long",
+          "name": "milliseconds",
+          "annotations": []
+        }
+      ],
+      "line_start": 19,
+      "line_end": 25,
+      "body": "    public static void sleep(long milliseconds) {\n        try {\n            Thread.sleep(milliseconds);\n        } catch (InterruptedException e) {\n            return;\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Thread.sleep",
+        "Threads.sleep"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "shutdownAndAwaitTermination": {
+      "method_name": "shutdownAndAwaitTermination",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "ExecutorService",
+          "name": "pool",
+          "annotations": []
+        }
+      ],
+      "line_start": 34,
+      "line_end": 49,
+      "body": "    public static void shutdownAndAwaitTermination(ExecutorService pool) {\n        if (pool != null && !pool.isShutdown()) {\n            pool.shutdown();\n            try {\n                if (!pool.awaitTermination(120, TimeUnit.SECONDS)) {\n                    pool.shutdownNow();\n                    if (!pool.awaitTermination(120, TimeUnit.SECONDS)) {\n                        logger.info(\"Pool did not terminate\");\n                    }\n                }\n            } catch (InterruptedException ie) {\n                pool.shutdownNow();\n                Thread.currentThread().interrupt();\n            }\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "pool.shutdown",
+        "Threads.interrupt",
+        "Threads.currentThread",
+        "Threads.info",
+        "Threads.awaitTermination",
+        "Thread.currentThread",
+        "pool.isShutdown",
+        "Threads.shutdownNow",
+        "pool.shutdownNow",
+        "Threads.shutdown",
+        "Threads.shutdownAndAwaitTermination",
+        "Threads.isShutdown",
+        "pool.awaitTermination",
+        "logger.info"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "printException": {
+      "method_name": "printException",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Runnable",
+          "name": "r",
+          "annotations": []
+        },
+        {
+          "type": "Throwable",
+          "name": "t",
+          "annotations": []
+        }
+      ],
+      "line_start": 54,
+      "line_end": 72,
+      "body": "    public static void printException(Runnable r, Throwable t) {\n        if (t == null && r instanceof Future<?>) {\n            try {\n                Future<?> future = (Future<?>) r;\n                if (future.isDone()) {\n                    future.get();\n                }\n            } catch (CancellationException ce) {\n                t = ce;\n            } catch (ExecutionException ee) {\n                t = ee.getCause();\n            } catch (InterruptedException ie) {\n                Thread.currentThread().interrupt();\n            }\n        }\n        if (t != null) {\n            logger.error(t.getMessage(), t);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Threads.printException",
+        "Threads.isDone",
+        "future.get",
+        "Threads.currentThread",
+        "Threads.error",
+        "Thread.currentThread",
+        "Threads.get",
+        "Threads.getMessage",
+        "Threads.getCause",
+        "Threads.interrupt",
+        "logger.error",
+        "future.isDone",
+        "t.getMessage",
+        "ee.getCause"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 13,
+  "line_end": 74
+}

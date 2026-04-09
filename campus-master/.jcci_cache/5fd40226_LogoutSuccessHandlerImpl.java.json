@@ -1,0 +1,161 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\security\\handle\\LogoutSuccessHandlerImpl.java",
+  "package_name": "com.oddfar.campus.framework.security.handle",
+  "class_name": "LogoutSuccessHandlerImpl",
+  "imports": [
+    "cn.hutool.extra.spring.SpringUtil",
+    "com.alibaba.fastjson2.JSON",
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.constant.HttpStatus",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.event.LogininforEvent",
+    "com.oddfar.campus.common.domain.model.LoginUser",
+    "com.oddfar.campus.common.utils.MessageUtils",
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.web.service.TokenService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.context.annotation.Configuration",
+    "org.springframework.security.core.Authentication",
+    "org.springframework.security.web.authentication.logout.LogoutSuccessHandler",
+    "javax.servlet.ServletException",
+    "javax.servlet.http.HttpServletRequest",
+    "javax.servlet.http.HttpServletResponse",
+    "java.io.IOException"
+  ],
+  "extends": null,
+  "implements": [
+    "LogoutSuccessHandler"
+  ],
+  "fields": {
+    "tokenService": {
+      "field_name": "tokenService",
+      "field_type": "TokenService",
+      "line_number": 31,
+      "annotations": [
+        "author",
+        "Configuration"
+      ]
+    }
+  },
+  "methods": {
+    "onLogoutSuccess": {
+      "method_name": "onLogoutSuccess",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        },
+        {
+          "type": "HttpServletResponse",
+          "name": "response",
+          "annotations": []
+        },
+        {
+          "type": "Authentication",
+          "name": "authentication",
+          "annotations": []
+        }
+      ],
+      "line_start": 38,
+      "line_end": 48,
+      "body": "    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)\n            throws IOException, ServletException {\n        LoginUser loginUser = tokenService.getLoginUser(request);\n        if (StringUtils.isNotNull(loginUser)) {\n            // 删除用户缓存记录\n            tokenService.delLoginUser(loginUser.getToken());\n            // 记录用户退出日志\n            recordLogoutInfo(loginUser.getUsername(), loginUser.getUserId(), Constants.LOGOUT, MessageUtils.message(\"user.logout.success\"),request);\n        }\n        ServletUtils.renderString(response, JSON.toJSONString(R.error(HttpStatus.SUCCESS, MessageUtils.message(\"user.logout.success\"))));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "loginUser.getUserId",
+        "LogoutSuccessHandlerImpl.onLogoutSuccess",
+        "LogoutSuccessHandlerImpl.delLoginUser",
+        "LogoutSuccessHandlerImpl.getLoginUser",
+        "R.error",
+        "LogoutSuccessHandlerImpl.getUserId",
+        "TokenService.getLoginUser",
+        "TokenService.delLoginUser",
+        "LogoutSuccessHandlerImpl.getUsername",
+        "ServletUtils.renderString",
+        "LogoutSuccessHandlerImpl.toJSONString",
+        "loginUser.getToken",
+        "JSON.toJSONString",
+        "loginUser.getUsername",
+        "MessageUtils.message",
+        "LogoutSuccessHandlerImpl.error",
+        "LogoutSuccessHandlerImpl.getToken",
+        "LogoutSuccessHandlerImpl.renderString",
+        "LogoutSuccessHandlerImpl.isNotNull",
+        "LogoutSuccessHandlerImpl.message",
+        "StringUtils.isNotNull",
+        "LogoutSuccessHandlerImpl.recordLogoutInfo"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "recordLogoutInfo": {
+      "method_name": "recordLogoutInfo",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "username",
+          "annotations": []
+        },
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "status",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "message",
+          "annotations": []
+        },
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 58,
+      "line_end": 66,
+      "body": "    private void recordLogoutInfo(String username, Long userId, String status, String message,HttpServletRequest request) {\n        LogininforEvent logininforEvent = new LogininforEvent();\n        logininforEvent.setUsername(username);\n        logininforEvent.setUserId(userId);\n        logininforEvent.setStatus(status);\n        logininforEvent.setMessage(message);\n        logininforEvent.setRequest(request);\n        SpringUtil.getApplicationContext().publishEvent(logininforEvent);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LogoutSuccessHandlerImpl.publishEvent",
+        "LogoutSuccessHandlerImpl.setUsername",
+        "logininforEvent.setRequest",
+        "LogoutSuccessHandlerImpl.LogininforEvent",
+        "LogoutSuccessHandlerImpl.setStatus",
+        "LogoutSuccessHandlerImpl.getApplicationContext",
+        "LogoutSuccessHandlerImpl.setRequest",
+        "LogoutSuccessHandlerImpl.setMessage",
+        "LogoutSuccessHandlerImpl.recordLogoutInfo",
+        "logininforEvent.setStatus",
+        "logininforEvent.setUserId",
+        "logininforEvent.setUsername",
+        "SpringUtil.getApplicationContext",
+        "logininforEvent.setMessage",
+        "LogoutSuccessHandlerImpl.setUserId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Configuration"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 30,
+  "line_end": 68
+}

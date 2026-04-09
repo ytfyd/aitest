@@ -1,0 +1,109 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\core\\text\\CharsetKit.java",
+  "package_name": "com.oddfar.campus.common.core.text",
+  "class_name": "CharsetKit",
+  "imports": [
+    "com.oddfar.campus.common.utils.StringUtils",
+    "java.nio.charset.Charset",
+    "java.nio.charset.StandardCharsets"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "charset": {
+      "method_name": "charset",
+      "return_type": "Charset",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "charset",
+          "annotations": []
+        }
+      ],
+      "line_start": 35,
+      "line_end": 38,
+      "body": "    public static Charset charset(String charset)\n    {\n        return StringUtils.isEmpty(charset) ? Charset.defaultCharset() : Charset.forName(charset);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "CharsetKit.defaultCharset",
+        "Charset.defaultCharset",
+        "CharsetKit.charset",
+        "Charset.forName",
+        "StringUtils.isEmpty",
+        "CharsetKit.isEmpty",
+        "CharsetKit.forName"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "convert": {
+      "method_name": "convert",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "source",
+          "annotations": []
+        },
+        {
+          "type": "Charset",
+          "name": "srcCharset",
+          "annotations": []
+        },
+        {
+          "type": "Charset",
+          "name": "destCharset",
+          "annotations": []
+        }
+      ],
+      "line_start": 61,
+      "line_end": 78,
+      "body": "    public static String convert(String source, Charset srcCharset, Charset destCharset)\n    {\n        if (null == srcCharset)\n        {\n            srcCharset = StandardCharsets.ISO_8859_1;\n        }\n\n        if (null == destCharset)\n        {\n            destCharset = StandardCharsets.UTF_8;\n        }\n\n        if (StringUtils.isEmpty(source) || srcCharset.equals(destCharset))\n        {\n            return source;\n        }\n        return new String(source.getBytes(srcCharset), destCharset);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "srcCharset.equals",
+        "source.getBytes",
+        "CharsetKit.equals",
+        "CharsetKit.String",
+        "StringUtils.isEmpty",
+        "CharsetKit.isEmpty",
+        "CharsetKit.getBytes",
+        "CharsetKit.convert"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "systemCharset": {
+      "method_name": "systemCharset",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 83,
+      "line_end": 86,
+      "body": "    public static String systemCharset()\n    {\n        return Charset.defaultCharset().name();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "CharsetKit.defaultCharset",
+        "Charset.defaultCharset",
+        "CharsetKit.systemCharset",
+        "CharsetKit.name"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 13,
+  "line_end": 88
+}

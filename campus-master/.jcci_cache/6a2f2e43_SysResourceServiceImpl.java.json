@@ -1,0 +1,329 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\service\\impl\\SysResourceServiceImpl.java",
+  "package_name": "com.oddfar.campus.framework.service.impl",
+  "class_name": "SysResourceServiceImpl",
+  "imports": [
+    "com.baomidou.mybatisplus.extension.service.impl.ServiceImpl",
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.TreeSelect",
+    "com.oddfar.campus.common.domain.entity.SysResourceEntity",
+    "com.oddfar.campus.common.domain.entity.SysRoleResourceEntity",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.domain.model.SysRoleAuth",
+    "com.oddfar.campus.framework.mapper.SysResourceMapper",
+    "com.oddfar.campus.framework.mapper.SysRoleResourceMapper",
+    "com.oddfar.campus.framework.service.SysResourceService",
+    "org.springframework.stereotype.Service",
+    "javax.annotation.Resource",
+    "java.util.stream.Collectors"
+  ],
+  "extends": "ServiceImpl",
+  "implements": [],
+  "fields": {
+    "resourceMapper": {
+      "field_name": "resourceMapper",
+      "field_type": "SysResourceMapper",
+      "line_number": 23,
+      "annotations": [
+        "Service"
+      ]
+    },
+    "roleResourceMapper": {
+      "field_name": "roleResourceMapper",
+      "field_type": "SysRoleResourceMapper",
+      "line_number": 25,
+      "annotations": [
+        "Service",
+        "Resource"
+      ]
+    }
+  },
+  "methods": {
+    "page": {
+      "method_name": "page",
+      "return_type": "PageResult<SysResourceEntity>",
+      "parameters": [
+        {
+          "type": "SysResourceEntity",
+          "name": "sysResourceEntity",
+          "annotations": []
+        }
+      ],
+      "line_start": 29,
+      "line_end": 31,
+      "body": "    public PageResult<SysResourceEntity> page(SysResourceEntity sysResourceEntity) {\n        return resourceMapper.selectPage(sysResourceEntity);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysResourceServiceImpl.selectPage",
+        "SysResourceServiceImpl.page",
+        "SysResourceMapper.selectPage"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertResource": {
+      "method_name": "insertResource",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysResourceEntity",
+          "name": "resource",
+          "annotations": []
+        }
+      ],
+      "line_start": 40,
+      "line_end": 44,
+      "body": "    public int insertResource(SysResourceEntity resource) {\n\n        int row = resourceMapper.insert(resource);\n        return row;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysResourceServiceImpl.insert",
+        "SysResourceMapper.insert",
+        "SysResourceServiceImpl.insertResource"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "truncateResource": {
+      "method_name": "truncateResource",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 50,
+      "line_end": 52,
+      "body": "    public void truncateResource() {\n        resourceMapper.truncateResource();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysResourceMapper.truncateResource",
+        "SysResourceServiceImpl.truncateResource"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectResourceCodeByRoleId": {
+      "method_name": "selectResourceCodeByRoleId",
+      "return_type": "Set<String>",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        }
+      ],
+      "line_start": 61,
+      "line_end": 63,
+      "body": "    public Set<String> selectResourceCodeByRoleId(Long roleId) {\n        return resourceMapper.selectResourceCodeByRoleId(roleId);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysResourceMapper.selectResourceCodeByRoleId",
+        "SysResourceServiceImpl.selectResourceCodeByRoleId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectApiResourceList": {
+      "method_name": "selectApiResourceList",
+      "return_type": "List<SysResourceEntity>",
+      "parameters": [
+        {
+          "type": "SysResourceEntity",
+          "name": "resource",
+          "annotations": []
+        },
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 79,
+      "line_end": 89,
+      "body": "    public List<SysResourceEntity> selectApiResourceList(SysResourceEntity resource, Long userId) {\n        List<SysResourceEntity> resourceList = null;\n        // 管理员显示所有资源信息\n        if (SysUserEntity.isAdmin(userId)) {\n            resourceList = resourceMapper.selectResourceList(resource);\n        } else {\n            resource.getParams().put(\"userId\", userId);\n            resourceList = resourceMapper.selectResourceListByUserId(resource);\n        }\n        return resourceList;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysResourceServiceImpl.selectApiResourceList",
+        "SysResourceMapper.selectResourceList",
+        "SysResourceServiceImpl.selectResourceList",
+        "SysResourceServiceImpl.getParams",
+        "SysResourceServiceImpl.selectResourceListByUserId",
+        "SysResourceMapper.selectResourceListByUserId",
+        "SysResourceServiceImpl.isAdmin",
+        "SysUserEntity.isAdmin",
+        "resource.getParams",
+        "SysResourceServiceImpl.put"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectSysRoleAuthAll": {
+      "method_name": "selectSysRoleAuthAll",
+      "return_type": "List<SysRoleAuth>",
+      "parameters": [],
+      "line_start": 73,
+      "line_end": 76,
+      "body": "    public List<SysRoleAuth> selectSysRoleAuthAll() {\n        return roleResourceMapper.selectList().stream()\n                .map(SysRoleAuth::new).collect(Collectors.toList());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysResourceServiceImpl.collect",
+        "Collectors.toList",
+        "SysResourceServiceImpl.stream",
+        "SysResourceServiceImpl.selectList",
+        "SysResourceServiceImpl.selectSysRoleAuthAll",
+        "SysRoleResourceMapper.selectList",
+        "SysResourceServiceImpl.map",
+        "SysResourceServiceImpl.toList"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectResourceListByRoleId": {
+      "method_name": "selectResourceListByRoleId",
+      "return_type": "List<Long>",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        }
+      ],
+      "line_start": 92,
+      "line_end": 94,
+      "body": "    public List<Long> selectResourceListByRoleId(Long roleId) {\n        return resourceMapper.selectResourceListByRoleId(roleId);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysResourceServiceImpl.selectResourceListByRoleId",
+        "SysResourceMapper.selectResourceListByRoleId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "buildResourceTreeSelect": {
+      "method_name": "buildResourceTreeSelect",
+      "return_type": "List<TreeSelect>",
+      "parameters": [
+        {
+          "type": "List<SysResourceEntity>",
+          "name": "resources",
+          "annotations": []
+        }
+      ],
+      "line_start": 97,
+      "line_end": 110,
+      "body": "    public List<TreeSelect> buildResourceTreeSelect(List<SysResourceEntity> resources) {\n\n        List<TreeSelect> treeSelects = new ArrayList<>();\n\n        Map<String, List<SysResourceEntity>> map = resources.stream().collect(\n                Collectors.groupingBy(SysResourceEntity::getClassName));\n        long size = 0L;\n        for (String key : map.keySet()) {\n            String modularName = map.get(key).get(0).getModularName();\n            TreeSelect treeSelect = new TreeSelect(++size, modularName, map.get(key));\n            treeSelects.add(treeSelect);\n        }\n        return treeSelects;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysResourceServiceImpl.collect",
+        "map.keySet",
+        "map.get",
+        "SysResourceServiceImpl.buildResourceTreeSelect",
+        "SysResourceServiceImpl.stream",
+        "SysResourceServiceImpl.get",
+        "SysResourceServiceImpl.keySet",
+        "SysResourceServiceImpl.groupingBy",
+        "SysResourceServiceImpl.getModularName",
+        "resources.stream",
+        "SysResourceServiceImpl.TreeSelect",
+        "SysResourceServiceImpl.add",
+        "Collectors.groupingBy",
+        "treeSelects.add"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "editRoleResource": {
+      "method_name": "editRoleResource",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        },
+        {
+          "type": "Long[]",
+          "name": "resourceIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 113,
+      "line_end": 121,
+      "body": "    public void editRoleResource(Long roleId, Long[] resourceIds) {\n        // 删除角色与api资源关联\n        roleResourceMapper.deleteRoleResourceByRoleId(roleId);\n        //添加角色与api资源管理\n        if (resourceIds.length > 0) {\n            List<SysResourceEntity> resourceEntities = resourceMapper.selectBatchIds(Arrays.asList(resourceIds));\n            insertRoleMenu(roleId, resourceEntities);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysResourceMapper.selectBatchIds",
+        "SysResourceServiceImpl.editRoleResource",
+        "SysResourceServiceImpl.asList",
+        "SysRoleResourceMapper.deleteRoleResourceByRoleId",
+        "SysResourceServiceImpl.deleteRoleResourceByRoleId",
+        "Arrays.asList",
+        "SysResourceServiceImpl.selectBatchIds",
+        "SysResourceServiceImpl.insertRoleMenu"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertRoleMenu": {
+      "method_name": "insertRoleMenu",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        },
+        {
+          "type": "List<SysResourceEntity>",
+          "name": "resourceEntities",
+          "annotations": []
+        }
+      ],
+      "line_start": 123,
+      "line_end": 136,
+      "body": "    public int insertRoleMenu(Long roleId, List<SysResourceEntity> resourceEntities) {\n\n        List<SysRoleResourceEntity> rrList = new ArrayList<>();\n\n        for (SysResourceEntity resourceEntity : resourceEntities) {\n            SysRoleResourceEntity rr = new SysRoleResourceEntity();\n            rr.setRoleId(roleId);\n            rr.setResourceCode(resourceEntity.getResourceCode());\n            rrList.add(rr);\n        }\n\n        return roleResourceMapper.saveBatch(rrList);\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "rrList.add",
+        "SysResourceServiceImpl.setRoleId",
+        "SysRoleResourceMapper.saveBatch",
+        "rr.setRoleId",
+        "SysResourceServiceImpl.setResourceCode",
+        "resourceEntity.getResourceCode",
+        "SysResourceServiceImpl.getResourceCode",
+        "SysResourceServiceImpl.saveBatch",
+        "SysResourceServiceImpl.add",
+        "SysResourceServiceImpl.SysRoleResourceEntity",
+        "rr.setResourceCode",
+        "SysResourceServiceImpl.insertRoleMenu"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Service"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 21,
+  "line_end": 139
+}

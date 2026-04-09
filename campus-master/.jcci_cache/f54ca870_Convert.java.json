@@ -1,0 +1,445 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\core\\text\\Convert.java",
+  "package_name": "com.oddfar.campus.common.core.text",
+  "class_name": "Convert",
+  "imports": [
+    "com.oddfar.campus.common.utils.StringUtils",
+    "org.apache.commons.lang3.ArrayUtils",
+    "java.math.BigDecimal",
+    "java.math.BigInteger",
+    "java.nio.ByteBuffer",
+    "java.nio.charset.Charset",
+    "java.text.NumberFormat",
+    "java.util.Set"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "toStr": {
+      "method_name": "toStr",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 46,
+      "line_end": 48,
+      "body": "    public static String toStr(Object value) {\n        return toStr(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toStr"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toChar": {
+      "method_name": "toChar",
+      "return_type": "Character",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 79,
+      "line_end": 81,
+      "body": "    public static Character toChar(Object value) {\n        return toChar(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toChar"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toByte": {
+      "method_name": "toByte",
+      "return_type": "Byte",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 121,
+      "line_end": 123,
+      "body": "    public static Byte toByte(Object value) {\n        return toByte(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toByte"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toShort": {
+      "method_name": "toShort",
+      "return_type": "Short",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 163,
+      "line_end": 165,
+      "body": "    public static Short toShort(Object value) {\n        return toShort(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toShort"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toNumber": {
+      "method_name": "toNumber",
+      "return_type": "Number",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 202,
+      "line_end": 204,
+      "body": "    public static Number toNumber(Object value) {\n        return toNumber(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toNumber"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toInt": {
+      "method_name": "toInt",
+      "return_type": "Integer",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 244,
+      "line_end": 246,
+      "body": "    public static Integer toInt(Object value) {\n        return toInt(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toInt"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toLong": {
+      "method_name": "toLong",
+      "return_type": "Long",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 368,
+      "line_end": 370,
+      "body": "    public static Long toLong(Object value) {\n        return toLong(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toLong"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toDouble": {
+      "method_name": "toDouble",
+      "return_type": "Double",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 411,
+      "line_end": 413,
+      "body": "    public static Double toDouble(Object value) {\n        return toDouble(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toDouble"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toFloat": {
+      "method_name": "toFloat",
+      "return_type": "Float",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 453,
+      "line_end": 455,
+      "body": "    public static Float toFloat(Object value) {\n        return toFloat(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toFloat"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toBool": {
+      "method_name": "toBool",
+      "return_type": "Boolean",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 501,
+      "line_end": 503,
+      "body": "    public static Boolean toBool(Object value) {\n        return toBool(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toBool"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toBigInteger": {
+      "method_name": "toBigInteger",
+      "return_type": "BigInteger",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 584,
+      "line_end": 586,
+      "body": "    public static BigInteger toBigInteger(Object value) {\n        return toBigInteger(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toBigInteger"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toBigDecimal": {
+      "method_name": "toBigDecimal",
+      "return_type": "BigDecimal",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 632,
+      "line_end": 634,
+      "body": "    public static BigDecimal toBigDecimal(Object value) {\n        return toBigDecimal(value, null);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toBigDecimal"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "utf8Str": {
+      "method_name": "utf8Str",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "obj",
+          "annotations": []
+        }
+      ],
+      "line_start": 643,
+      "line_end": 645,
+      "body": "    public static String utf8Str(Object obj) {\n        return str(obj, CharsetKit.CHARSET_UTF_8);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.str",
+        "Convert.utf8Str"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "str": {
+      "method_name": "str",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "ByteBuffer",
+          "name": "data",
+          "annotations": []
+        },
+        {
+          "type": "Charset",
+          "name": "charset",
+          "annotations": []
+        }
+      ],
+      "line_start": 736,
+      "line_end": 741,
+      "body": "    public static String str(ByteBuffer data, Charset charset) {\n        if (null == charset) {\n            charset = Charset.defaultCharset();\n        }\n        return charset.decode(data).toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toString",
+        "Charset.defaultCharset",
+        "Convert.str",
+        "Convert.decode",
+        "Convert.defaultCharset",
+        "charset.decode"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toSBC": {
+      "method_name": "toSBC",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "input",
+          "annotations": []
+        },
+        {
+          "type": "Set<Character>",
+          "name": "notConvertSet",
+          "annotations": []
+        }
+      ],
+      "line_start": 762,
+      "line_end": 778,
+      "body": "    public static String toSBC(String input, Set<Character> notConvertSet) {\n        char[] c = input.toCharArray();\n        for (int i = 0; i < c.length; i++) {\n            if (null != notConvertSet && notConvertSet.contains(c[i])) {\n                // 跳过不替换的字符\n                continue;\n            }\n\n            if (c[i] == ' ') {\n                c[i] = '\\u3000';\n            } else if (c[i] < '\\177') {\n                c[i] = (char) (c[i] + 65248);\n\n            }\n        }\n        return new String(c);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.contains",
+        "Convert.toCharArray",
+        "notConvertSet.contains",
+        "Convert.String",
+        "Convert.toSBC",
+        "input.toCharArray"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toDBC": {
+      "method_name": "toDBC",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "text",
+          "annotations": []
+        },
+        {
+          "type": "Set<Character>",
+          "name": "notConvertSet",
+          "annotations": []
+        }
+      ],
+      "line_start": 797,
+      "line_end": 814,
+      "body": "    public static String toDBC(String text, Set<Character> notConvertSet) {\n        char[] c = text.toCharArray();\n        for (int i = 0; i < c.length; i++) {\n            if (null != notConvertSet && notConvertSet.contains(c[i])) {\n                // 跳过不替换的字符\n                continue;\n            }\n\n            if (c[i] == '\\u3000') {\n                c[i] = ' ';\n            } else if (c[i] > '\\uFF00' && c[i] < '\\uFF5F') {\n                c[i] = (char) (c[i] - 65248);\n            }\n        }\n        String returnString = new String(c);\n\n        return returnString;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.contains",
+        "Convert.toCharArray",
+        "notConvertSet.contains",
+        "Convert.String",
+        "Convert.toDBC",
+        "text.toCharArray"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "digitUppercase": {
+      "method_name": "digitUppercase",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "double",
+          "name": "n",
+          "annotations": []
+        }
+      ],
+      "line_start": 822,
+      "line_end": 848,
+      "body": "    public static String digitUppercase(double n) {\n        String[] fraction = {\"角\", \"分\"};\n        String[] digit = {\"零\", \"壹\", \"贰\", \"叁\", \"肆\", \"伍\", \"陆\", \"柒\", \"捌\", \"玖\"};\n        String[][] unit = {{\"元\", \"万\", \"亿\"}, {\"\", \"拾\", \"佰\", \"仟\"}};\n\n        String head = n < 0 ? \"负\" : \"\";\n        n = Math.abs(n);\n\n        String s = \"\";\n        for (int i = 0; i < fraction.length; i++) {\n            s += (digit[(int) (Math.floor(n * 10 * Math.pow(10, i)) % 10)] + fraction[i]).replaceAll(\"(零.)+\", \"\");\n        }\n        if (s.length() < 1) {\n            s = \"整\";\n        }\n        int integerPart = (int) Math.floor(n);\n\n        for (int i = 0; i < unit[0].length && integerPart > 0; i++) {\n            String p = \"\";\n            for (int j = 0; j < unit[1].length && n > 0; j++) {\n                p = digit[integerPart % 10] + unit[1][j] + p;\n                integerPart = integerPart / 10;\n            }\n            s = p.replaceAll(\"(零.)*零$\", \"\").replaceAll(\"^$\", \"零\") + unit[0][i] + s;\n        }\n        return head + s.replaceAll(\"(零.)*零元\", \"元\").replaceFirst(\"(零.)+\", \"\").replaceAll(\"(零.)+\", \"零\").replaceAll(\"^整$\", \"零元整\");\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Math.abs",
+        "s.length",
+        "Convert.pow",
+        "Convert.abs",
+        "Convert.replaceAll",
+        "Convert.replaceFirst",
+        "Convert.digitUppercase",
+        "Math.floor",
+        "p.replaceAll",
+        "Convert.floor",
+        "s.replaceAll",
+        "Math.pow",
+        "Convert.length"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 18,
+  "line_end": 850
+}

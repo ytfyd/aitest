@@ -1,0 +1,115 @@
+{
+  "file_path": "campus-modular\\src\\main\\java\\com\\oddfar\\campus\\business\\controller\\RedisRateLimiterController.java",
+  "package_name": "com.oddfar.campus.business.controller",
+  "class_name": "RedisRateLimiterController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.RateLimiter",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.enums.LimitType",
+    "org.springframework.web.bind.annotation.GetMapping",
+    "org.springframework.web.bind.annotation.RequestMapping",
+    "org.springframework.web.bind.annotation.RestController"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "testObj": {
+      "method_name": "testObj",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 17,
+      "line_end": 48,
+      "body": "@RequestMapping(\"/test/rateLimiter\")\npublic class RedisRateLimiterController {\n    /**\n     * 测试全局限流\n     * 全局影响\n     */\n    @RateLimiter(count = 5, time = 60)\n    @GetMapping(\"/test\")\n    public R test() {\n        return R.ok(\"操作成功\");\n    }\n\n    /**\n     * 测试请求IP限流\n     * 同一IP请求受影响\n     */\n    @RateLimiter(count = 5, time = 60, limitType = LimitType.IP)\n    @GetMapping(\"/testip\")\n    public R testip(String value) {\n        return R.ok(\"操作成功\", value);\n    }\n\n    /**\n     * 测试请求IP限流(key基于参数获取)\n     * 同一IP请求受影响\n     */\n    @RateLimiter(count = 5, time = 60, limitType = LimitType.IP, key = \"#value\")\n    @GetMapping(\"/testObj\")\n    public R testObj(String value) {\n        return R.ok(\"操作成功\", value);\n    }\n}",
+      "annotations": [
+        "RequestMapping",
+        "RateLimiter",
+        "GetMapping",
+        "RateLimiter",
+        "GetMapping",
+        "RateLimiter",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "RedisRateLimiterController.测试请求IP限流",
+        "RedisRateLimiterController.testip",
+        "R.ok",
+        "RedisRateLimiterController.RateLimiter",
+        "RedisRateLimiterController.test",
+        "RedisRateLimiterController.RequestMapping",
+        "RedisRateLimiterController.GetMapping",
+        "RedisRateLimiterController.ok",
+        "RedisRateLimiterController.testObj"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/test",
+      "http_method": "GET"
+    },
+    "test": {
+      "method_name": "test",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 25,
+      "line_end": 27,
+      "body": "    public R test() {\n        return R.ok(\"操作成功\");\n    }",
+      "annotations": [
+        "@RateLimiter(count = 5, time = 60)",
+        "@GetMapping(\"/test\")"
+      ],
+      "called_methods": [
+        "R.ok",
+        "RedisRateLimiterController.test",
+        "RedisRateLimiterController.ok"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/test",
+      "http_method": "GET"
+    },
+    "testip": {
+      "method_name": "testip",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 35,
+      "line_end": 37,
+      "body": "    public R testip(String value) {\n        return R.ok(\"操作成功\", value);\n    }",
+      "annotations": [
+        "@RateLimiter(count = 5, time = 60, limitType = LimitType.IP)",
+        "@GetMapping(\"/testip\")"
+      ],
+      "called_methods": [
+        "RedisRateLimiterController.testip",
+        "R.ok",
+        "RedisRateLimiterController.ok"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/testip",
+      "http_method": "GET"
+    }
+  },
+  "annotations": [
+    "author",
+    "since",
+    "RestController",
+    "RequestMapping"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 18,
+  "line_end": 49
+}

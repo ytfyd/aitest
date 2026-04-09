@@ -1,6 +1,7 @@
 HELP.md
 
 *.log
+.jcci_cache/
 
 # Build Tools
 target/

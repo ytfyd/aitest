@@ -1,0 +1,69 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\exception\\file\\InvalidExtensionException.java",
+  "package_name": "com.oddfar.campus.common.exception.file",
+  "class_name": "InvalidExtensionException",
+  "imports": [
+    "org.apache.commons.fileupload.FileUploadException",
+    "java.util.Arrays"
+  ],
+  "extends": "FileUploadException",
+  "implements": [],
+  "fields": {
+    "extension": {
+      "field_name": "extension",
+      "field_type": "String",
+      "line_number": 16,
+      "annotations": [
+        "author"
+      ]
+    },
+    "filename": {
+      "field_name": "filename",
+      "field_type": "String",
+      "line_number": 17,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "getExtension": {
+      "method_name": "getExtension",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 30,
+      "line_end": 32,
+      "body": "    public String getExtension() {\n        return extension;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "InvalidExtensionException.getExtension"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getFilename": {
+      "method_name": "getFilename",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 34,
+      "line_end": 36,
+      "body": "    public String getFilename() {\n        return filename;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "InvalidExtensionException.getFilename"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 12,
+  "line_end": 70
+}

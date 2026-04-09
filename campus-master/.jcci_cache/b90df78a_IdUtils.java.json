@@ -1,0 +1,95 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\uuid\\IdUtils.java",
+  "package_name": "com.oddfar.campus.common.utils.uuid",
+  "class_name": "IdUtils",
+  "imports": [
+    "cn.hutool.core.lang.UUID"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "randomUUID": {
+      "method_name": "randomUUID",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 17,
+      "line_end": 20,
+      "body": "    public static String randomUUID()\n    {\n        return UUID.randomUUID().toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "UUID.randomUUID",
+        "IdUtils.toString",
+        "IdUtils.randomUUID"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "simpleUUID": {
+      "method_name": "simpleUUID",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 27,
+      "line_end": 30,
+      "body": "    public static String simpleUUID()\n    {\n        return UUID.randomUUID().toString(true);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "UUID.randomUUID",
+        "IdUtils.toString",
+        "IdUtils.simpleUUID",
+        "IdUtils.randomUUID"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "fastUUID": {
+      "method_name": "fastUUID",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 37,
+      "line_end": 40,
+      "body": "    public static String fastUUID()\n    {\n        return UUID.fastUUID().toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "IdUtils.fastUUID",
+        "UUID.fastUUID",
+        "IdUtils.toString"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "fastSimpleUUID": {
+      "method_name": "fastSimpleUUID",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 47,
+      "line_end": 50,
+      "body": "    public static String fastSimpleUUID()\n    {\n        return UUID.fastUUID().toString(true);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "IdUtils.fastUUID",
+        "UUID.fastUUID",
+        "IdUtils.fastSimpleUUID",
+        "IdUtils.toString"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 10,
+  "line_end": 52
+}

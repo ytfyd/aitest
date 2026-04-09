@@ -1,0 +1,508 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysRoleController.java",
+  "package_name": "com.oddfar.campus.admin.controller.system",
+  "class_name": "SysRoleController",
+  "imports": [
+    "com.baomidou.mybatisplus.extension.plugins.pagination.Page",
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.entity.SysRoleEntity",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.domain.entity.SysUserRoleEntity",
+    "com.oddfar.campus.common.domain.model.LoginUser",
+    "com.oddfar.campus.common.enums.ResBizTypeEnum",
+    "com.oddfar.campus.common.utils.SecurityUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.service.SysRoleService",
+    "com.oddfar.campus.framework.service.SysUserService",
+    "com.oddfar.campus.framework.web.service.SysPermissionService",
+    "com.oddfar.campus.framework.web.service.TokenService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.security.access.prepost.PreAuthorize",
+    "org.springframework.validation.annotation.Validated",
+    "java.util.Arrays"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "roleService": {
+      "field_name": "roleService",
+      "field_type": "SysRoleService",
+      "line_number": 30,
+      "annotations": [
+        "RestController",
+        "RequestMapping",
+        "ApiResource"
+      ]
+    },
+    "userService": {
+      "field_name": "userService",
+      "field_type": "SysUserService",
+      "line_number": 32,
+      "annotations": [
+        "RequestMapping",
+        "ApiResource",
+        "Autowired"
+      ]
+    },
+    "permissionService": {
+      "field_name": "permissionService",
+      "field_type": "SysPermissionService",
+      "line_number": 34,
+      "annotations": [
+        "Autowired",
+        "Autowired"
+      ]
+    },
+    "tokenService": {
+      "field_name": "tokenService",
+      "field_type": "TokenService",
+      "line_number": 36,
+      "annotations": [
+        "Autowired",
+        "Autowired",
+        "Autowired"
+      ]
+    }
+  },
+  "methods": {
+    "list": {
+      "method_name": "list",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": []
+        }
+      ],
+      "line_start": 39,
+      "line_end": 44,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:role:list')\")\n    @GetMapping(\"/list\")\n    public R list(SysRoleEntity role) {\n        PageResult<SysRoleEntity> list = roleService.page(role);\n        return R.ok().put(list);\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysRoleController.PreAuthorize",
+        "SysRoleController.page",
+        "SysRoleController.list",
+        "ss.hasPermi",
+        "R.ok",
+        "SysRoleController.hasPermi",
+        "SysRoleController.GetMapping",
+        "SysRoleService.page",
+        "SysRoleController.put",
+        "SysRoleController.ok"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/list",
+      "http_method": "GET"
+    },
+    "getInfo": {
+      "method_name": "getInfo",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 49,
+      "line_end": 50,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:role:query')\")\n    @GetMapping(value = \"/{roleId}\")",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysRoleController.PreAuthorize",
+        "SysRoleController.hasPermi",
+        "SysRoleController.GetMapping",
+        "ss.hasPermi"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/{roleId}",
+      "http_method": "GET"
+    },
+    "add": {
+      "method_name": "add",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 60,
+      "line_end": 68,
+      "body": "    public R add(@Validated @RequestBody SysRoleEntity role) {\n        if (!roleService.checkRoleNameUnique(role)) {\n            return R.error(\"新增角色'\" + role.getRoleName() + \"'失败，角色名称已存在\");\n        } else if (!roleService.checkRoleKeyUnique(role)) {\n            return R.error(\"新增角色'\" + role.getRoleName() + \"'失败，角色权限已存在\");\n        }\n        return R.ok(roleService.insertRole(role));\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleController.add",
+        "R.error",
+        "role.getRoleName",
+        "SysRoleService.insertRole",
+        "SysRoleController.insertRole",
+        "R.ok",
+        "SysRoleController.checkRoleNameUnique",
+        "SysRoleController.checkRoleKeyUnique",
+        "SysRoleController.ok",
+        "SysRoleService.checkRoleNameUnique",
+        "SysRoleService.checkRoleKeyUnique",
+        "SysRoleController.getRoleName",
+        "SysRoleController.error"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "edit": {
+      "method_name": "edit",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 75,
+      "line_end": 95,
+      "body": "    public R edit(@Validated @RequestBody SysRoleEntity role) {\n        roleService.checkRoleAllowed(role);\n        if (!roleService.checkRoleNameUnique(role)) {\n            return R.error(\"修改角色'\" + role.getRoleName() + \"'失败，角色名称已存在\");\n        } else if (!roleService.checkRoleKeyUnique(role)) {\n            return R.error(\"修改角色'\" + role.getRoleName() + \"'失败，角色权限已存在\");\n        }\n\n        if (roleService.updateRole(role) > 0) {\n            // 更新缓存用户权限\n            LoginUser loginUser = SecurityUtils.getLoginUser();\n            if (StringUtils.isNotNull(loginUser.getUser()) && !loginUser.getUser().isAdmin()) {\n                loginUser.setPermissions(permissionService.getMenuPermission(loginUser.getUser()));\n                loginUser.setUser(userService.selectUserByUserName(loginUser.getUser().getUserName()));\n                tokenService.setLoginUser(loginUser);\n            }\n            permissionService.resetLoginUserRoleCache(role.getRoleId());\n            return R.ok();\n        }\n        return R.error(\"修改角色'\" + role.getRoleName() + \"'失败，请联系管理员\");\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleController.getLoginUser",
+        "SysPermissionService.getMenuPermission",
+        "SysRoleController.getUserName",
+        "SysRoleController.checkRoleNameUnique",
+        "SysRoleController.resetLoginUserRoleCache",
+        "SysRoleController.ok",
+        "SysRoleService.checkRoleNameUnique",
+        "SysRoleController.error",
+        "SysRoleController.setLoginUser",
+        "SysRoleService.checkRoleAllowed",
+        "R.error",
+        "loginUser.getUser",
+        "role.getRoleName",
+        "SysRoleController.updateRole",
+        "SysRoleController.isAdmin",
+        "SecurityUtils.getLoginUser",
+        "SysPermissionService.resetLoginUserRoleCache",
+        "loginUser.setPermissions",
+        "SysRoleController.getUser",
+        "SysRoleController.setPermissions",
+        "role.getRoleId",
+        "SysRoleController.getMenuPermission",
+        "SysUserService.selectUserByUserName",
+        "SysRoleService.updateRole",
+        "TokenService.setLoginUser",
+        "R.ok",
+        "SysRoleController.edit",
+        "SysRoleController.checkRoleKeyUnique",
+        "SysRoleController.getRoleId",
+        "SysRoleController.setUser",
+        "SysRoleController.checkRoleAllowed",
+        "SysRoleController.selectUserByUserName",
+        "SysRoleController.isNotNull",
+        "SysRoleController.getRoleName",
+        "loginUser.setUser",
+        "StringUtils.isNotNull",
+        "SysRoleService.checkRoleKeyUnique"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "changeStatus": {
+      "method_name": "changeStatus",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": [
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 100,
+      "line_end": 108,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:role:edit')\")\n    @PutMapping(\"/changeStatus\")\n    public R changeStatus(@RequestBody SysRoleEntity role) {\n        roleService.checkRoleAllowed(role);\n        roleService.updateRoleStatus(role);\n        //更新redis缓存权限数据\n        permissionService.resetLoginUserRoleCache(role.getRoleId());\n        return R.ok();\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "SysRoleController.PreAuthorize",
+        "SysRoleController.PutMapping",
+        "ss.hasPermi",
+        "R.ok",
+        "SysRoleController.hasPermi",
+        "SysRoleController.changeStatus",
+        "SysRoleController.getRoleId",
+        "SysRoleService.updateRoleStatus",
+        "SysPermissionService.resetLoginUserRoleCache",
+        "SysRoleController.checkRoleAllowed",
+        "SysRoleController.resetLoginUserRoleCache",
+        "SysRoleController.updateRoleStatus",
+        "SysRoleController.ok",
+        "role.getRoleId",
+        "SysRoleService.checkRoleAllowed"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/changeStatus",
+      "http_method": "PUT"
+    },
+    "remove": {
+      "method_name": "remove",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "roleIds",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 113,
+      "line_end": 114,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:role:remove')\")\n    @DeleteMapping(\"/{roleIds}\")",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "DeleteMapping"
+      ],
+      "called_methods": [
+        "SysRoleController.PreAuthorize",
+        "SysRoleController.DeleteMapping",
+        "SysRoleController.hasPermi",
+        "ss.hasPermi"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/{roleIds}",
+      "http_method": "DELETE"
+    },
+    "allocatedList": {
+      "method_name": "allocatedList",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 127,
+      "line_end": 132,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:role:list')\")\n    @GetMapping(\"/authUser/allocatedList\")\n    public R allocatedList(SysUserEntity user) {\n        Page<SysUserEntity> page = userService.selectAllocatedList(user);\n        return R.ok().put(page);\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysRoleController.PreAuthorize",
+        "ss.hasPermi",
+        "SysRoleController.selectAllocatedList",
+        "R.ok",
+        "SysRoleController.hasPermi",
+        "SysRoleController.GetMapping",
+        "SysRoleController.put",
+        "SysRoleController.allocatedList",
+        "SysUserService.selectAllocatedList",
+        "SysRoleController.ok"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/authUser/allocatedList",
+      "http_method": "GET"
+    },
+    "unallocatedList": {
+      "method_name": "unallocatedList",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 137,
+      "line_end": 142,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:role:list')\")\n    @GetMapping(\"/authUser/unallocatedList\")\n    public R unallocatedList(SysUserEntity user) {\n        Page<SysUserEntity> page = userService.selectUnallocatedList(user);\n        return R.ok().put(page);\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysRoleController.PreAuthorize",
+        "ss.hasPermi",
+        "R.ok",
+        "SysRoleController.hasPermi",
+        "SysRoleController.GetMapping",
+        "SysRoleController.put",
+        "SysRoleController.unallocatedList",
+        "SysUserService.selectUnallocatedList",
+        "SysRoleController.ok",
+        "SysRoleController.selectUnallocatedList"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/authUser/unallocatedList",
+      "http_method": "GET"
+    },
+    "cancelAuthUser": {
+      "method_name": "cancelAuthUser",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysUserRoleEntity",
+          "name": "userRole",
+          "annotations": [
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 147,
+      "line_end": 154,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:role:edit')\")\n    @PutMapping(\"/authUser/cancel\")\n    public R cancelAuthUser(@RequestBody SysUserRoleEntity userRole) {\n        int i = roleService.deleteAuthUser(userRole);\n        //更新redis缓存权限数据\n        permissionService.resetLoginUserRoleCache(userRole.getRoleId());\n        return R.ok(i);\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "SysRoleController.PreAuthorize",
+        "SysRoleController.PutMapping",
+        "ss.hasPermi",
+        "SysRoleController.cancelAuthUser",
+        "R.ok",
+        "SysRoleController.deleteAuthUser",
+        "SysRoleController.hasPermi",
+        "SysRoleController.getRoleId",
+        "SysRoleController.resetLoginUserRoleCache",
+        "SysPermissionService.resetLoginUserRoleCache",
+        "SysRoleService.deleteAuthUser",
+        "SysRoleController.ok",
+        "userRole.getRoleId"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/authUser/cancel",
+      "http_method": "PUT"
+    },
+    "cancelAuthUserAll": {
+      "method_name": "cancelAuthUserAll",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        },
+        {
+          "type": "Long[]",
+          "name": "userIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 159,
+      "line_end": 167,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:role:edit')\")\n    @PutMapping(\"/authUser/cancelAll\")\n    public R cancelAuthUserAll(Long roleId, Long[] userIds) {\n        int i = roleService.deleteAuthUsers(roleId, userIds);\n        //更新redis缓存权限数据\n        permissionService.resetLoginUserRoleCache(roleId);\n\n        return R.ok(i);\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "SysRoleController.PreAuthorize",
+        "SysRoleController.PutMapping",
+        "ss.hasPermi",
+        "R.ok",
+        "SysRoleController.hasPermi",
+        "SysRoleController.resetLoginUserRoleCache",
+        "SysPermissionService.resetLoginUserRoleCache",
+        "SysRoleController.deleteAuthUsers",
+        "SysRoleController.ok",
+        "SysRoleController.cancelAuthUserAll",
+        "SysRoleService.deleteAuthUsers"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/authUser/cancelAll",
+      "http_method": "PUT"
+    },
+    "selectAuthUserAll": {
+      "method_name": "selectAuthUserAll",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        },
+        {
+          "type": "Long[]",
+          "name": "userIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 172,
+      "line_end": 176,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:role:edit')\")\n    @PutMapping(\"/authUser/selectAll\")\n    public R selectAuthUserAll(Long roleId, Long[] userIds) {\n        return R.ok(roleService.insertAuthUsers(roleId, userIds));\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "SysRoleController.PreAuthorize",
+        "SysRoleController.PutMapping",
+        "ss.hasPermi",
+        "R.ok",
+        "SysRoleController.hasPermi",
+        "SysRoleController.insertAuthUsers",
+        "SysRoleController.ok",
+        "SysRoleService.insertAuthUsers",
+        "SysRoleController.selectAuthUserAll"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/authUser/selectAll",
+      "http_method": "PUT"
+    }
+  },
+  "annotations": [
+    "RestController",
+    "RequestMapping",
+    "ApiResource"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 28,
+  "line_end": 179
+}

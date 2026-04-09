@@ -1,0 +1,272 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\constant\\Constants.java",
+  "package_name": "com.oddfar.campus.common.constant",
+  "class_name": "Constants",
+  "imports": [],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "UTF8": {
+      "field_name": "UTF8",
+      "field_type": "String",
+      "line_number": [
+        12,
+        25
+      ],
+      "annotations": []
+    },
+    "GBK": {
+      "field_name": "GBK",
+      "field_type": "String",
+      "line_number": [
+        17,
+        25
+      ],
+      "annotations": []
+    },
+    "WWW": {
+      "field_name": "WWW",
+      "field_type": "String",
+      "line_number": [
+        22,
+        25
+      ],
+      "annotations": []
+    },
+    "HTTP": {
+      "field_name": "HTTP",
+      "field_type": "String",
+      "line_number": [
+        27,
+        25
+      ],
+      "annotations": []
+    },
+    "HTTPS": {
+      "field_name": "HTTPS",
+      "field_type": "String",
+      "line_number": [
+        32,
+        25
+      ],
+      "annotations": []
+    },
+    "SUCCESS": {
+      "field_name": "SUCCESS",
+      "field_type": "String",
+      "line_number": [
+        37,
+        25
+      ],
+      "annotations": []
+    },
+    "FAIL": {
+      "field_name": "FAIL",
+      "field_type": "String",
+      "line_number": [
+        42,
+        25
+      ],
+      "annotations": []
+    },
+    "YES": {
+      "field_name": "YES",
+      "field_type": "String",
+      "line_number": [
+        47,
+        25
+      ],
+      "annotations": []
+    },
+    "NO": {
+      "field_name": "NO",
+      "field_type": "String",
+      "line_number": [
+        52,
+        25
+      ],
+      "annotations": []
+    },
+    "LOGIN_SUCCESS": {
+      "field_name": "LOGIN_SUCCESS",
+      "field_type": "String",
+      "line_number": [
+        57,
+        25
+      ],
+      "annotations": []
+    },
+    "LOGOUT": {
+      "field_name": "LOGOUT",
+      "field_type": "String",
+      "line_number": [
+        62,
+        25
+      ],
+      "annotations": []
+    },
+    "REGISTER": {
+      "field_name": "REGISTER",
+      "field_type": "String",
+      "line_number": [
+        67,
+        25
+      ],
+      "annotations": []
+    },
+    "LOGIN_FAIL": {
+      "field_name": "LOGIN_FAIL",
+      "field_type": "String",
+      "line_number": [
+        72,
+        25
+      ],
+      "annotations": []
+    },
+    "TOKEN": {
+      "field_name": "TOKEN",
+      "field_type": "String",
+      "line_number": [
+        77,
+        25
+      ],
+      "annotations": []
+    },
+    "USER_ID": {
+      "field_name": "USER_ID",
+      "field_type": "String",
+      "line_number": [
+        82,
+        25
+      ],
+      "annotations": []
+    },
+    "TOKEN_PREFIX": {
+      "field_name": "TOKEN_PREFIX",
+      "field_type": "String",
+      "line_number": [
+        87,
+        25
+      ],
+      "annotations": []
+    },
+    "LOGIN_USER_KEY": {
+      "field_name": "LOGIN_USER_KEY",
+      "field_type": "String",
+      "line_number": [
+        92,
+        25
+      ],
+      "annotations": []
+    },
+    "JWT_USERID": {
+      "field_name": "JWT_USERID",
+      "field_type": "String",
+      "line_number": [
+        97,
+        25
+      ],
+      "annotations": []
+    },
+    "JWT_USERNAME": {
+      "field_name": "JWT_USERNAME",
+      "field_type": "String",
+      "line_number": [
+        102,
+        25
+      ],
+      "annotations": []
+    },
+    "JWT_AVATAR": {
+      "field_name": "JWT_AVATAR",
+      "field_type": "String",
+      "line_number": [
+        107,
+        25
+      ],
+      "annotations": []
+    },
+    "JWT_CREATED": {
+      "field_name": "JWT_CREATED",
+      "field_type": "String",
+      "line_number": [
+        112,
+        25
+      ],
+      "annotations": []
+    },
+    "JWT_AUTHORITIES": {
+      "field_name": "JWT_AUTHORITIES",
+      "field_type": "String",
+      "line_number": [
+        117,
+        25
+      ],
+      "annotations": []
+    },
+    "RESOURCE_PREFIX": {
+      "field_name": "RESOURCE_PREFIX",
+      "field_type": "String",
+      "line_number": [
+        122,
+        25
+      ],
+      "annotations": []
+    },
+    "LOOKUP_RMI": {
+      "field_name": "LOOKUP_RMI",
+      "field_type": "String",
+      "line_number": [
+        127,
+        25
+      ],
+      "annotations": []
+    },
+    "LOOKUP_LDAP": {
+      "field_name": "LOOKUP_LDAP",
+      "field_type": "String",
+      "line_number": [
+        132,
+        25
+      ],
+      "annotations": []
+    },
+    "LOOKUP_LDAPS": {
+      "field_name": "LOOKUP_LDAPS",
+      "field_type": "String",
+      "line_number": [
+        137,
+        25
+      ],
+      "annotations": []
+    },
+    "JOB_WHITELIST_STR": {
+      "field_name": "JOB_WHITELIST_STR",
+      "field_type": "String",
+      "line_number": [
+        142,
+        25
+      ],
+      "annotations": []
+    },
+    "JOB_ERROR_STR": {
+      "field_name": "JOB_ERROR_STR",
+      "field_type": "String",
+      "line_number": [
+        147,
+        25
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    8,
+    8
+  ],
+  "line_end": 0
+}

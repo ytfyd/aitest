@@ -1,0 +1,257 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysDictDataController.java",
+  "package_name": "com.oddfar.campus.admin.controller.system",
+  "class_name": "SysDictDataController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.Anonymous",
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.entity.SysDictDataEntity",
+    "com.oddfar.campus.common.enums.ResBizTypeEnum",
+    "com.oddfar.campus.framework.service.SysDictDataService",
+    "com.oddfar.campus.framework.service.SysDictTypeService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.security.access.prepost.PreAuthorize",
+    "org.springframework.util.StringUtils",
+    "org.springframework.validation.annotation.Validated",
+    "java.util.ArrayList",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "dictDataService": {
+      "field_name": "dictDataService",
+      "field_type": "SysDictDataService",
+      "line_number": 24,
+      "annotations": [
+        "RestController",
+        "RequestMapping",
+        "ApiResource"
+      ]
+    },
+    "dictTypeService": {
+      "field_name": "dictTypeService",
+      "field_type": "SysDictTypeService",
+      "line_number": 26,
+      "annotations": [
+        "ApiResource",
+        "Autowired"
+      ]
+    }
+  },
+  "methods": {
+    "page": {
+      "method_name": "page",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysDictDataEntity",
+          "name": "dictData",
+          "annotations": []
+        }
+      ],
+      "line_start": 30,
+      "line_end": 35,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:dict:list')\")\n    @GetMapping(value = \"/list\", name = \"字典数据管理-分页\")\n    public R page(SysDictDataEntity dictData) {\n        PageResult<SysDictDataEntity> page = dictDataService.page(dictData);\n        return R.ok().put(page);\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "ss.hasPermi",
+        "SysDictDataController.page",
+        "R.ok",
+        "SysDictDataController.GetMapping",
+        "SysDictDataService.page",
+        "SysDictDataController.ok",
+        "SysDictDataController.PreAuthorize",
+        "SysDictDataController.hasPermi",
+        "SysDictDataController.put"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/list",
+      "http_method": "GET"
+    },
+    "dictType": {
+      "method_name": "dictType",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "dictType",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 42,
+      "line_end": 49,
+      "body": "    public R dictType(@PathVariable String dictType) {\n\n        List<SysDictDataEntity> data = dictTypeService.selectDictDataByType(dictType);\n        if (StringUtils.isEmpty(data)) {\n            data = new ArrayList<SysDictDataEntity>();\n        }\n        return R.ok().put(data);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysDictDataController.dictType",
+        "SysDictTypeService.selectDictDataByType",
+        "R.ok",
+        "SysDictDataController.ok",
+        "StringUtils.isEmpty",
+        "SysDictDataController.isEmpty",
+        "SysDictDataController.put",
+        "SysDictDataController.selectDictDataByType"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getInfo": {
+      "method_name": "getInfo",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "dictCode",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 55,
+      "line_end": 56,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:dict:query')\")\n    @GetMapping(value = \"/{dictCode}\", name = \"字典数据管理-查询\")",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysDictDataController.PreAuthorize",
+        "SysDictDataController.hasPermi",
+        "SysDictDataController.GetMapping",
+        "ss.hasPermi"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/{dictCode}",
+      "http_method": "GET"
+    },
+    "add": {
+      "method_name": "add",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysDictDataEntity",
+          "name": "dict",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 65,
+      "line_end": 69,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:dict:add')\")\n    @PostMapping(name = \"字典数据管理-新增\")\n    public R add(@Validated @RequestBody SysDictDataEntity dict) {\n        return R.ok(dictDataService.insertDictData(dict));\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PostMapping"
+      ],
+      "called_methods": [
+        "SysDictDataController.insertDictData",
+        "ss.hasPermi",
+        "SysDictDataController.add",
+        "R.ok",
+        "SysDictDataController.ok",
+        "SysDictDataService.insertDictData",
+        "SysDictDataController.PreAuthorize",
+        "SysDictDataController.hasPermi",
+        "SysDictDataController.PostMapping"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/dict/data",
+      "http_method": "POST"
+    },
+    "edit": {
+      "method_name": "edit",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysDictDataEntity",
+          "name": "dict",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 74,
+      "line_end": 78,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:dict:edit')\")\n    @PutMapping(name = \"字典数据管理-修改\")\n    public R edit(@Validated @RequestBody SysDictDataEntity dict) {\n        return R.ok(dictDataService.updateDictData(dict));\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "ss.hasPermi",
+        "SysDictDataController.edit",
+        "R.ok",
+        "SysDictDataController.PutMapping",
+        "SysDictDataController.updateDictData",
+        "SysDictDataController.ok",
+        "SysDictDataController.PreAuthorize",
+        "SysDictDataService.updateDictData",
+        "SysDictDataController.hasPermi"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/dict/data",
+      "http_method": "PUT"
+    },
+    "remove": {
+      "method_name": "remove",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "dictCodes",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 83,
+      "line_end": 84,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:dict:remove')\")\n    @DeleteMapping(value = \"/{dictCodes}\", name = \"字典数据管理-删除\")",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "DeleteMapping"
+      ],
+      "called_methods": [
+        "SysDictDataController.DeleteMapping",
+        "SysDictDataController.PreAuthorize",
+        "SysDictDataController.hasPermi",
+        "ss.hasPermi"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/{dictCodes}",
+      "http_method": "DELETE"
+    }
+  },
+  "annotations": [
+    "RestController",
+    "RequestMapping",
+    "ApiResource"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 23,
+  "line_end": 90
+}

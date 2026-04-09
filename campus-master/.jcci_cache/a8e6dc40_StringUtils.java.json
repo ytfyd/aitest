@@ -1,0 +1,624 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\StringUtils.java",
+  "package_name": "com.oddfar.campus.common.utils",
+  "class_name": "StringUtils",
+  "imports": [
+    "cn.hutool.core.text.StrFormatter",
+    "com.oddfar.campus.common.constant.Constants",
+    "org.springframework.util.AntPathMatcher"
+  ],
+  "extends": "org",
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "isEmpty": {
+      "method_name": "isEmpty",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "str",
+          "annotations": []
+        }
+      ],
+      "line_start": 101,
+      "line_end": 103,
+      "body": "    public static boolean isEmpty(String str) {\n        return isNull(str) || NULLSTR.equals(str.trim());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "str.trim",
+        "StringUtils.equals",
+        "NULLSTR.equals",
+        "StringUtils.isNull",
+        "StringUtils.trim",
+        "StringUtils.isEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isNotEmpty": {
+      "method_name": "isNotEmpty",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "str",
+          "annotations": []
+        }
+      ],
+      "line_start": 111,
+      "line_end": 113,
+      "body": "    public static boolean isNotEmpty(String str) {\n        return !isEmpty(str);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isEmpty",
+        "StringUtils.isNotEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isNull": {
+      "method_name": "isNull",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "object",
+          "annotations": []
+        }
+      ],
+      "line_start": 121,
+      "line_end": 123,
+      "body": "    public static boolean isNull(Object object) {\n        return object == null;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isNull"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isNotNull": {
+      "method_name": "isNotNull",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "object",
+          "annotations": []
+        }
+      ],
+      "line_start": 131,
+      "line_end": 133,
+      "body": "    public static boolean isNotNull(Object object) {\n        return !isNull(object);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isNull",
+        "StringUtils.isNotNull"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isArray": {
+      "method_name": "isArray",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "object",
+          "annotations": []
+        }
+      ],
+      "line_start": 141,
+      "line_end": 143,
+      "body": "    public static boolean isArray(Object object) {\n        return isNotNull(object) && object.getClass().isArray();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "object.getClass",
+        "StringUtils.getClass",
+        "StringUtils.isNotNull",
+        "StringUtils.isArray"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "trim": {
+      "method_name": "trim",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "str",
+          "annotations": []
+        }
+      ],
+      "line_start": 148,
+      "line_end": 150,
+      "body": "    public static String trim(String str) {\n        return (str == null ? \"\" : str.trim());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "str.trim",
+        "StringUtils.trim"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "substring": {
+      "method_name": "substring",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "str",
+          "annotations": []
+        },
+        {
+          "type": "int",
+          "name": "start",
+          "annotations": []
+        },
+        {
+          "type": "int",
+          "name": "end",
+          "annotations": []
+        }
+      ],
+      "line_start": 186,
+      "line_end": 214,
+      "body": "    public static String substring(final String str, int start, int end) {\n        if (str == null) {\n            return NULLSTR;\n        }\n\n        if (end < 0) {\n            end = str.length() + end;\n        }\n        if (start < 0) {\n            start = str.length() + start;\n        }\n\n        if (end > str.length()) {\n            end = str.length();\n        }\n\n        if (start > end) {\n            return NULLSTR;\n        }\n\n        if (start < 0) {\n            start = 0;\n        }\n        if (end < 0) {\n            end = 0;\n        }\n\n        return str.substring(start, end);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.length",
+        "StringUtils.substring",
+        "str.length",
+        "str.substring"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "format": {
+      "method_name": "format",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "template",
+          "annotations": []
+        },
+        {
+          "type": "Object...",
+          "name": "params",
+          "annotations": []
+        }
+      ],
+      "line_start": 229,
+      "line_end": 234,
+      "body": "    public static String format(String template, Object... params) {\n        if (isEmpty(params) || isEmpty(template)) {\n            return template;\n        }\n        return StrFormatter.format(template, params);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isEmpty",
+        "StrFormatter.format",
+        "StringUtils.format"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "ishttp": {
+      "method_name": "ishttp",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "link",
+          "annotations": []
+        }
+      ],
+      "line_start": 242,
+      "line_end": 244,
+      "body": "    public static boolean ishttp(String link) {\n        return StringUtils.startsWithAny(link, Constants.HTTP, Constants.HTTPS);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.ishttp",
+        "StringUtils.startsWithAny"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "str2Set": {
+      "method_name": "str2Set",
+      "return_type": "Set<String>",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "str",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "sep",
+          "annotations": []
+        }
+      ],
+      "line_start": 253,
+      "line_end": 255,
+      "body": "    public static final Set<String> str2Set(String str, String sep) {\n        return new HashSet<String>(str2List(str, sep, true, false));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.str2Set",
+        "StringUtils.str2List"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "str2List": {
+      "method_name": "str2List",
+      "return_type": "List<String>",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "str",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "sep",
+          "annotations": []
+        },
+        {
+          "type": "boolean",
+          "name": "filterBlank",
+          "annotations": []
+        },
+        {
+          "type": "boolean",
+          "name": "trim",
+          "annotations": []
+        }
+      ],
+      "line_start": 266,
+      "line_end": 288,
+      "body": "    public static final List<String> str2List(String str, String sep, boolean filterBlank, boolean trim) {\n        List<String> list = new ArrayList<String>();\n        if (StringUtils.isEmpty(str)) {\n            return list;\n        }\n\n        // 过滤空白字符串\n        if (filterBlank && StringUtils.isBlank(str)) {\n            return list;\n        }\n        String[] split = str.split(sep);\n        for (String string : split) {\n            if (filterBlank && StringUtils.isBlank(string)) {\n                continue;\n            }\n            if (trim) {\n                string = string.trim();\n            }\n            list.add(string);\n        }\n\n        return list;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "list.add",
+        "string.trim",
+        "StringUtils.str2List",
+        "StringUtils.isBlank",
+        "str.split",
+        "StringUtils.add",
+        "StringUtils.split",
+        "StringUtils.trim",
+        "StringUtils.isEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "containsAny": {
+      "method_name": "containsAny",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Collection<String>",
+          "name": "collection",
+          "annotations": []
+        },
+        {
+          "type": "String...",
+          "name": "array",
+          "annotations": []
+        }
+      ],
+      "line_start": 297,
+      "line_end": 308,
+      "body": "    public static boolean containsAny(Collection<String> collection, String... array) {\n        if (isEmpty(collection) || isEmpty(array)) {\n            return false;\n        } else {\n            for (String str : array) {\n                if (collection.contains(str)) {\n                    return true;\n                }\n            }\n            return false;\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isEmpty",
+        "collection.contains",
+        "StringUtils.containsAny",
+        "StringUtils.contains"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "containsAnyIgnoreCase": {
+      "method_name": "containsAnyIgnoreCase",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "CharSequence",
+          "name": "cs",
+          "annotations": []
+        },
+        {
+          "type": "CharSequence...",
+          "name": "searchCharSequences",
+          "annotations": []
+        }
+      ],
+      "line_start": 317,
+      "line_end": 327,
+      "body": "    public static boolean containsAnyIgnoreCase(CharSequence cs, CharSequence... searchCharSequences) {\n        if (isEmpty(cs) || isEmpty(searchCharSequences)) {\n            return false;\n        }\n        for (CharSequence testStr : searchCharSequences) {\n            if (containsIgnoreCase(cs, testStr)) {\n                return true;\n            }\n        }\n        return false;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isEmpty",
+        "StringUtils.containsIgnoreCase",
+        "StringUtils.containsAnyIgnoreCase"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toUnderScoreCase": {
+      "method_name": "toUnderScoreCase",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "str",
+          "annotations": []
+        }
+      ],
+      "line_start": 332,
+      "line_end": 366,
+      "body": "    public static String toUnderScoreCase(String str) {\n        if (str == null) {\n            return null;\n        }\n        StringBuilder sb = new StringBuilder();\n        // 前置字符是否大写\n        boolean preCharIsUpperCase = true;\n        // 当前字符是否大写\n        boolean curreCharIsUpperCase = true;\n        // 下一字符是否大写\n        boolean nexteCharIsUpperCase = true;\n        for (int i = 0; i < str.length(); i++) {\n            char c = str.charAt(i);\n            if (i > 0) {\n                preCharIsUpperCase = Character.isUpperCase(str.charAt(i - 1));\n            } else {\n                preCharIsUpperCase = false;\n            }\n\n            curreCharIsUpperCase = Character.isUpperCase(c);\n\n            if (i < (str.length() - 1)) {\n                nexteCharIsUpperCase = Character.isUpperCase(str.charAt(i + 1));\n            }\n\n            if (preCharIsUpperCase && curreCharIsUpperCase && !nexteCharIsUpperCase) {\n                sb.append(SEPARATOR);\n            } else if ((i != 0 && !preCharIsUpperCase) && curreCharIsUpperCase) {\n                sb.append(SEPARATOR);\n            }\n            sb.append(Character.toLowerCase(c));\n        }\n\n        return sb.toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.toUnderScoreCase",
+        "StringUtils.toString",
+        "str.charAt",
+        "StringUtils.length",
+        "sb.append",
+        "StringUtils.StringBuilder",
+        "StringUtils.append",
+        "Character.isUpperCase",
+        "sb.toString",
+        "StringUtils.toLowerCase",
+        "str.length",
+        "StringUtils.charAt",
+        "StringUtils.isUpperCase",
+        "Character.toLowerCase"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "inStringIgnoreCase": {
+      "method_name": "inStringIgnoreCase",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "str",
+          "annotations": []
+        },
+        {
+          "type": "String...",
+          "name": "strs",
+          "annotations": []
+        }
+      ],
+      "line_start": 375,
+      "line_end": 384,
+      "body": "    public static boolean inStringIgnoreCase(String str, String... strs) {\n        if (str != null && strs != null) {\n            for (String s : strs) {\n                if (str.equalsIgnoreCase(trim(s))) {\n                    return true;\n                }\n            }\n        }\n        return false;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "str.equalsIgnoreCase",
+        "StringUtils.inStringIgnoreCase",
+        "StringUtils.equalsIgnoreCase",
+        "StringUtils.trim"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "convertToCamelCase": {
+      "method_name": "convertToCamelCase",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "name",
+          "annotations": []
+        }
+      ],
+      "line_start": 392,
+      "line_end": 414,
+      "body": "    public static String convertToCamelCase(String name) {\n        StringBuilder result = new StringBuilder();\n        // 快速检查\n        if (name == null || name.isEmpty()) {\n            // 没必要转换\n            return \"\";\n        } else if (!name.contains(\"_\")) {\n            // 不含下划线，仅将首字母大写\n            return name.substring(0, 1).toUpperCase() + name.substring(1);\n        }\n        // 用下划线将原始字符串分割\n        String[] camels = name.split(\"_\");\n        for (String camel : camels) {\n            // 跳过原始字符串中开头、结尾的下换线或双重下划线\n            if (camel.isEmpty()) {\n                continue;\n            }\n            // 首字母大写\n            result.append(camel.substring(0, 1).toUpperCase());\n            result.append(camel.substring(1).toLowerCase());\n        }\n        return result.toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "result.append",
+        "StringUtils.contains",
+        "camel.isEmpty",
+        "StringUtils.toString",
+        "StringUtils.convertToCamelCase",
+        "result.toString",
+        "StringUtils.StringBuilder",
+        "StringUtils.substring",
+        "StringUtils.append",
+        "name.contains",
+        "StringUtils.split",
+        "StringUtils.toLowerCase",
+        "StringUtils.toUpperCase",
+        "camel.substring",
+        "name.isEmpty",
+        "name.split",
+        "StringUtils.isEmpty",
+        "name.substring"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toCamelCase": {
+      "method_name": "toCamelCase",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "s",
+          "annotations": []
+        }
+      ],
+      "line_start": 419,
+      "line_end": 439,
+      "body": "    public static String toCamelCase(String s) {\n        if (s == null) {\n            return null;\n        }\n        s = s.toLowerCase();\n        StringBuilder sb = new StringBuilder(s.length());\n        boolean upperCase = false;\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n\n            if (c == SEPARATOR) {\n                upperCase = true;\n            } else if (upperCase) {\n                sb.append(Character.toUpperCase(c));\n                upperCase = false;\n            } else {\n                sb.append(c);\n            }\n        }\n        return sb.toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.toString",
+        "s.charAt",
+        "StringUtils.length",
+        "sb.append",
+        "StringUtils.StringBuilder",
+        "StringUtils.append",
+        "s.length",
+        "sb.toString",
+        "StringUtils.toLowerCase",
+        "StringUtils.charAt",
+        "StringUtils.toCamelCase",
+        "StringUtils.toUpperCase",
+        "s.toLowerCase",
+        "Character.toUpperCase"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "matches": {
+      "method_name": "matches",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "str",
+          "annotations": []
+        },
+        {
+          "type": "List<String>",
+          "name": "strs",
+          "annotations": []
+        }
+      ],
+      "line_start": 448,
+      "line_end": 458,
+      "body": "    public static boolean matches(String str, List<String> strs) {\n        if (isEmpty(str) || isEmpty(strs)) {\n            return false;\n        }\n        for (String pattern : strs) {\n            if (isMatch(pattern, str)) {\n                return true;\n            }\n        }\n        return false;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isEmpty",
+        "StringUtils.isMatch",
+        "StringUtils.matches"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isMatch": {
+      "method_name": "isMatch",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "pattern",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "url",
+          "annotations": []
+        }
+      ],
+      "line_start": 470,
+      "line_end": 473,
+      "body": "    public static boolean isMatch(String pattern, String url) {\n        AntPathMatcher matcher = new AntPathMatcher();\n        return matcher.match(pattern, url);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "matcher.match",
+        "StringUtils.isMatch",
+        "StringUtils.match",
+        "StringUtils.AntPathMatcher"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "padl": {
+      "method_name": "padl",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "s",
+          "annotations": []
+        },
+        {
+          "type": "int",
+          "name": "size",
+          "annotations": []
+        },
+        {
+          "type": "char",
+          "name": "c",
+          "annotations": []
+        }
+      ],
+      "line_start": 499,
+      "line_end": 517,
+      "body": "    public static final String padl(final String s, final int size, final char c) {\n        final StringBuilder sb = new StringBuilder(size);\n        if (s != null) {\n            final int len = s.length();\n            if (s.length() <= size) {\n                for (int i = size - len; i > 0; i--) {\n                    sb.append(c);\n                }\n                sb.append(s);\n            } else {\n                return s.substring(len - size, len);\n            }\n        } else {\n            for (int i = size; i > 0; i--) {\n                sb.append(c);\n            }\n        }\n        return sb.toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.toString",
+        "StringUtils.length",
+        "sb.append",
+        "StringUtils.StringBuilder",
+        "StringUtils.append",
+        "sb.toString",
+        "s.length",
+        "StringUtils.substring",
+        "s.substring",
+        "StringUtils.padl"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 14,
+  "line_end": 518
+}

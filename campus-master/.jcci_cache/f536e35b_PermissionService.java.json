@@ -1,0 +1,385 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\web\\service\\PermissionService.java",
+  "package_name": "com.oddfar.campus.framework.web.service",
+  "class_name": "PermissionService",
+  "imports": [
+    "cn.hutool.core.util.StrUtil",
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.domain.entity.SysRoleEntity",
+    "com.oddfar.campus.common.domain.model.LoginUser",
+    "com.oddfar.campus.common.utils.SecurityUtils",
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.security.context.PermissionContextHolder",
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.beans.factory.annotation.Value",
+    "org.springframework.stereotype.Service",
+    "org.springframework.util.CollectionUtils",
+    "org.springframework.web.context.WebApplicationContext",
+    "org.springframework.web.method.HandlerMethod",
+    "org.springframework.web.servlet.HandlerExecutionChain",
+    "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping",
+    "javax.servlet.http.HttpServletRequest",
+    "java.lang.reflect.Method",
+    "java.util.Set"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "springApplicationName": {
+      "field_name": "springApplicationName",
+      "field_type": "String",
+      "line_number": 37,
+      "annotations": [
+        "Service",
+        "Value"
+      ]
+    }
+  },
+  "methods": {
+    "hasPermi": {
+      "method_name": "hasPermi",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "permission",
+          "annotations": []
+        }
+      ],
+      "line_start": 62,
+      "line_end": 72,
+      "body": "    public boolean hasPermi(String permission) {\n        if (StringUtils.isEmpty(permission)) {\n            return false;\n        }\n        LoginUser loginUser = SecurityUtils.getLoginUser();\n        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getPermissions())) {\n            return false;\n        }\n        PermissionContextHolder.setContext(permission);\n        return hasPermissions(loginUser.getPermissions(), permission);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "PermissionService.hasPermi",
+        "PermissionService.setContext",
+        "PermissionContextHolder.setContext",
+        "PermissionService.isNull",
+        "PermissionService.getLoginUser",
+        "StringUtils.isNull",
+        "PermissionService.isEmpty",
+        "SecurityUtils.getLoginUser",
+        "CollectionUtils.isEmpty",
+        "loginUser.getPermissions",
+        "PermissionService.hasPermissions",
+        "StringUtils.isEmpty",
+        "PermissionService.getPermissions"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "resourceAuth": {
+      "method_name": "resourceAuth",
+      "return_type": "boolean",
+      "parameters": [],
+      "line_start": 78,
+      "line_end": 97,
+      "body": "    public boolean resourceAuth() {\n        LoginUser loginUser = SecurityUtils.getLoginUser();\n        if (StringUtils.isNull(loginUser)) {\n            return false;\n        }\n\n        HttpServletRequest request = ServletUtils.getRequest();\n        RequestMappingHandlerMapping mapping = applicationContext.getBean(RequestMappingHandlerMapping.class);\n        HandlerExecutionChain handlerChain = null;\n        try {\n            handlerChain = mapping.getHandler(request);\n        } catch (Exception e) {\n            e.printStackTrace();\n        }\n        //通过处理链找到对应的HandlerMethod类\n        HandlerMethod handler = (HandlerMethod) handlerChain.getHandler();\n        String resourceCode = getResourceCode(handler);\n\n        return hasResources(loginUser.getResources(), resourceCode);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "loginUser.getResources",
+        "handlerChain.getHandler",
+        "mapping.getHandler",
+        "PermissionService.isNull",
+        "applicationContext.getBean",
+        "PermissionService.getLoginUser",
+        "PermissionService.getRequest",
+        "StringUtils.isNull",
+        "PermissionService.getHandler",
+        "PermissionService.printStackTrace",
+        "PermissionService.hasResources",
+        "SecurityUtils.getLoginUser",
+        "PermissionService.getBean",
+        "PermissionService.getResources",
+        "PermissionService.resourceAuth",
+        "ServletUtils.getRequest",
+        "PermissionService.getResourceCode",
+        "e.printStackTrace"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getResourceCode": {
+      "method_name": "getResourceCode",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "HandlerMethod",
+          "name": "handler",
+          "annotations": []
+        }
+      ],
+      "line_start": 106,
+      "line_end": 128,
+      "body": "    private String getResourceCode(HandlerMethod handler) {\n        Object bean = handler.getBean();//处理请求的类\n        Class<?> aClass = bean.getClass();\n        Method method = handler.getMethod();//处理请求的方法\n        //获取@ApiResource接口\n        ApiResource apiResource =  method.getDeclaringClass().getAnnotation(ApiResource.class);\n        //资源唯一编码\n        StringBuffer resourceCode = new StringBuffer();\n        //应用编码\n        String appCode = springApplicationName;\n        if (apiResource != null) {\n            if (StringUtils.isNotEmpty(apiResource.appCode())) {\n                appCode = apiResource.appCode();\n            }\n        }\n        String className = StrUtil.toUnderlineCase(StringUtils.substringBefore(aClass.getSimpleName(), \"$$\")\n                .replace(\"Controller\", \"\"));\n\n        String methodName = StrUtil.toUnderlineCase(method.getName());\n\n        return resourceCode.append(appCode).append(\".\").append(className).append(\".\").append(methodName).toString();\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "handler.getMethod",
+        "PermissionService.getName",
+        "aClass.getSimpleName",
+        "PermissionService.substringBefore",
+        "PermissionService.replace",
+        "PermissionService.StringBuffer",
+        "PermissionService.isNotEmpty",
+        "PermissionService.toString",
+        "handler.getBean",
+        "StrUtil.toUnderlineCase",
+        "method.getName",
+        "bean.getClass",
+        "apiResource.appCode",
+        "resourceCode.append",
+        "PermissionService.toUnderlineCase",
+        "PermissionService.getSimpleName",
+        "PermissionService.getBean",
+        "PermissionService.append",
+        "PermissionService.getDeclaringClass",
+        "method.getDeclaringClass",
+        "StringUtils.substringBefore",
+        "PermissionService.getClass",
+        "PermissionService.getMethod",
+        "PermissionService.getAnnotation",
+        "PermissionService.appCode",
+        "StringUtils.isNotEmpty",
+        "PermissionService.getResourceCode"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "hasResources": {
+      "method_name": "hasResources",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Set<String>",
+          "name": "resources",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "resource",
+          "annotations": []
+        }
+      ],
+      "line_start": 137,
+      "line_end": 139,
+      "body": "    private boolean hasResources(Set<String> resources, String resource) {\n        return resources.contains(ALL_PERMISSION) || resources.contains(StringUtils.trim(resource));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "PermissionService.hasResources",
+        "resources.contains",
+        "PermissionService.contains",
+        "StringUtils.trim",
+        "PermissionService.trim"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "lacksPermi": {
+      "method_name": "lacksPermi",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "permission",
+          "annotations": []
+        }
+      ],
+      "line_start": 147,
+      "line_end": 149,
+      "body": "    public boolean lacksPermi(String permission) {\n        return hasPermi(permission) != true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "PermissionService.hasPermi",
+        "PermissionService.lacksPermi"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "hasAnyPermi": {
+      "method_name": "hasAnyPermi",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "permissions",
+          "annotations": []
+        }
+      ],
+      "line_start": 157,
+      "line_end": 173,
+      "body": "    public boolean hasAnyPermi(String permissions) {\n        if (StringUtils.isEmpty(permissions)) {\n            return false;\n        }\n        LoginUser loginUser = SecurityUtils.getLoginUser();\n        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getPermissions())) {\n            return false;\n        }\n        PermissionContextHolder.setContext(permissions);\n        Set<String> authorities = loginUser.getPermissions();\n        for (String permission : permissions.split(PERMISSION_DELIMETER)) {\n            if (permission != null && hasPermissions(authorities, permission)) {\n                return true;\n            }\n        }\n        return false;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "PermissionService.setContext",
+        "permissions.split",
+        "PermissionContextHolder.setContext",
+        "PermissionService.hasAnyPermi",
+        "PermissionService.isNull",
+        "PermissionService.getLoginUser",
+        "StringUtils.isNull",
+        "PermissionService.isEmpty",
+        "SecurityUtils.getLoginUser",
+        "CollectionUtils.isEmpty",
+        "PermissionService.split",
+        "loginUser.getPermissions",
+        "PermissionService.hasPermissions",
+        "StringUtils.isEmpty",
+        "PermissionService.getPermissions"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "hasRole": {
+      "method_name": "hasRole",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "role",
+          "annotations": []
+        }
+      ],
+      "line_start": 181,
+      "line_end": 196,
+      "body": "    public boolean hasRole(String role) {\n        if (StringUtils.isEmpty(role)) {\n            return false;\n        }\n        LoginUser loginUser = SecurityUtils.getLoginUser();\n        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getUser().getRoles())) {\n            return false;\n        }\n        for (SysRoleEntity sysRole : loginUser.getUser().getRoles()) {\n            String roleKey = sysRole.getRoleKey();\n            if (SUPER_ADMIN.equals(roleKey) || roleKey.equals(StringUtils.trim(role))) {\n                return true;\n            }\n        }\n        return false;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "roleKey.equals",
+        "loginUser.getUser",
+        "PermissionService.hasRole",
+        "PermissionService.isNull",
+        "PermissionService.getRoleKey",
+        "PermissionService.getRoles",
+        "PermissionService.getLoginUser",
+        "StringUtils.isNull",
+        "PermissionService.isEmpty",
+        "SecurityUtils.getLoginUser",
+        "CollectionUtils.isEmpty",
+        "sysRole.getRoleKey",
+        "StringUtils.trim",
+        "PermissionService.equals",
+        "StringUtils.isEmpty",
+        "PermissionService.trim",
+        "SUPER_ADMIN.equals",
+        "PermissionService.getUser"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "lacksRole": {
+      "method_name": "lacksRole",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "role",
+          "annotations": []
+        }
+      ],
+      "line_start": 204,
+      "line_end": 206,
+      "body": "    public boolean lacksRole(String role) {\n        return hasRole(role) != true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "PermissionService.lacksRole",
+        "PermissionService.hasRole"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "hasAnyRoles": {
+      "method_name": "hasAnyRoles",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "roles",
+          "annotations": []
+        }
+      ],
+      "line_start": 214,
+      "line_end": 228,
+      "body": "    public boolean hasAnyRoles(String roles) {\n        if (StringUtils.isEmpty(roles)) {\n            return false;\n        }\n        LoginUser loginUser = SecurityUtils.getLoginUser();\n        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getUser().getRoles())) {\n            return false;\n        }\n        for (String role : roles.split(ROLE_DELIMETER)) {\n            if (hasRole(role)) {\n                return true;\n            }\n        }\n        return false;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "loginUser.getUser",
+        "PermissionService.hasRole",
+        "PermissionService.isNull",
+        "PermissionService.getLoginUser",
+        "PermissionService.hasAnyRoles",
+        "StringUtils.isNull",
+        "PermissionService.isEmpty",
+        "roles.split",
+        "SecurityUtils.getLoginUser",
+        "CollectionUtils.isEmpty",
+        "PermissionService.split",
+        "StringUtils.isEmpty",
+        "PermissionService.getRoles",
+        "PermissionService.getUser"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "hasPermissions": {
+      "method_name": "hasPermissions",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Set<String>",
+          "name": "permissions",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "permission",
+          "annotations": []
+        }
+      ],
+      "line_start": 237,
+      "line_end": 239,
+      "body": "    private boolean hasPermissions(Set<String> permissions, String permission) {\n        return permissions.contains(ALL_PERMISSION) || permissions.contains(StringUtils.trim(permission));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "permissions.contains",
+        "PermissionService.contains",
+        "StringUtils.trim",
+        "PermissionService.hasPermissions",
+        "PermissionService.trim"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Service"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 33,
+  "line_end": 241
+}

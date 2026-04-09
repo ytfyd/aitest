@@ -1,0 +1,132 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\web\\service\\UserDetailsServiceImpl.java",
+  "package_name": "com.oddfar.campus.framework.web.service",
+  "class_name": "UserDetailsServiceImpl",
+  "imports": [
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.domain.model.LoginUser",
+    "com.oddfar.campus.common.enums.UserStatusEnum",
+    "com.oddfar.campus.common.exception.ServiceException",
+    "com.oddfar.campus.common.exception.user.UserPasswordNotMatchException",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.service.SysUserService",
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.security.core.userdetails.UserDetails",
+    "org.springframework.security.core.userdetails.UserDetailsService",
+    "org.springframework.security.core.userdetails.UsernameNotFoundException",
+    "org.springframework.stereotype.Service"
+  ],
+  "extends": null,
+  "implements": [
+    "UserDetailsService"
+  ],
+  "fields": {
+    "userService": {
+      "field_name": "userService",
+      "field_type": "SysUserService",
+      "line_number": 27,
+      "annotations": [
+        "author",
+        "Service"
+      ]
+    },
+    "passwordService": {
+      "field_name": "passwordService",
+      "field_type": "SysPasswordService",
+      "line_number": 30,
+      "annotations": [
+        "Autowired"
+      ]
+    },
+    "permissionService": {
+      "field_name": "permissionService",
+      "field_type": "SysPermissionService",
+      "line_number": 33,
+      "annotations": [
+        "Autowired",
+        "Autowired"
+      ]
+    }
+  },
+  "methods": {
+    "loadUserByUsername": {
+      "method_name": "loadUserByUsername",
+      "return_type": "UserDetails",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "username",
+          "annotations": []
+        }
+      ],
+      "line_start": 37,
+      "line_end": 53,
+      "body": "    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {\n        SysUserEntity user = userService.selectUserByUserName(username);\n        if (StringUtils.isNull(user)) {\n            log.info(\"登录用户：{} 不存在.\", username);\n            throw new UserPasswordNotMatchException();\n        } else if (UserStatusEnum.DELETED.getCode().equals(user.getStatus())) {\n            log.info(\"登录用户：{} 已被删除.\", username);\n            throw new ServiceException(\"对不起，您的账号：\" + username + \" 已被删除\");\n        } else if (UserStatusEnum.DISABLE.getCode().equals(user.getStatus())) {\n            log.info(\"登录用户：{} 已被停用.\", username);\n            throw new ServiceException(\"对不起，您的账号：\" + username + \" 已停用\");\n        }\n\n        passwordService.validate(user);\n\n        return createLoginUser(user);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserService.selectUserByUserName",
+        "SysPasswordService.validate",
+        "DELETED.getCode",
+        "UserDetailsServiceImpl.UserPasswordNotMatchException",
+        "UserDetailsServiceImpl.getCode",
+        "StringUtils.isNull",
+        "UserDetailsServiceImpl.validate",
+        "UserDetailsServiceImpl.ServiceException",
+        "DISABLE.getCode",
+        "UserDetailsServiceImpl.info",
+        "UserDetailsServiceImpl.selectUserByUserName",
+        "UserDetailsServiceImpl.loadUserByUsername",
+        "UserDetailsServiceImpl.isNull",
+        "UserDetailsServiceImpl.getStatus",
+        "log.info",
+        "UserDetailsServiceImpl.createLoginUser",
+        "UserDetailsServiceImpl.equals",
+        "user.getStatus"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "createLoginUser": {
+      "method_name": "createLoginUser",
+      "return_type": "UserDetails",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 55,
+      "line_end": 58,
+      "body": "    public UserDetails createLoginUser(SysUserEntity user) {\n        return new LoginUser(user.getUserId(), user,\n                permissionService.getMenuPermission(user), permissionService.getResources(user));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysPermissionService.getMenuPermission",
+        "user.getUserId",
+        "SysPermissionService.getResources",
+        "UserDetailsServiceImpl.createLoginUser",
+        "UserDetailsServiceImpl.getMenuPermission",
+        "UserDetailsServiceImpl.getUserId",
+        "UserDetailsServiceImpl.getResources",
+        "UserDetailsServiceImpl.LoginUser"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Service"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 24,
+  "line_end": 60
+}

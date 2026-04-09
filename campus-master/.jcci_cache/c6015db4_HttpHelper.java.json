@@ -1,0 +1,71 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\http\\HttpHelper.java",
+  "package_name": "com.oddfar.campus.common.utils.http",
+  "class_name": "HttpHelper",
+  "imports": [
+    "org.apache.commons.lang3.exception.ExceptionUtils",
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory",
+    "javax.servlet.ServletRequest",
+    "java.io.BufferedReader",
+    "java.io.IOException",
+    "java.io.InputStream",
+    "java.io.InputStreamReader",
+    "java.nio.charset.StandardCharsets"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getBodyString": {
+      "method_name": "getBodyString",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "ServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 23,
+      "line_end": 55,
+      "body": "    public static String getBodyString(ServletRequest request)\n    {\n        StringBuilder sb = new StringBuilder();\n        BufferedReader reader = null;\n        try (InputStream inputStream = request.getInputStream())\n        {\n            reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));\n            String line = \"\";\n            while ((line = reader.readLine()) != null)\n            {\n                sb.append(line);\n            }\n        }\n        catch (IOException e)\n        {\n            LOGGER.warn(\"getBodyString出现问题！\");\n        }\n        finally\n        {\n            if (reader != null)\n            {\n                try\n                {\n                    reader.close();\n                }\n                catch (IOException e)\n                {\n                    LOGGER.error(ExceptionUtils.getMessage(e));\n                }\n            }\n        }\n        return sb.toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "HttpHelper.try",
+        "HttpHelper.warn",
+        "sb.append",
+        "HttpHelper.append",
+        "request.getInputStream",
+        "HttpHelper.StringBuilder",
+        "HttpHelper.close",
+        "LOGGER.warn",
+        "HttpHelper.error",
+        "HttpHelper.InputStreamReader",
+        "ExceptionUtils.getMessage",
+        "HttpHelper.toString",
+        "sb.toString",
+        "HttpHelper.BufferedReader",
+        "HttpHelper.getBodyString",
+        "reader.close",
+        "HttpHelper.getInputStream",
+        "HttpHelper.readLine",
+        "LOGGER.error",
+        "reader.readLine",
+        "HttpHelper.getMessage"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 19,
+  "line_end": 57
+}

@@ -1,0 +1,94 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\config\\RedisConfig.java",
+  "package_name": "com.oddfar.campus.common.config",
+  "class_name": "RedisConfig",
+  "imports": [
+    "org.springframework.cache.annotation.CachingConfigurerSupport",
+    "org.springframework.cache.annotation.EnableCaching",
+    "org.springframework.context.annotation.Bean",
+    "org.springframework.context.annotation.Configuration",
+    "org.springframework.data.redis.connection.RedisConnectionFactory",
+    "org.springframework.data.redis.core.RedisTemplate",
+    "org.springframework.data.redis.core.script.DefaultRedisScript",
+    "org.springframework.data.redis.serializer.StringRedisSerializer"
+  ],
+  "extends": "CachingConfigurerSupport",
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "redisTemplate": {
+      "method_name": "redisTemplate",
+      "return_type": "RedisTemplate<Object, Object>",
+      "parameters": [
+        {
+          "type": "RedisConnectionFactory",
+          "name": "connectionFactory",
+          "annotations": []
+        }
+      ],
+      "line_start": 21,
+      "line_end": 21,
+      "body": "    @SuppressWarnings(value = {\"unchecked\", \"rawtypes\"})",
+      "annotations": [
+        "SuppressWarnings"
+      ],
+      "called_methods": [
+        "RedisConfig.SuppressWarnings"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "limitScript": {
+      "method_name": "limitScript",
+      "return_type": "DefaultRedisScript<Long>",
+      "parameters": [],
+      "line_start": 41,
+      "line_end": 46,
+      "body": "    public DefaultRedisScript<Long> limitScript() {\n        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();\n        redisScript.setScriptText(limitScriptText());\n        redisScript.setResultType(Long.class);\n        return redisScript;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "redisScript.setResultType",
+        "RedisConfig.setScriptText",
+        "redisScript.setScriptText",
+        "RedisConfig.limitScript",
+        "RedisConfig.setResultType",
+        "RedisConfig.limitScriptText"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "limitScriptText": {
+      "method_name": "limitScriptText",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 51,
+      "line_end": 64,
+      "body": "    private String limitScriptText() {\n        return \"local key = KEYS[1]\\n\" +\n                \"local count = tonumber(ARGV[1])\\n\" +\n                \"local time = tonumber(ARGV[2])\\n\" +\n                \"local current = redis.call('get', key);\\n\" +\n                \"if current and tonumber(current) > count then\\n\" +\n                \"    return tonumber(current);\\n\" +\n                \"end\\n\" +\n                \"current = redis.call('incr', key)\\n\" +\n                \"if tonumber(current) == 1 then\\n\" +\n                \"    redis.call('expire', key, time)\\n\" +\n                \"end\\n\" +\n                \"return tonumber(current);\";\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RedisConfig.limitScriptText",
+        "RedisConfig.call",
+        "redis.call",
+        "RedisConfig.tonumber"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Configuration",
+    "EnableCaching"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 19,
+  "line_end": 66
+}

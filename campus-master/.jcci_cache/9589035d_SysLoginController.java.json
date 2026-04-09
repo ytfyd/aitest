@@ -1,0 +1,204 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysLoginController.java",
+  "package_name": "com.oddfar.campus.admin.controller.system",
+  "class_name": "SysLoginController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.entity.SysMenuEntity",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.domain.model.LoginBody",
+    "com.oddfar.campus.common.enums.ResBizTypeEnum",
+    "com.oddfar.campus.common.utils.SecurityUtils",
+    "com.oddfar.campus.framework.service.SysMenuService",
+    "com.oddfar.campus.framework.web.service.SysLoginService",
+    "com.oddfar.campus.framework.web.service.SysPermissionService",
+    "io.swagger.annotations.ApiOperation",
+    "io.swagger.annotations.ApiParam",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.web.bind.annotation.GetMapping",
+    "org.springframework.web.bind.annotation.PostMapping",
+    "org.springframework.web.bind.annotation.RequestBody",
+    "org.springframework.web.bind.annotation.RestController",
+    "java.util.List",
+    "java.util.Set"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "menuService": {
+      "field_name": "menuService",
+      "field_type": "SysMenuService",
+      "line_number": 31,
+      "annotations": [
+        "RestController",
+        "ApiResource"
+      ]
+    },
+    "loginService": {
+      "field_name": "loginService",
+      "field_type": "SysLoginService",
+      "line_number": 33,
+      "annotations": [
+        "RestController",
+        "ApiResource",
+        "Autowired"
+      ]
+    },
+    "permissionService": {
+      "field_name": "permissionService",
+      "field_type": "SysPermissionService",
+      "line_number": 36,
+      "annotations": [
+        "Autowired",
+        "Autowired"
+      ]
+    }
+  },
+  "methods": {
+    "getRouters": {
+      "method_name": "getRouters",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 28,
+      "line_end": 86,
+      "body": "@ApiResource(name = \"登录路由\", resBizType = ResBizTypeEnum.SYSTEM)\npublic class SysLoginController {\n\n    @Autowired\n    private SysMenuService menuService;\n    @Autowired\n    private SysLoginService loginService;\n\n    @Autowired\n    private SysPermissionService permissionService;\n\n    /**\n     * 登录方法\n     *\n     * @param loginBody 登录信息\n     * @return 结果\n     */\n    @ApiOperation(value = \"登录方法\", notes = \"用户登录接口，返回JWT令牌\")\n    @PostMapping(value = \"/login\", name = \"登录方法\")\n    public R login(@ApiParam(value = \"登录信息\", required = true) @RequestBody LoginBody loginBody) {\n        R r = R.ok();\n        // 生成令牌\n        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword());\n        r.put(Constants.TOKEN, token);\n        return r;\n    }\n\n    /**\n     * 获取用户信息\n     *\n     * @return 用户信息\n     */\n    @GetMapping(value = \"getInfo\", name = \"获取用户信息\")\n    public R getInfo() {\n        SysUserEntity user = SecurityUtils.getLoginUser().getUser();\n        // 角色集合\n        Set<String> roles = permissionService.getRolePermission(user);\n        // 权限集合\n        Set<String> permissions = permissionService.getMenuPermission(user);\n        R ajax = R.ok();\n        ajax.put(\"user\", user);\n        ajax.put(\"roles\", roles);\n        ajax.put(\"permissions\", permissions);\n        return ajax;\n    }\n\n    /**\n     * 获取路由信息\n     *\n     * @return 路由信息\n     */\n    @GetMapping(value = \"getRouters\", name = \"获取路由信息\")\n    public R getRouters() {\n        Long userId = SecurityUtils.getUserId();\n        List<SysMenuEntity> menus = menuService.selectMenuTreeByUserId(userId);\n        return R.ok(menuService.buildMenus(menus));\n    }\n\n}",
+      "annotations": [
+        "ApiResource",
+        "Autowired",
+        "Autowired",
+        "Autowired",
+        "param",
+        "return",
+        "ApiOperation",
+        "PostMapping",
+        "ApiParam",
+        "RequestBody",
+        "return",
+        "GetMapping",
+        "return",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysPermissionService.getMenuPermission",
+        "SecurityUtils.getUserId",
+        "SysLoginController.ApiResource",
+        "SysLoginController.getUserId",
+        "SysMenuService.selectMenuTreeByUserId",
+        "SysLoginController.getLoginUser",
+        "SysLoginController.getUser",
+        "SysLoginController.ApiParam",
+        "SysLoginController.selectMenuTreeByUserId",
+        "SysLoginController.login",
+        "SysLoginController.getRolePermission",
+        "SysLoginController.put",
+        "SysLoginController.GetMapping",
+        "SecurityUtils.getLoginUser",
+        "ajax.put",
+        "SysPermissionService.getRolePermission",
+        "r.put",
+        "SysLoginService.login",
+        "SysLoginController.getPassword",
+        "loginBody.getUsername",
+        "SysLoginController.buildMenus",
+        "SysMenuService.buildMenus",
+        "R.ok",
+        "loginBody.getPassword",
+        "SysLoginController.ok",
+        "SysLoginController.getRouters",
+        "SysLoginController.getMenuPermission",
+        "SysLoginController.PostMapping",
+        "SysLoginController.ApiOperation",
+        "SysLoginController.getUsername",
+        "SysLoginController.getInfo"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/getInfo",
+      "http_method": "GET"
+    },
+    "login": {
+      "method_name": "login",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "=",
+          "name": "\"",
+          "annotations": [
+            "@ApiParam(value"
+          ]
+        },
+        {
+          "type": "LoginBody",
+          "name": "loginBody",
+          "annotations": [
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 47,
+      "line_end": 53,
+      "body": "    public R login(@ApiParam(value = \"登录信息\", required = true) @RequestBody LoginBody loginBody) {\n        R r = R.ok();\n        // 生成令牌\n        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword());\n        r.put(Constants.TOKEN, token);\n        return r;\n    }",
+      "annotations": [
+        "@ApiOperation(value = \"登录方法\", notes = \"用户登录接口，返回JWT令牌\")",
+        "@PostMapping(value = \"/login\", name = \"登录方法\")"
+      ],
+      "called_methods": [
+        "SysLoginController.ApiParam",
+        "loginBody.getUsername",
+        "SysLoginController.login",
+        "R.ok",
+        "SysLoginController.getUsername",
+        "SysLoginController.put",
+        "loginBody.getPassword",
+        "SysLoginController.ok",
+        "r.put",
+        "SysLoginService.login",
+        "SysLoginController.getPassword"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/login",
+      "http_method": "POST"
+    },
+    "getInfo": {
+      "method_name": "getInfo",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 61,
+      "line_end": 72,
+      "body": "    public R getInfo() {\n        SysUserEntity user = SecurityUtils.getLoginUser().getUser();\n        // 角色集合\n        Set<String> roles = permissionService.getRolePermission(user);\n        // 权限集合\n        Set<String> permissions = permissionService.getMenuPermission(user);\n        R ajax = R.ok();\n        ajax.put(\"user\", user);\n        ajax.put(\"roles\", roles);\n        ajax.put(\"permissions\", permissions);\n        return ajax;\n    }",
+      "annotations": [
+        "@GetMapping(value = \"getInfo\", name = \"获取用户信息\")"
+      ],
+      "called_methods": [
+        "SysPermissionService.getMenuPermission",
+        "R.ok",
+        "SysLoginController.getRolePermission",
+        "SysLoginController.put",
+        "SecurityUtils.getLoginUser",
+        "ajax.put",
+        "SysLoginController.getInfo",
+        "SysLoginController.ok",
+        "SysPermissionService.getRolePermission",
+        "SysLoginController.getLoginUser",
+        "SysLoginController.getUser",
+        "SysLoginController.getMenuPermission"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/getInfo",
+      "http_method": "GET"
+    }
+  },
+  "annotations": [
+    "RestController",
+    "ApiResource"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 29,
+  "line_end": 87
+}

@@ -1,0 +1,43 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\LogUtils.java",
+  "package_name": "com.oddfar.campus.common.utils",
+  "class_name": "LogUtils",
+  "imports": [],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getBlock": {
+      "method_name": "getBlock",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "msg",
+          "annotations": []
+        }
+      ],
+      "line_start": 10,
+      "line_end": 17,
+      "body": "    public static String getBlock(Object msg)\n    {\n        if (msg == null)\n        {\n            msg = \"\";\n        }\n        return \"[\" + msg.toString() + \"]\";\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LogUtils.toString",
+        "LogUtils.getBlock",
+        "msg.toString"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 8,
+  "line_end": 19
+}

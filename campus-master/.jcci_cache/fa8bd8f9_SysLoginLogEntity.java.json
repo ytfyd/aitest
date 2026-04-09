@@ -1,0 +1,152 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\entity\\SysLoginLogEntity.java",
+  "package_name": "com.oddfar.campus.common.domain.entity",
+  "class_name": "SysLoginLogEntity",
+  "imports": [
+    "com.baomidou.mybatisplus.annotation.TableField",
+    "com.baomidou.mybatisplus.annotation.TableId",
+    "com.baomidou.mybatisplus.annotation.TableName",
+    "com.fasterxml.jackson.annotation.JsonFormat",
+    "com.fasterxml.jackson.annotation.JsonIgnore",
+    "lombok.Data",
+    "javax.validation.constraints.Max",
+    "javax.validation.constraints.Min",
+    "javax.validation.constraints.NotNull",
+    "java.util.Date",
+    "java.util.HashMap",
+    "java.util.Map"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "infoId": {
+      "field_name": "infoId",
+      "field_type": "Long",
+      "line_number": 31,
+      "annotations": [
+        "author",
+        "Data",
+        "TableName",
+        "TableId"
+      ]
+    },
+    "userId": {
+      "field_name": "userId",
+      "field_type": "Long",
+      "line_number": 36,
+      "annotations": [
+        "TableId"
+      ]
+    },
+    "userName": {
+      "field_name": "userName",
+      "field_type": "String",
+      "line_number": 41,
+      "annotations": [
+        "TableId"
+      ]
+    },
+    "status": {
+      "field_name": "status",
+      "field_type": "String",
+      "line_number": 46,
+      "annotations": []
+    },
+    "ipaddr": {
+      "field_name": "ipaddr",
+      "field_type": "String",
+      "line_number": 51,
+      "annotations": []
+    },
+    "loginLocation": {
+      "field_name": "loginLocation",
+      "field_type": "String",
+      "line_number": 56,
+      "annotations": []
+    },
+    "browser": {
+      "field_name": "browser",
+      "field_type": "String",
+      "line_number": 61,
+      "annotations": []
+    },
+    "os": {
+      "field_name": "os",
+      "field_type": "String",
+      "line_number": 66,
+      "annotations": []
+    },
+    "msg": {
+      "field_name": "msg",
+      "field_type": "String",
+      "line_number": 71,
+      "annotations": []
+    },
+    "loginTime": {
+      "field_name": "loginTime",
+      "field_type": "Date",
+      "line_number": 77,
+      "annotations": [
+        "JsonFormat"
+      ]
+    },
+    "params": {
+      "field_name": "params",
+      "field_type": "Map<String, Object>",
+      "line_number": 84,
+      "annotations": [
+        "TableField"
+      ]
+    },
+    "pageNum": {
+      "field_name": "pageNum",
+      "field_type": "Integer",
+      "line_number": 89,
+      "annotations": [
+        "TableField",
+        "NotNull",
+        "Min",
+        "TableField"
+      ]
+    },
+    "pageSize": {
+      "field_name": "pageSize",
+      "field_type": "Integer",
+      "line_number": 96,
+      "annotations": [
+        "NotNull",
+        "Min",
+        "Max",
+        "TableField"
+      ]
+    }
+  },
+  "methods": {
+    "getParams": {
+      "method_name": "getParams",
+      "return_type": "Map<String, Object>",
+      "parameters": [],
+      "line_start": 99,
+      "line_end": 104,
+      "body": "    public Map<String, Object> getParams() {\n        if (params == null) {\n            params = new HashMap<>();\n        }\n        return params;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysLoginLogEntity.getParams"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Data",
+    "TableName"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 24,
+  "line_end": 106
+}

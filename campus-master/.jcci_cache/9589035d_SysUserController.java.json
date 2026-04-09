@@ -1,0 +1,564 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysUserController.java",
+  "package_name": "com.oddfar.campus.admin.controller.system",
+  "class_name": "SysUserController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.entity.SysRoleEntity",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.enums.ResBizTypeEnum",
+    "com.oddfar.campus.common.utils.SecurityUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.service.SysRoleService",
+    "com.oddfar.campus.framework.service.SysUserService",
+    "com.oddfar.campus.framework.web.service.SysPermissionService",
+    "org.apache.commons.lang3.ArrayUtils",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.security.access.prepost.PreAuthorize",
+    "org.springframework.validation.annotation.Validated",
+    "java.util.List",
+    "java.util.stream.Collectors"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "userService": {
+      "field_name": "userService",
+      "field_type": "SysUserService",
+      "line_number": 32,
+      "annotations": [
+        "author",
+        "RestController",
+        "RequestMapping",
+        "ApiResource"
+      ]
+    },
+    "roleService": {
+      "field_name": "roleService",
+      "field_type": "SysRoleService",
+      "line_number": 34,
+      "annotations": [
+        "RequestMapping",
+        "ApiResource",
+        "Autowired"
+      ]
+    },
+    "permissionService": {
+      "field_name": "permissionService",
+      "field_type": "SysPermissionService",
+      "line_number": 36,
+      "annotations": [
+        "Autowired",
+        "Autowired"
+      ]
+    }
+  },
+  "methods": {
+    "page": {
+      "method_name": "page",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "sysUserEntity",
+          "annotations": []
+        }
+      ],
+      "line_start": 29,
+      "line_end": 168,
+      "body": "@RequestMapping(\"/system/user\")\n@ApiResource(name = \"用户管理\", resBizType = ResBizTypeEnum.SYSTEM)\npublic class SysUserController {\n    @Autowired\n    private SysUserService userService;\n    @Autowired\n    private SysRoleService roleService;\n    @Autowired\n    private SysPermissionService permissionService;\n\n    /**\n     * 分页\n     */\n    @GetMapping(\"list\")\n    @PreAuthorize(\"@ss.hasPermi('system:user:list')\")\n    public R page(SysUserEntity sysUserEntity) {\n        PageResult<SysUserEntity> page = userService.page(sysUserEntity);\n\n        return R.ok().put(page);\n    }\n\n    /**\n     * 信息\n     */\n    @GetMapping({\"{userId}\", \"/\"})\n    @PreAuthorize(\"@ss.hasPermi('system:user:query')\")\n    public R getInfo(@PathVariable(value = \"userId\", required = false) Long userId) {\n        R res = R.ok();\n        List<SysRoleEntity> roles = roleService.selectRoleAll();\n        res.put(\"roles\", SysUserEntity.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));\n        if (StringUtils.isNotNull(userId)) {\n            SysUserEntity sysUser = userService.selectUserById(userId);\n            res.put(\"data\", sysUser);\n            res.put(\"roleIds\", sysUser.getRoles().stream().map(SysRoleEntity::getRoleId).collect(Collectors.toList()));\n        }\n\n        return res;\n    }\n\n    /**\n     * 新增用户\n     */\n    @PostMapping\n    @PreAuthorize(\"@ss.hasPermi('system:user:add')\")\n    public R add(@Validated @RequestBody SysUserEntity sysUserEntity) {\n        userService.insertUser(sysUserEntity);\n\n        return R.ok();\n    }\n\n    /**\n     * 修改\n     */\n    @PutMapping\n    @PreAuthorize(\"@ss.hasPermi('system:user:edit')\")\n    public R update(@Validated @RequestBody SysUserEntity user) {\n        userService.checkUserAllowed(user);\n        if (!(userService.checkUserNameUnique(user))) {\n            return R.error(\"修改用户'\" + user.getUserName() + \"'失败，登录账号已存在\");\n        } else if (StringUtils.isNotEmpty(user.getPhonenumber())\n                && !(userService.checkPhoneUnique(user))) {\n            return R.error(\"修改用户'\" + user.getUserName() + \"'失败，手机号码已存在\");\n        } else if (StringUtils.isNotEmpty(user.getEmail())\n                && !(userService.checkEmailUnique(user))) {\n            return R.error(\"修改用户'\" + user.getUserName() + \"'失败，邮箱账号已存在\");\n        }\n        user.setPassword(null);\n\n        return R.ok(userService.updateUser(user));\n    }\n\n    /**\n     * 删除\n     */\n    @DeleteMapping(\"/{userIds}\")\n    @PreAuthorize(\"@ss.hasPermi('system:user:remove')\")\n    public R remove(@PathVariable Long[] userIds) {\n        if (ArrayUtils.contains(userIds, SecurityUtils.getUserId())) {\n            return R.error(\"当前用户不能删除\");\n        }\n        return R.ok(userService.deleteUserByIds(userIds));\n    }\n\n    /**\n     * 根据用户编号获取授权角色\n     */\n    @PreAuthorize(\"@ss.hasPermi('system:user:query')\")\n    @GetMapping(\"/authRole/{userId}\")\n    public R authRole(@PathVariable(\"userId\") Long userId) {\n        R res = R.ok();\n        SysUserEntity user = userService.selectUserById(userId);\n        List<SysRoleEntity> roles = roleService.selectRolesByUserId(userId);\n        res.put(\"user\", user);\n        res.put(\"roles\", SysUserEntity.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));\n        return res;\n    }\n\n    /**\n     * 用户授权角色\n     */\n    @PreAuthorize(\"@ss.hasPermi('system:user:edit')\")\n    @PutMapping(\"/authRole\")\n    public R insertAuthRole(Long userId, Long[] roleIds) {\n        if (!SysUserEntity.isAdmin(userId)) {\n            userService.insertUserAuth(userId, roleIds);\n            return R.ok();\n        } else {\n            return R.error(\"不可操作超级管理员\");\n        }\n\n\n    }\n\n    /**\n     * 重置密码\n     */\n    @PreAuthorize(\"@ss.hasPermi('system:user:resetPwd')\")\n    @PutMapping(\"/resetPwd\")\n    public R resetPwd(@RequestBody SysUserEntity user) {\n\n        userService.checkUserAllowed(user);\n        user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));\n        return R.ok(userService.resetPwd(user));\n    }\n\n    /**\n     * 状态修改\n     */\n    @PreAuthorize(\"@ss.hasPermi('system:user:edit')\")\n    @PutMapping(\"/changeStatus\")\n    public R changeStatus(@RequestBody SysUserEntity user) {\n\n        userService.checkUserAllowed(user);\n        userService.updateUserStatus(user);\n        permissionService.resetUserRoleAuthCache(user.getUserId());\n        return R.ok();\n    }\n\n\n}",
+      "annotations": [
+        "RequestMapping",
+        "ApiResource",
+        "Autowired",
+        "Autowired",
+        "Autowired",
+        "GetMapping",
+        "PreAuthorize",
+        "ss"
+      ],
+      "called_methods": [
+        "SysUserController.PutMapping",
+        "SysUserController.add",
+        "SysUserController.GetMapping",
+        "SysRoleService.selectRolesByUserId",
+        "SysUserService.checkEmailUnique",
+        "SysUserController.error",
+        "SysUserController.getUserId",
+        "SysUserController.getInfo",
+        "ss.hasPermi",
+        "SysUserService.page",
+        "SysUserController.getPhonenumber",
+        "SysUserController.ApiResource",
+        "SysUserController.selectRoleAll",
+        "SysUserController.insertAuthRole",
+        "SysUserController.stream",
+        "SysUserController.checkUserNameUnique",
+        "SysUserController.insertUser",
+        "SysUserController.update",
+        "SysUserController.encryptPassword",
+        "SysUserService.insertUserAuth",
+        "SysUserService.deleteUserByIds",
+        "SysUserController.remove",
+        "SysUserController.updateUserStatus",
+        "StringUtils.isNotNull",
+        "SysUserController.put",
+        "SysUserController.toList",
+        "SysUserController.insertUserAuth",
+        "ArrayUtils.contains",
+        "SysUserController.isAdmin",
+        "user.getEmail",
+        "SysUserController.resetPwd",
+        "SysUserController.setPassword",
+        "SysUserController.selectUserById",
+        "SysUserController.getRoles",
+        "SysUserController.resetUserRoleAuthCache",
+        "SysUserController.map",
+        "user.setPassword",
+        "SysUserController.page",
+        "user.getPhonenumber",
+        "SysUserController.PathVariable",
+        "SysUserController.changeStatus",
+        "SysUserController.checkEmailUnique",
+        "SysUserController.RequestMapping",
+        "SysUserController.collect",
+        "SysUserController.DeleteMapping",
+        "SysUserController.contains",
+        "SysUserController.updateUser",
+        "SysUserController.PreAuthorize",
+        "SysUserController.filter",
+        "SysUserService.checkUserAllowed",
+        "SysUserService.checkUserNameUnique",
+        "user.getUserName",
+        "SysUserController.isNotNull",
+        "SysUserController.getEmail",
+        "user.getPassword",
+        "SysUserController.checkPhoneUnique",
+        "sysUser.getRoles",
+        "SysUserController.deleteUserByIds",
+        "Collectors.toList",
+        "SysRoleService.selectRoleAll",
+        "SysUserController.selectRolesByUserId",
+        "SysUserService.selectUserById",
+        "SysUserService.updateUserStatus",
+        "SecurityUtils.encryptPassword",
+        "r.isAdmin",
+        "roles.stream",
+        "SysUserService.resetPwd",
+        "SysUserController.authRole",
+        "SecurityUtils.getUserId",
+        "res.put",
+        "R.error",
+        "SysUserController.ok",
+        "SysUserController.isNotEmpty",
+        "SysUserService.checkPhoneUnique",
+        "SysUserService.insertUser",
+        "R.ok",
+        "SysPermissionService.resetUserRoleAuthCache",
+        "SysUserEntity.isAdmin",
+        "SysUserController.hasPermi",
+        "SysUserController.getUserName",
+        "SysUserController.getPassword",
+        "user.getUserId",
+        "StringUtils.isNotEmpty",
+        "SysUserService.updateUser",
+        "SysUserController.checkUserAllowed"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/list",
+      "http_method": "GET"
+    },
+    "remove": {
+      "method_name": "remove",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "userIds",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 54,
+      "line_end": 66,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:user:query')\")\n    public R getInfo(@PathVariable(value = \"userId\", required = false) Long userId) {\n        R res = R.ok();\n        List<SysRoleEntity> roles = roleService.selectRoleAll();\n        res.put(\"roles\", SysUserEntity.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));\n        if (StringUtils.isNotNull(userId)) {\n            SysUserEntity sysUser = userService.selectUserById(userId);\n            res.put(\"data\", sysUser);\n            res.put(\"roleIds\", sysUser.getRoles().stream().map(SysRoleEntity::getRoleId).collect(Collectors.toList()));\n        }\n\n        return res;\n    }",
+      "annotations": [
+        "ss",
+        "PathVariable",
+        "PostMapping",
+        "PreAuthorize",
+        "ss",
+        "Validated",
+        "RequestBody",
+        "PutMapping",
+        "PreAuthorize",
+        "ss",
+        "Validated",
+        "RequestBody",
+        "DeleteMapping",
+        "PreAuthorize",
+        "ss"
+      ],
+      "called_methods": [
+        "r.isAdmin",
+        "roles.stream",
+        "SysUserController.PreAuthorize",
+        "SysUserController.filter",
+        "res.put",
+        "SysUserController.isAdmin",
+        "SysUserController.ok",
+        "SysUserController.selectUserById",
+        "SysUserController.getRoles",
+        "SysUserController.getInfo",
+        "SysUserController.map",
+        "ss.hasPermi",
+        "SysUserController.isNotNull",
+        "R.ok",
+        "SysUserController.selectRoleAll",
+        "SysUserController.stream",
+        "SysUserController.PathVariable",
+        "SysUserEntity.isAdmin",
+        "sysUser.getRoles",
+        "SysUserController.hasPermi",
+        "Collectors.toList",
+        "SysRoleService.selectRoleAll",
+        "SysUserController.collect",
+        "SysUserService.selectUserById",
+        "StringUtils.isNotNull",
+        "SysUserController.put",
+        "SysUserController.toList"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/user",
+      "http_method": "POST"
+    },
+    "insertAuthRole": {
+      "method_name": "insertAuthRole",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        },
+        {
+          "type": "Long[]",
+          "name": "roleIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 129,
+      "line_end": 140,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:user:edit')\")\n    @PutMapping(\"/authRole\")\n    public R insertAuthRole(Long userId, Long[] roleIds) {\n        if (!SysUserEntity.isAdmin(userId)) {\n            userService.insertUserAuth(userId, roleIds);\n            return R.ok();\n        } else {\n            return R.error(\"不可操作超级管理员\");\n        }\n\n\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "R.error",
+        "SysUserService.insertUserAuth",
+        "SysUserController.PutMapping",
+        "SysUserController.isAdmin",
+        "SysUserController.ok",
+        "ss.hasPermi",
+        "SysUserController.PreAuthorize",
+        "R.ok",
+        "SysUserController.error",
+        "SysUserController.insertAuthRole",
+        "SysUserController.insertUserAuth",
+        "SysUserEntity.isAdmin",
+        "SysUserController.hasPermi"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/authRole",
+      "http_method": "PUT"
+    },
+    "resetPwd": {
+      "method_name": "resetPwd",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": [
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 145,
+      "line_end": 152,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:user:resetPwd')\")\n    @PutMapping(\"/resetPwd\")\n    public R resetPwd(@RequestBody SysUserEntity user) {\n\n        userService.checkUserAllowed(user);\n        user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));\n        return R.ok(userService.resetPwd(user));\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "SysUserService.resetPwd",
+        "SysUserController.encryptPassword",
+        "SysUserController.PutMapping",
+        "SysUserController.getPassword",
+        "user.setPassword",
+        "ss.hasPermi",
+        "SysUserController.ok",
+        "SysUserController.PreAuthorize",
+        "R.ok",
+        "SysUserController.resetPwd",
+        "SysUserController.setPassword",
+        "user.getPassword",
+        "SysUserService.checkUserAllowed",
+        "SysUserController.hasPermi",
+        "SecurityUtils.encryptPassword",
+        "SysUserController.checkUserAllowed"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/resetPwd",
+      "http_method": "PUT"
+    },
+    "changeStatus": {
+      "method_name": "changeStatus",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": [
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 157,
+      "line_end": 165,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:user:edit')\")\n    @PutMapping(\"/changeStatus\")\n    public R changeStatus(@RequestBody SysUserEntity user) {\n\n        userService.checkUserAllowed(user);\n        userService.updateUserStatus(user);\n        permissionService.resetUserRoleAuthCache(user.getUserId());\n        return R.ok();\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "SysUserController.PutMapping",
+        "SysUserController.ok",
+        "ss.hasPermi",
+        "SysUserController.resetUserRoleAuthCache",
+        "SysUserController.PreAuthorize",
+        "user.getUserId",
+        "R.ok",
+        "SysUserService.updateUserStatus",
+        "SysPermissionService.resetUserRoleAuthCache",
+        "SysUserController.updateUserStatus",
+        "SysUserController.changeStatus",
+        "SysUserController.getUserId",
+        "SysUserService.checkUserAllowed",
+        "SysUserController.hasPermi",
+        "SysUserController.checkUserAllowed"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/changeStatus",
+      "http_method": "PUT"
+    },
+    "getInfo": {
+      "method_name": "getInfo",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "=",
+          "name": "\"",
+          "annotations": [
+            "@PathVariable(value"
+          ]
+        },
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 55,
+      "line_end": 66,
+      "body": "    public R getInfo(@PathVariable(value = \"userId\", required = false) Long userId) {\n        R res = R.ok();\n        List<SysRoleEntity> roles = roleService.selectRoleAll();\n        res.put(\"roles\", SysUserEntity.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));\n        if (StringUtils.isNotNull(userId)) {\n            SysUserEntity sysUser = userService.selectUserById(userId);\n            res.put(\"data\", sysUser);\n            res.put(\"roleIds\", sysUser.getRoles().stream().map(SysRoleEntity::getRoleId).collect(Collectors.toList()));\n        }\n\n        return res;\n    }",
+      "annotations": [
+        "@GetMapping({\"{userId}\", \"/\"})",
+        "@PreAuthorize(\"@ss.hasPermi('system:user:query')\")"
+      ],
+      "called_methods": [
+        "r.isAdmin",
+        "roles.stream",
+        "SysUserController.filter",
+        "res.put",
+        "SysUserController.isAdmin",
+        "SysUserController.ok",
+        "SysUserController.selectUserById",
+        "SysUserController.getRoles",
+        "SysUserController.getInfo",
+        "SysUserController.map",
+        "SysUserController.isNotNull",
+        "R.ok",
+        "SysUserController.selectRoleAll",
+        "SysUserController.stream",
+        "SysUserController.PathVariable",
+        "SysUserEntity.isAdmin",
+        "sysUser.getRoles",
+        "Collectors.toList",
+        "SysRoleService.selectRoleAll",
+        "SysUserController.collect",
+        "SysUserService.selectUserById",
+        "StringUtils.isNotNull",
+        "SysUserController.put",
+        "SysUserController.toList"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/user",
+      "http_method": "GET"
+    },
+    "add": {
+      "method_name": "add",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "sysUserEntity",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 73,
+      "line_end": 77,
+      "body": "    public R add(@Validated @RequestBody SysUserEntity sysUserEntity) {\n        userService.insertUser(sysUserEntity);\n\n        return R.ok();\n    }",
+      "annotations": [
+        "@PostMapping",
+        "@PreAuthorize(\"@ss.hasPermi('system:user:add')\")"
+      ],
+      "called_methods": [
+        "SysUserController.ok",
+        "SysUserController.add",
+        "R.ok",
+        "SysUserService.insertUser",
+        "SysUserController.insertUser"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/user",
+      "http_method": "POST"
+    },
+    "update": {
+      "method_name": "update",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 84,
+      "line_end": 98,
+      "body": "    public R update(@Validated @RequestBody SysUserEntity user) {\n        userService.checkUserAllowed(user);\n        if (!(userService.checkUserNameUnique(user))) {\n            return R.error(\"修改用户'\" + user.getUserName() + \"'失败，登录账号已存在\");\n        } else if (StringUtils.isNotEmpty(user.getPhonenumber())\n                && !(userService.checkPhoneUnique(user))) {\n            return R.error(\"修改用户'\" + user.getUserName() + \"'失败，手机号码已存在\");\n        } else if (StringUtils.isNotEmpty(user.getEmail())\n                && !(userService.checkEmailUnique(user))) {\n            return R.error(\"修改用户'\" + user.getUserName() + \"'失败，邮箱账号已存在\");\n        }\n        user.setPassword(null);\n\n        return R.ok(userService.updateUser(user));\n    }",
+      "annotations": [
+        "@PutMapping",
+        "@PreAuthorize(\"@ss.hasPermi('system:user:edit')\")"
+      ],
+      "called_methods": [
+        "SysUserService.checkUserAllowed",
+        "SysUserService.checkEmailUnique",
+        "R.error",
+        "user.getEmail",
+        "SysUserController.ok",
+        "SysUserService.checkUserNameUnique",
+        "SysUserController.error",
+        "SysUserController.isNotEmpty",
+        "SysUserController.setPassword",
+        "SysUserService.checkPhoneUnique",
+        "user.getUserName",
+        "user.setPassword",
+        "R.ok",
+        "user.getPhonenumber",
+        "SysUserController.getPhonenumber",
+        "SysUserController.getEmail",
+        "SysUserController.checkPhoneUnique",
+        "SysUserController.checkUserNameUnique",
+        "SysUserController.getUserName",
+        "SysUserController.update",
+        "SysUserController.checkEmailUnique",
+        "SysUserController.updateUser",
+        "StringUtils.isNotEmpty",
+        "SysUserService.updateUser",
+        "SysUserController.checkUserAllowed"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/user",
+      "http_method": "PUT"
+    },
+    "authRole": {
+      "method_name": "authRole",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": [
+            "@PathVariable(\")"
+          ]
+        }
+      ],
+      "line_start": 117,
+      "line_end": 124,
+      "body": "    public R authRole(@PathVariable(\"userId\") Long userId) {\n        R res = R.ok();\n        SysUserEntity user = userService.selectUserById(userId);\n        List<SysRoleEntity> roles = roleService.selectRolesByUserId(userId);\n        res.put(\"user\", user);\n        res.put(\"roles\", SysUserEntity.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));\n        return res;\n    }",
+      "annotations": [
+        "@PreAuthorize(\"@ss.hasPermi('system:user:query')\")",
+        "@GetMapping(\"/authRole/{userId}\")"
+      ],
+      "called_methods": [
+        "r.isAdmin",
+        "roles.stream",
+        "SysUserController.authRole",
+        "SysUserController.filter",
+        "SysRoleService.selectRolesByUserId",
+        "res.put",
+        "SysUserController.isAdmin",
+        "SysUserController.ok",
+        "SysUserController.selectUserById",
+        "R.ok",
+        "SysUserController.stream",
+        "SysUserController.PathVariable",
+        "SysUserEntity.isAdmin",
+        "Collectors.toList",
+        "SysUserController.selectRolesByUserId",
+        "SysUserController.collect",
+        "SysUserService.selectUserById",
+        "SysUserController.put",
+        "SysUserController.toList"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/authRole/{userId}",
+      "http_method": "GET"
+    }
+  },
+  "annotations": [
+    "author",
+    "RestController",
+    "RequestMapping",
+    "ApiResource"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 31,
+  "line_end": 168
+}

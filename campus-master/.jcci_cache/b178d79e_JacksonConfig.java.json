@@ -1,0 +1,72 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\config\\JacksonConfig.java",
+  "package_name": "com.oddfar.campus.framework.config",
+  "class_name": "JacksonConfig",
+  "imports": [
+    "com.fasterxml.jackson.databind.ser.std.ToStringSerializer",
+    "com.fasterxml.jackson.datatype.jsr310.JavaTimeModule",
+    "com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer",
+    "com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer",
+    "com.oddfar.campus.framework.handler.BigNumberSerializer",
+    "lombok.extern.slf4j.Slf4j",
+    "org.springframework.boot.autoconfigure.AutoConfigureBefore",
+    "org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer",
+    "org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration",
+    "org.springframework.context.annotation.Bean",
+    "org.springframework.context.annotation.Configuration",
+    "java.math.BigDecimal",
+    "java.math.BigInteger",
+    "java.time.LocalDateTime",
+    "java.time.format.DateTimeFormatter",
+    "java.util.TimeZone"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "customizer": {
+      "method_name": "customizer",
+      "return_type": "Jackson2ObjectMapperBuilderCustomizer",
+      "parameters": [],
+      "line_start": 32,
+      "line_end": 48,
+      "body": "    public Jackson2ObjectMapperBuilderCustomizer customizer() {\n        return builder -> {\n            // 全局配置序列化返回 JSON 处理\n            JavaTimeModule javaTimeModule = new JavaTimeModule();\n            javaTimeModule.addSerializer(Long.class, BigNumberSerializer.INSTANCE);\n            javaTimeModule.addSerializer(Long.TYPE, BigNumberSerializer.INSTANCE);\n            javaTimeModule.addSerializer(BigInteger.class, BigNumberSerializer.INSTANCE);\n            javaTimeModule.addSerializer(BigDecimal.class, ToStringSerializer.instance);\n            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(\"yyyy-MM-dd HH:mm:ss\");\n            javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(formatter));\n            javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(formatter));\n            builder.modules(javaTimeModule);\n            //时区配置\n            builder.timeZone(TimeZone.getDefault());\n            log.info(\"初始化 jackson 配置\");\n        };\n    }",
+      "annotations": [],
+      "called_methods": [
+        "JacksonConfig.customizer",
+        "JacksonConfig.ofPattern",
+        "JacksonConfig.modules",
+        "javaTimeModule.addSerializer",
+        "JacksonConfig.LocalDateTimeDeserializer",
+        "builder.modules",
+        "builder.timeZone",
+        "JacksonConfig.LocalDateTimeSerializer",
+        "JacksonConfig.info",
+        "DateTimeFormatter.ofPattern",
+        "JacksonConfig.timeZone",
+        "javaTimeModule.addDeserializer",
+        "JacksonConfig.JavaTimeModule",
+        "JacksonConfig.addSerializer",
+        "log.info",
+        "JacksonConfig.getDefault",
+        "JacksonConfig.addDeserializer",
+        "TimeZone.getDefault"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Slf4j",
+    "Configuration",
+    "AutoConfigureBefore"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 29,
+  "line_end": 51
+}

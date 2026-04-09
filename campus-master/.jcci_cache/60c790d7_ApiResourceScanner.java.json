@@ -1,0 +1,305 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\listener\\ApiResourceScanner.java",
+  "package_name": "com.oddfar.campus.framework.listener",
+  "class_name": "ApiResourceScanner",
+  "imports": [
+    "cn.hutool.core.util.StrUtil",
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.domain.entity.SysResourceEntity",
+    "com.oddfar.campus.common.utils.spring.AopTargetUtils",
+    "com.oddfar.campus.framework.api.resource.ResourceCollectorApi",
+    "org.apache.commons.lang3.StringUtils",
+    "org.springframework.beans.BeansException",
+    "org.springframework.beans.factory.annotation.Value",
+    "org.springframework.beans.factory.config.BeanPostProcessor",
+    "org.springframework.security.access.prepost.PreAuthorize",
+    "org.springframework.web.bind.annotation.RequestMapping",
+    "org.springframework.web.bind.annotation.RestController",
+    "java.lang.annotation.Annotation",
+    "java.lang.reflect.InvocationTargetException",
+    "java.lang.reflect.Method",
+    "java.util.ArrayList",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [
+    "BeanPostProcessor"
+  ],
+  "fields": {
+    "springApplicationName": {
+      "field_name": "springApplicationName",
+      "field_type": "String",
+      "line_number": 32,
+      "annotations": [
+        "author",
+        "Value"
+      ]
+    }
+  },
+  "methods": {
+    "postProcessBeforeInitialization": {
+      "method_name": "postProcessBeforeInitialization",
+      "return_type": "Object",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "bean",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "beanName",
+          "annotations": []
+        }
+      ],
+      "line_start": 45,
+      "line_end": 47,
+      "body": "    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {\n        return bean;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ApiResourceScanner.postProcessBeforeInitialization"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "postProcessAfterInitialization": {
+      "method_name": "postProcessAfterInitialization",
+      "return_type": "Object",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "bean",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "beanName",
+          "annotations": []
+        }
+      ],
+      "line_start": 50,
+      "line_end": 73,
+      "body": "    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {\n        Object aopTarget = AopTargetUtils.getTarget(bean);\n\n        if (aopTarget == null) {\n            aopTarget = bean;\n        }\n\n        Class<?> clazz = aopTarget.getClass();\n        // 判断是不是控制器,不是控制器就略过\n        boolean controllerFlag = getControllerFlag(clazz);\n        if (!controllerFlag) {\n            return bean;\n        }\n\n        ApiResource classApiAnnotation = clazz.getAnnotation(ApiResource.class);\n        if (classApiAnnotation != null) {\n            // 扫描控制器的所有带ApiResource注解的方法\n            List<SysResourceEntity> apiResources = doScan(clazz);\n            // 将扫描到的注解转化为资源实体存储到缓存\n            resourceCollectorApi.collectResources(apiResources);\n        }\n\n        return bean;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ApiResourceScanner.getTarget",
+        "ApiResourceScanner.doScan",
+        "ApiResourceScanner.postProcessAfterInitialization",
+        "clazz.getAnnotation",
+        "ApiResourceScanner.getAnnotation",
+        "resourceCollectorApi.collectResources",
+        "ApiResourceScanner.getClass",
+        "aopTarget.getClass",
+        "ApiResourceScanner.getControllerFlag",
+        "ApiResourceScanner.collectResources",
+        "AopTargetUtils.getTarget"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getControllerFlag": {
+      "method_name": "getControllerFlag",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Class<?>",
+          "name": "clazz",
+          "annotations": []
+        }
+      ],
+      "line_start": 79,
+      "line_end": 87,
+      "body": "    private boolean getControllerFlag(Class<?> clazz) {\n        Annotation[] annotations = clazz.getAnnotations();\n        for (Annotation annotation : annotations) {\n            if (RestController.class.equals(annotation.annotationType())) {\n                return true;\n            }\n        }\n        return false;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "annotation.annotationType",
+        "class.equals",
+        "ApiResourceScanner.annotationType",
+        "ApiResourceScanner.getControllerFlag",
+        "clazz.getAnnotations",
+        "ApiResourceScanner.equals",
+        "ApiResourceScanner.getAnnotations"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "doScan": {
+      "method_name": "doScan",
+      "return_type": "List<SysResourceEntity>",
+      "parameters": [
+        {
+          "type": "Class<?>",
+          "name": "clazz",
+          "annotations": []
+        }
+      ],
+      "line_start": 93,
+      "line_end": 116,
+      "body": "    private List<SysResourceEntity> doScan(Class<?> clazz) {\n\n        ArrayList<SysResourceEntity> apiResources = new ArrayList<>();\n        Method[] declaredMethods = clazz.getDeclaredMethods();\n        if (declaredMethods.length > 0) {\n            for (Method declaredMethod : declaredMethods) {\n                Annotation annotation = null;\n\n                Annotation[] annotations = declaredMethod.getAnnotations();\n                for (Annotation a : annotations) {\n                    //若是 spring 的请求注解\n                    if (a.toString().contains(\"Mapping(\")) {\n                        annotation = a;\n                    }\n                }\n\n                if (annotation != null) {\n                    SysResourceEntity definition = createDefinition(clazz, declaredMethod, annotation);\n                    apiResources.add(definition);\n                }\n            }\n        }\n        return apiResources;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ApiResourceScanner.add",
+        "ApiResourceScanner.Mapping",
+        "a.toString",
+        "declaredMethod.getAnnotations",
+        "apiResources.add",
+        "ApiResourceScanner.getDeclaredMethods",
+        "ApiResourceScanner.contains",
+        "ApiResourceScanner.toString",
+        "ApiResourceScanner.createDefinition",
+        "ApiResourceScanner.doScan",
+        "ApiResourceScanner.getAnnotations",
+        "clazz.getDeclaredMethods"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "createDefinition": {
+      "method_name": "createDefinition",
+      "return_type": "SysResourceEntity",
+      "parameters": [
+        {
+          "type": "Class<?>",
+          "name": "controllerClass",
+          "annotations": []
+        },
+        {
+          "type": "Method",
+          "name": "method",
+          "annotations": []
+        },
+        {
+          "type": "Annotation",
+          "name": "annotation",
+          "annotations": []
+        }
+      ],
+      "line_start": 122,
+      "line_end": 180,
+      "body": "    private SysResourceEntity createDefinition(Class<?> controllerClass, Method method, Annotation annotation) {\n        SysResourceEntity resource = new SysResourceEntity();\n\n        //设置类和方法名称\n        resource.setClassName(controllerClass.getSimpleName());\n        resource.setMethodName(method.getName());\n\n        // 填充模块编码，模块编码就是控制器名称截取Controller关键字前边的字符串\n        String className = resource.getClassName();\n\n        int controllerIndex = className.indexOf(\"Controller\");\n        if (controllerIndex == -1) {\n            throw new IllegalArgumentException(\"controller class name is not illegal, it should end with Controller!\");\n        }\n        //去掉Controller\n        String modular = className.substring(0, controllerIndex);\n        resource.setModular_code(modular);\n\n        // 填充模块的中文名称\n        ApiResource apiResource = controllerClass.getAnnotation(ApiResource.class);\n        // 接口资源的类别\n        resource.setResourceBizType(apiResource.resBizType().getCode());\n        resource.setModularName(apiResource.name());\n        // 设置appCode\n        if (StrUtil.isNotBlank(apiResource.appCode())) {\n            resource.setAppCode(apiResource.appCode());\n        }else {\n            resource.setAppCode(springApplicationName);\n        }\n        //资源唯一编码\n        String resourceCode = StrUtil.toUnderlineCase(resource.getAppCode()) + \".\" + StrUtil.toUnderlineCase(modular) + \".\" + StrUtil.toUnderlineCase(resource.getMethodName());\n        resource.setResourceCode(resourceCode);\n\n        //是否需要鉴权\n        PreAuthorize preAuthorize = method.getAnnotation(PreAuthorize.class);\n        resource.setRequiredPermissionFlag(Constants.NO);\n        if (preAuthorize != null) {\n            if (preAuthorize.value().contains(\"@ss.resourceAuth\")) {\n                resource.setRequiredPermissionFlag(Constants.YES);\n            }\n        }\n\n        // 填充其他属性\n        String name = invokeAnnotationMethod(annotation, \"name\", String.class);\n        //不存在则资源名称为方法名\n        if (StringUtils.isNotEmpty(name)) {\n            resource.setResourceName(name);\n        } else {\n            resource.setResourceName(resource.getMethodName());\n        }\n\n        String[] value = invokeAnnotationMethod(annotation, \"value\", String[].class);\n        String controllerMethodPath = createControllerPath(controllerClass, value);\n        resource.setUrl(controllerMethodPath);\n        //填充请求方法\n        resource.setHttpMethod(StringUtils.substringBetween(annotation.toString(), \"annotation.\", \"Mapping\").toLowerCase());\n\n        return resource;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ApiResourceScanner.substringBetween",
+        "resource.getMethodName",
+        "resource.setModular_code",
+        "resource.setResourceName",
+        "ApiResourceScanner.toUnderlineCase",
+        "ApiResourceScanner.getAnnotation",
+        "resource.setClassName",
+        "ApiResourceScanner.setResourceName",
+        "ApiResourceScanner.setModularName",
+        "annotation.toString",
+        "resource.setMethodName",
+        "resource.setHttpMethod",
+        "ApiResourceScanner.SysResourceEntity",
+        "ApiResourceScanner.setMethodName",
+        "ApiResourceScanner.setAppCode",
+        "ApiResourceScanner.getAppCode",
+        "preAuthorize.value",
+        "ApiResourceScanner.setRequiredPermissionFlag",
+        "ApiResourceScanner.isNotEmpty",
+        "ApiResourceScanner.invokeAnnotationMethod",
+        "ApiResourceScanner.setModular_code",
+        "StringUtils.substringBetween",
+        "ApiResourceScanner.appCode",
+        "resource.getClassName",
+        "ApiResourceScanner.toLowerCase",
+        "controllerClass.getSimpleName",
+        "className.indexOf",
+        "apiResource.resBizType",
+        "resource.setResourceCode",
+        "ApiResourceScanner.getSimpleName",
+        "resource.setRequiredPermissionFlag",
+        "controllerClass.getAnnotation",
+        "method.getAnnotation",
+        "ApiResourceScanner.contains",
+        "StrUtil.isNotBlank",
+        "ApiResourceScanner.createDefinition",
+        "ApiResourceScanner.indexOf",
+        "ApiResourceScanner.getMethodName",
+        "StrUtil.toUnderlineCase",
+        "method.getName",
+        "ApiResourceScanner.setResourceCode",
+        "apiResource.appCode",
+        "ApiResourceScanner.IllegalArgumentException",
+        "ApiResourceScanner.value",
+        "ApiResourceScanner.resBizType",
+        "resource.setResourceBizType",
+        "ApiResourceScanner.substring",
+        "ApiResourceScanner.setClassName",
+        "className.substring",
+        "ApiResourceScanner.isNotBlank",
+        "ApiResourceScanner.setUrl",
+        "ApiResourceScanner.setHttpMethod",
+        "ApiResourceScanner.getClassName",
+        "resource.setModularName",
+        "apiResource.name",
+        "ApiResourceScanner.createControllerPath",
+        "ApiResourceScanner.name",
+        "resource.getAppCode",
+        "resource.setUrl",
+        "ApiResourceScanner.setResourceBizType",
+        "ApiResourceScanner.getCode",
+        "StringUtils.isNotEmpty",
+        "ApiResourceScanner.toString",
+        "ApiResourceScanner.getName",
+        "resource.setAppCode"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "createControllerPath": {
+      "method_name": "createControllerPath",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "Class<?>",
+          "name": "clazz",
+          "annotations": []
+        },
+        {
+          "type": "String[]",
+          "name": "paths",
+          "annotations": []
+        }
+      ],
+      "line_start": 186,
+      "line_end": 212,
+      "body": "    private String createControllerPath(Class<?> clazz, String[] paths) {\n        String path = \"\";\n        if (paths.length > 0) {\n            path = \"/\" + paths[0];\n        }\n        String controllerPath;\n\n        RequestMapping controllerRequestMapping = clazz.getDeclaredAnnotation(RequestMapping.class);\n        if (controllerRequestMapping == null) {\n            controllerPath = \"\";\n        } else {\n            String[] values = controllerRequestMapping.value();\n            if (values.length > 0) {\n                controllerPath = values[0];\n            } else {\n                controllerPath = \"\";\n            }\n        }\n\n        // 控制器上的path要以/开头\n        if (!controllerPath.startsWith(\"/\")) {\n            controllerPath = \"/\" + controllerPath;\n        }\n\n        // 前缀多个左斜杠替换为一个\n        return (controllerPath + path).replaceAll(\"/+\", \"/\");\n    }",
+      "annotations": [],
+      "called_methods": [
+        "clazz.getDeclaredAnnotation",
+        "controllerRequestMapping.value",
+        "ApiResourceScanner.createControllerPath",
+        "ApiResourceScanner.getDeclaredAnnotation",
+        "ApiResourceScanner.value",
+        "ApiResourceScanner.replaceAll",
+        "controllerPath.startsWith",
+        "ApiResourceScanner.startsWith"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 29,
+  "line_end": 232
+}

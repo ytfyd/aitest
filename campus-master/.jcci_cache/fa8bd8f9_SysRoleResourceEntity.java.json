@@ -1,0 +1,60 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\entity\\SysRoleResourceEntity.java",
+  "package_name": "com.oddfar.campus.common.domain.entity",
+  "class_name": "SysRoleResourceEntity",
+  "imports": [
+    "com.baomidou.mybatisplus.annotation.IdType",
+    "com.baomidou.mybatisplus.annotation.TableId",
+    "com.baomidou.mybatisplus.annotation.TableName",
+    "lombok.Data",
+    "java.io.Serializable"
+  ],
+  "extends": null,
+  "implements": [
+    "Serializable"
+  ],
+  "fields": {
+    "serialVersionUID": {
+      "field_name": "serialVersionUID",
+      "field_type": "long",
+      "line_number": [
+        16,
+        26
+      ],
+      "annotations": []
+    },
+    "resourceCode": {
+      "field_name": "resourceCode",
+      "field_type": "String",
+      "line_number": [
+        21,
+        13
+      ],
+      "annotations": []
+    },
+    "roleId": {
+      "field_name": "roleId",
+      "field_type": "Long",
+      "line_number": [
+        27,
+        13
+      ],
+      "annotations": [
+        "TableId"
+      ]
+    }
+  },
+  "methods": {},
+  "annotations": [
+    "Data",
+    "TableName"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    15,
+    8
+  ],
+  "line_end": 0
+}

@@ -1,0 +1,78 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\security\\handle\\AuthenticationEntryPointImpl.java",
+  "package_name": "com.oddfar.campus.framework.security.handle",
+  "class_name": "AuthenticationEntryPointImpl",
+  "imports": [
+    "com.alibaba.fastjson2.JSON",
+    "com.oddfar.campus.common.constant.HttpStatus",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "org.springframework.security.core.AuthenticationException",
+    "org.springframework.security.web.AuthenticationEntryPoint",
+    "org.springframework.stereotype.Component",
+    "javax.servlet.http.HttpServletRequest",
+    "javax.servlet.http.HttpServletResponse",
+    "java.io.IOException",
+    "java.io.Serializable"
+  ],
+  "extends": null,
+  "implements": [
+    "AuthenticationEntryPoint",
+    "Serializable"
+  ],
+  "fields": {},
+  "methods": {
+    "commence": {
+      "method_name": "commence",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        },
+        {
+          "type": "HttpServletResponse",
+          "name": "response",
+          "annotations": []
+        },
+        {
+          "type": "AuthenticationException",
+          "name": "e",
+          "annotations": []
+        }
+      ],
+      "line_start": 27,
+      "line_end": 32,
+      "body": "    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e)\n            throws IOException {\n        int code = HttpStatus.UNAUTHORIZED;\n        String msg = StringUtils.format(\"请求访问：{}，认证失败，无法访问系统资源\", request.getRequestURI());\n        ServletUtils.renderString(response, JSON.toJSONString(R.error(code, msg)));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "R.error",
+        "request.getRequestURI",
+        "AuthenticationEntryPointImpl.error",
+        "AuthenticationEntryPointImpl.toJSONString",
+        "AuthenticationEntryPointImpl.commence",
+        "StringUtils.format",
+        "AuthenticationEntryPointImpl.renderString",
+        "AuthenticationEntryPointImpl.getRequestURI",
+        "JSON.toJSONString",
+        "ServletUtils.renderString",
+        "AuthenticationEntryPointImpl.format"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 23,
+  "line_end": 34
+}

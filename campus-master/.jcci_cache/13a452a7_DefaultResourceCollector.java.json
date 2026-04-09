@@ -1,0 +1,155 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\resource\\impl\\DefaultResourceCollector.java",
+  "package_name": "com.oddfar.campus.framework.api.resource.impl",
+  "class_name": "DefaultResourceCollector",
+  "imports": [
+    "com.oddfar.campus.common.domain.entity.SysResourceEntity",
+    "com.oddfar.campus.common.domain.model.SysRoleAuth",
+    "com.oddfar.campus.common.domain.model.SysRoleAuthList",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.api.resource.ResourceCollectorApi",
+    "java.util.concurrent.ConcurrentHashMap"
+  ],
+  "extends": null,
+  "implements": [
+    "ResourceCollectorApi"
+  ],
+  "fields": {},
+  "methods": {
+    "collectResources": {
+      "method_name": "collectResources",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "List<SysResourceEntity>",
+          "name": "apiResource",
+          "annotations": []
+        }
+      ],
+      "line_start": 22,
+      "line_end": 32,
+      "body": "    public void collectResources(List<SysResourceEntity> apiResource) {\n        if (apiResource != null && apiResource.size() > 0) {\n            for (SysResourceEntity resourceEntity : apiResource) {\n                SysResourceEntity alreadyFlag = resourceDefinitions.get(resourceEntity.getResourceCode());\n                if (alreadyFlag != null) {\n                    throw new RuntimeException(\"资源扫描过程中存在重复资源！\\n已存在资源：\" + alreadyFlag + \"\\n新资源为： \" + resourceEntity);\n                }\n                resourceDefinitions.put(resourceEntity.getResourceCode(), resourceEntity);\n            }\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "apiResource.size",
+        "DefaultResourceCollector.collectResources",
+        "DefaultResourceCollector.getResourceCode",
+        "DefaultResourceCollector.RuntimeException",
+        "resourceEntity.getResourceCode",
+        "resourceDefinitions.get",
+        "DefaultResourceCollector.size",
+        "DefaultResourceCollector.get",
+        "DefaultResourceCollector.put",
+        "resourceDefinitions.put"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getAllResources": {
+      "method_name": "getAllResources",
+      "return_type": "List<SysResourceEntity>",
+      "parameters": [],
+      "line_start": 35,
+      "line_end": 42,
+      "body": "    public List<SysResourceEntity> getAllResources() {\n        Set<Map.Entry<String, SysResourceEntity>> entries = resourceDefinitions.entrySet();\n        ArrayList<SysResourceEntity> resourceDefinitions = new ArrayList<>();\n        for (Map.Entry<String, SysResourceEntity> entry : entries) {\n            resourceDefinitions.add(entry.getValue());\n        }\n        return resourceDefinitions;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "entry.getValue",
+        "resourceDefinitions.add",
+        "DefaultResourceCollector.add",
+        "DefaultResourceCollector.getValue",
+        "DefaultResourceCollector.entrySet",
+        "resourceDefinitions.entrySet",
+        "DefaultResourceCollector.getAllResources"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setRoleAuthCache": {
+      "method_name": "setRoleAuthCache",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "List<SysRoleAuth>>",
+          "name": "rolePermsMap",
+          "annotations": []
+        },
+        {
+          "type": "List<SysRoleAuth>>",
+          "name": "roleResourceMap",
+          "annotations": []
+        }
+      ],
+      "line_start": 45,
+      "line_end": 106,
+      "body": "    public void setRoleAuthCache(Map<Long, List<SysRoleAuth>> rolePermsMap, Map<Long, List<SysRoleAuth>> roleResourceMap) {\n        roleListMap.clear();\n\n        for (Long roleId : rolePermsMap.keySet()) {\n\n            List<SysRoleAuth> list = rolePermsMap.get(roleId);\n            //把关于roleId的perms数据建立成set集合\n            Set<String> perms = new HashSet<>();\n            list.stream().forEach(r -> {\n                if (StringUtils.isNotEmpty(r.getPerms())) {\n                    perms.add(r.getPerms());\n                }\n            });\n\n            //如果resMap包含roleId\n            if (roleListMap.containsKey(roleId)) {\n                SysRoleAuthList sysRoleList = roleListMap.get(roleId);\n                if (sysRoleList.getPerms() != null) {\n                    //如果存在perms，则添加数据\n                    sysRoleList.getPerms().addAll(perms);\n                } else {\n                    //无数据则直接set\n                    sysRoleList.setPerms(perms);\n                }\n            } else {\n                //不包含roleId重新生成\n                SysRoleAuthList sysRoleList = new SysRoleAuthList(roleId, perms, null);\n                roleListMap.put(roleId, sysRoleList);\n            }\n\n        }\n\n        for (Long roleId : roleResourceMap.keySet()) {\n            List<SysRoleAuth> list = roleResourceMap.get(roleId);\n            //把关于roleId的resource数据建立成set集合\n            Set<String> resourceSet = new HashSet<>();\n\n\n            list.stream().forEach(r -> {\n                if (StringUtils.isNotEmpty(r.getResourceCode())) {\n                    resourceSet.add(r.getResourceCode());\n                }\n            });\n\n\n            //如果map包含roleId\n            if (roleListMap.containsKey(roleId)) {\n                SysRoleAuthList sysRoleList = roleListMap.get(roleId);\n                if (sysRoleList.getResourceCode() != null) {\n                    sysRoleList.getResourceCode().addAll(resourceSet);\n                } else {\n                    sysRoleList.setResourceCode(resourceSet);\n                }\n\n            } else {\n                SysRoleAuthList sysRoleList = new SysRoleAuthList(roleId, null, resourceSet);\n                roleListMap.put(roleId, sysRoleList);\n            }\n\n        }\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "sysRoleList.getPerms",
+        "DefaultResourceCollector.containsKey",
+        "r.getResourceCode",
+        "DefaultResourceCollector.SysRoleAuthList",
+        "rolePermsMap.get",
+        "roleListMap.clear",
+        "DefaultResourceCollector.setPerms",
+        "DefaultResourceCollector.keySet",
+        "resourceSet.add",
+        "DefaultResourceCollector.addAll",
+        "DefaultResourceCollector.get",
+        "DefaultResourceCollector.put",
+        "roleResourceMap.keySet",
+        "list.stream",
+        "roleListMap.put",
+        "roleResourceMap.get",
+        "roleListMap.get",
+        "rolePermsMap.keySet",
+        "DefaultResourceCollector.clear",
+        "DefaultResourceCollector.add",
+        "sysRoleList.setResourceCode",
+        "DefaultResourceCollector.setRoleAuthCache",
+        "r.getPerms",
+        "DefaultResourceCollector.isNotEmpty",
+        "roleListMap.containsKey",
+        "DefaultResourceCollector.setResourceCode",
+        "sysRoleList.getResourceCode",
+        "DefaultResourceCollector.forEach",
+        "DefaultResourceCollector.getPerms",
+        "DefaultResourceCollector.getResourceCode",
+        "DefaultResourceCollector.stream",
+        "perms.add",
+        "StringUtils.isNotEmpty",
+        "sysRoleList.setPerms"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getRoleListMap": {
+      "method_name": "getRoleListMap",
+      "return_type": "Map<Long, SysRoleAuthList>",
+      "parameters": [],
+      "line_start": 109,
+      "line_end": 111,
+      "body": "    public Map<Long, SysRoleAuthList> getRoleListMap() {\n        return roleListMap;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DefaultResourceCollector.getRoleListMap"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 12,
+  "line_end": 114
+}

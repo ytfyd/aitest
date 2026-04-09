@@ -1,0 +1,253 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\service\\impl\\SysLoginLogServiceImpl.java",
+  "package_name": "com.oddfar.campus.framework.service.impl",
+  "class_name": "SysLoginLogServiceImpl",
+  "imports": [
+    "cn.hutool.http.useragent.UserAgent",
+    "cn.hutool.http.useragent.UserAgentUtil",
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.entity.SysLoginLogEntity",
+    "com.oddfar.campus.common.domain.event.LogininforEvent",
+    "com.oddfar.campus.common.utils.LogUtils",
+    "com.oddfar.campus.common.utils.SpringUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.common.utils.ip.AddressUtils",
+    "com.oddfar.campus.common.utils.ip.IpUtils",
+    "com.oddfar.campus.framework.mapper.SysLoginLogMapper",
+    "com.oddfar.campus.framework.service.SysLoginLogService",
+    "lombok.extern.slf4j.Slf4j",
+    "org.springframework.context.event.EventListener",
+    "org.springframework.scheduling.annotation.Async",
+    "org.springframework.stereotype.Service",
+    "javax.annotation.Resource",
+    "javax.servlet.http.HttpServletRequest",
+    "java.util.Arrays",
+    "java.util.Date",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [
+    "SysLoginLogService"
+  ],
+  "fields": {
+    "loginLogMapper": {
+      "field_name": "loginLogMapper",
+      "field_type": "SysLoginLogMapper",
+      "line_number": 36,
+      "annotations": [
+        "author",
+        "Service",
+        "Slf4j"
+      ]
+    }
+  },
+  "methods": {
+    "recordLogininfor": {
+      "method_name": "recordLogininfor",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "LogininforEvent",
+          "name": "logininforEvent",
+          "annotations": []
+        }
+      ],
+      "line_start": 46,
+      "line_end": 84,
+      "body": "    public void recordLogininfor(LogininforEvent logininforEvent) {\n        HttpServletRequest request = logininforEvent.getRequest();\n        final UserAgent userAgent = UserAgentUtil.parse(request.getHeader(\"User-Agent\"));\n        final String ip = IpUtils.getIpAddr(request);\n\n        String address = AddressUtils.getRealAddressByIP(ip);\n        StringBuilder s = new StringBuilder();\n        s.append(LogUtils.getBlock(ip));\n        s.append(address);\n        s.append(LogUtils.getBlock(logininforEvent.getUsername()));\n        s.append(LogUtils.getBlock(logininforEvent.getUserId()));\n        s.append(LogUtils.getBlock(logininforEvent.getStatus()));\n        s.append(LogUtils.getBlock(logininforEvent.getMessage()));\n        // 打印信息到日志\n        log.info(s.toString(), logininforEvent.getArgs());\n        // 获取客户端操作系统\n        String os = userAgent.getOs().getName();\n        // 获取客户端浏览器\n        String browser = userAgent.getBrowser().getName();\n        // 封装对象\n        SysLoginLogEntity logininfor = new SysLoginLogEntity();\n        logininfor.setLoginTime(new Date());\n        logininfor.setUserName(logininforEvent.getUsername());\n        logininfor.setUserId(logininforEvent.getUserId());\n        logininfor.setIpaddr(ip);\n        logininfor.setLoginLocation(address);\n        logininfor.setBrowser(browser);\n        logininfor.setOs(os);\n        logininfor.setMsg(logininforEvent.getMessage());\n        // 日志状态\n        if (StringUtils.equalsAny(logininforEvent.getStatus(), Constants.LOGIN_SUCCESS, Constants.LOGOUT, Constants.REGISTER)) {\n            logininfor.setStatus(Constants.SUCCESS);\n        } else if (Constants.LOGIN_FAIL.equals(logininforEvent.getStatus())) {\n            logininfor.setStatus(Constants.FAIL);\n        }\n        // 插入数据\n        SpringUtils.getBean(SysLoginLogService.class).insertLogininfor(logininfor);\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysLoginLogServiceImpl.parse",
+        "UserAgentUtil.parse",
+        "SysLoginLogServiceImpl.getBlock",
+        "userAgent.getOs",
+        "SysLoginLogServiceImpl.equalsAny",
+        "AddressUtils.getRealAddressByIP",
+        "SysLoginLogServiceImpl.info",
+        "logininforEvent.getStatus",
+        "SysLoginLogServiceImpl.getOs",
+        "SysLoginLogServiceImpl.equals",
+        "logininforEvent.getArgs",
+        "logininfor.setOs",
+        "request.getHeader",
+        "SpringUtils.getBean",
+        "SysLoginLogServiceImpl.toString",
+        "SysLoginLogServiceImpl.setUserName",
+        "SysLoginLogServiceImpl.setUserId",
+        "logininfor.setStatus",
+        "SysLoginLogServiceImpl.setOs",
+        "SysLoginLogServiceImpl.getStatus",
+        "logininforEvent.getUsername",
+        "logininfor.setLoginTime",
+        "SysLoginLogServiceImpl.getName",
+        "SysLoginLogServiceImpl.getRealAddressByIP",
+        "SysLoginLogServiceImpl.setStatus",
+        "logininfor.setMsg",
+        "SysLoginLogServiceImpl.setLoginLocation",
+        "logininfor.setIpaddr",
+        "StringUtils.equalsAny",
+        "userAgent.getBrowser",
+        "SysLoginLogServiceImpl.getMessage",
+        "SysLoginLogServiceImpl.append",
+        "SysLoginLogServiceImpl.setIpaddr",
+        "SysLoginLogServiceImpl.getHeader",
+        "SysLoginLogServiceImpl.SysLoginLogEntity",
+        "LOGIN_FAIL.equals",
+        "SysLoginLogServiceImpl.StringBuilder",
+        "logininfor.setUserName",
+        "logininforEvent.getUserId",
+        "logininforEvent.getRequest",
+        "s.toString",
+        "logininfor.setUserId",
+        "SysLoginLogServiceImpl.getRequest",
+        "SysLoginLogServiceImpl.getIpAddr",
+        "LogUtils.getBlock",
+        "SysLoginLogServiceImpl.setBrowser",
+        "SysLoginLogServiceImpl.getBrowser",
+        "SysLoginLogServiceImpl.insertLogininfor",
+        "s.append",
+        "IpUtils.getIpAddr",
+        "SysLoginLogServiceImpl.recordLogininfor",
+        "logininfor.setLoginLocation",
+        "SysLoginLogServiceImpl.Date",
+        "SysLoginLogServiceImpl.getArgs",
+        "SysLoginLogServiceImpl.getUsername",
+        "logininforEvent.getMessage",
+        "SysLoginLogServiceImpl.setLoginTime",
+        "logininfor.setBrowser",
+        "SysLoginLogServiceImpl.setMsg",
+        "log.info",
+        "SysLoginLogServiceImpl.getUserId",
+        "SysLoginLogServiceImpl.getBean"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectLogininforPage": {
+      "method_name": "selectLogininforPage",
+      "return_type": "PageResult<SysLoginLogEntity>",
+      "parameters": [
+        {
+          "type": "SysLoginLogEntity",
+          "name": "logininfor",
+          "annotations": []
+        }
+      ],
+      "line_start": 93,
+      "line_end": 95,
+      "body": "    public PageResult<SysLoginLogEntity> selectLogininforPage(SysLoginLogEntity logininfor) {\n        return loginLogMapper.selectLogininforPage(logininfor);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysLoginLogMapper.selectLogininforPage",
+        "SysLoginLogServiceImpl.selectLogininforPage"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertLogininfor": {
+      "method_name": "insertLogininfor",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "SysLoginLogEntity",
+          "name": "logininfor",
+          "annotations": []
+        }
+      ],
+      "line_start": 103,
+      "line_end": 105,
+      "body": "    public void insertLogininfor(SysLoginLogEntity logininfor) {\n        loginLogMapper.insert(logininfor);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysLoginLogServiceImpl.insertLogininfor",
+        "SysLoginLogServiceImpl.insert",
+        "SysLoginLogMapper.insert"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectLogininforList": {
+      "method_name": "selectLogininforList",
+      "return_type": "List<SysLoginLogEntity>",
+      "parameters": [
+        {
+          "type": "SysLoginLogEntity",
+          "name": "logininfor",
+          "annotations": []
+        }
+      ],
+      "line_start": 114,
+      "line_end": 116,
+      "body": "    public List<SysLoginLogEntity> selectLogininforList(SysLoginLogEntity logininfor) {\n        return loginLogMapper.selectLogininforList(logininfor);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysLoginLogServiceImpl.selectLogininforList",
+        "SysLoginLogMapper.selectLogininforList"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteLogininforByIds": {
+      "method_name": "deleteLogininforByIds",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "infoIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 125,
+      "line_end": 127,
+      "body": "    public int deleteLogininforByIds(Long[] infoIds) {\n        return loginLogMapper.deleteBatchIds(Arrays.asList(infoIds));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysLoginLogServiceImpl.deleteLogininforByIds",
+        "SysLoginLogServiceImpl.asList",
+        "Arrays.asList",
+        "SysLoginLogServiceImpl.deleteBatchIds",
+        "SysLoginLogMapper.deleteBatchIds"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "cleanLogininfor": {
+      "method_name": "cleanLogininfor",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 133,
+      "line_end": 135,
+      "body": "    public void cleanLogininfor() {\n        loginLogMapper.cleanLogininfor();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysLoginLogServiceImpl.cleanLogininfor",
+        "SysLoginLogMapper.cleanLogininfor"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Service",
+    "Slf4j"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 34,
+  "line_end": 137
+}

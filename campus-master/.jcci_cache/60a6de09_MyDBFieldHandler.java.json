@@ -1,0 +1,127 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\handler\\MyDBFieldHandler.java",
+  "package_name": "com.oddfar.campus.framework.handler",
+  "class_name": "MyDBFieldHandler",
+  "imports": [
+    "com.baomidou.mybatisplus.core.handlers.MetaObjectHandler",
+    "com.oddfar.campus.common.domain.BaseEntity",
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "com.oddfar.campus.common.utils.web.WebFrameworkUtils",
+    "org.apache.ibatis.reflection.MetaObject",
+    "java.util.Date",
+    "java.util.Objects"
+  ],
+  "extends": null,
+  "implements": [
+    "MetaObjectHandler"
+  ],
+  "fields": {},
+  "methods": {
+    "insertFill": {
+      "method_name": "insertFill",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "MetaObject",
+          "name": "metaObject",
+          "annotations": []
+        }
+      ],
+      "line_start": 18,
+      "line_end": 48,
+      "body": "    public void insertFill(MetaObject metaObject) {\n//        this.strictInsertFill(metaObject, \"createTime\", () -> LocalDateTime.now(), LocalDateTime.class); // 起始版本 3.3.3(推荐)\n\n        if (Objects.nonNull(metaObject) && metaObject.getOriginalObject() instanceof BaseEntity) {\n            BaseEntity baseEntity = (BaseEntity) metaObject.getOriginalObject();\n\n            Date current = new Date();\n            // 创建时间为空，则以当前时间为插入时间\n            if (Objects.isNull(baseEntity.getCreateTime())) {\n                baseEntity.setCreateTime(current);\n            }\n            // 更新时间为空，则以当前时间为更新时间\n            if (Objects.isNull(baseEntity.getUpdateTime())) {\n                baseEntity.setUpdateTime(current);\n            }\n            //TODO getRequest2\n            Long userId = WebFrameworkUtils.getLoginUserId(ServletUtils.getRequest());\n\n            // 当前登录用户不为空，创建人为空，则当前登录用户为创建人\n            if (Objects.nonNull(userId) && Objects.isNull(baseEntity.getCreateUser())) {\n                baseEntity.setCreateUser(userId);\n            }\n            // 当前登录用户不为空，更新人为空，则当前登录用户为更新人\n            if (Objects.nonNull(userId) && Objects.isNull(baseEntity.getUpdateUser())) {\n                baseEntity.setUpdateUser(userId);\n            }\n            if (Objects.isNull(baseEntity.getDelFlag())) {\n                baseEntity.setDelFlag(0);\n            }\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "baseEntity.setUpdateUser",
+        "MyDBFieldHandler.getUpdateUser",
+        "baseEntity.getDelFlag",
+        "WebFrameworkUtils.getLoginUserId",
+        "MyDBFieldHandler.getCreateUser",
+        "Objects.isNull",
+        "baseEntity.setCreateTime",
+        "metaObject.getOriginalObject",
+        "MyDBFieldHandler.setDelFlag",
+        "MyDBFieldHandler.Date",
+        "MyDBFieldHandler.getUpdateTime",
+        "baseEntity.getUpdateTime",
+        "MyDBFieldHandler.isNull",
+        "baseEntity.getCreateTime",
+        "MyDBFieldHandler.now",
+        "MyDBFieldHandler.nonNull",
+        "MyDBFieldHandler.insertFill",
+        "MyDBFieldHandler.setUpdateUser",
+        "MyDBFieldHandler.getLoginUserId",
+        "MyDBFieldHandler.setCreateUser",
+        "3.3",
+        "Objects.nonNull",
+        "MyDBFieldHandler.getDelFlag",
+        "baseEntity.setUpdateTime",
+        "MyDBFieldHandler.strictInsertFill",
+        "MyDBFieldHandler.getOriginalObject",
+        "MyDBFieldHandler.setCreateTime",
+        "ServletUtils.getRequest",
+        "MyDBFieldHandler.3",
+        "baseEntity.setDelFlag",
+        "baseEntity.getUpdateUser",
+        "baseEntity.getCreateUser",
+        "MyDBFieldHandler.getCreateTime",
+        "MyDBFieldHandler.setUpdateTime",
+        "baseEntity.setCreateUser",
+        "MyDBFieldHandler.getRequest",
+        "LocalDateTime.now"
+      ],
+      "used_fields": [
+        "strictInsertFill"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "updateFill": {
+      "method_name": "updateFill",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "MetaObject",
+          "name": "metaObject",
+          "annotations": []
+        }
+      ],
+      "line_start": 51,
+      "line_end": 66,
+      "body": "    public void updateFill(MetaObject metaObject) {\n//        this.strictUpdateFill(metaObject, \"updateTime\", () -> LocalDateTime.now(), LocalDateTime.class); // 起始版本 3.3.3(推荐)\n\n        // 更新时间为空，则以当前时间为更新时间\n        Object modifyTime = getFieldValByName(\"updateTime\", metaObject);\n        if (Objects.isNull(modifyTime)) {\n            setFieldValByName(\"updateTime\", new Date(), metaObject);\n        }\n\n        // 当前登录用户不为空，更新人为空，则当前登录用户为更新人\n        Object modifier = getFieldValByName(\"updateUser\", metaObject);\n        Long userId = WebFrameworkUtils.getLoginUserId(ServletUtils.getRequest());\n        if (Objects.nonNull(userId) && Objects.isNull(modifier)) {\n            setFieldValByName(\"updateUser\", userId, metaObject);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MyDBFieldHandler.nonNull",
+        "Objects.isNull",
+        "MyDBFieldHandler.getLoginUserId",
+        "MyDBFieldHandler.strictUpdateFill",
+        "MyDBFieldHandler.getFieldValByName",
+        "MyDBFieldHandler.updateFill",
+        "MyDBFieldHandler.getRequest",
+        "3.3",
+        "Objects.nonNull",
+        "MyDBFieldHandler.Date",
+        "MyDBFieldHandler.3",
+        "MyDBFieldHandler.isNull",
+        "MyDBFieldHandler.setFieldValByName",
+        "MyDBFieldHandler.now",
+        "ServletUtils.getRequest",
+        "WebFrameworkUtils.getLoginUserId",
+        "LocalDateTime.now"
+      ],
+      "used_fields": [
+        "strictUpdateFill"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 15,
+  "line_end": 68
+}

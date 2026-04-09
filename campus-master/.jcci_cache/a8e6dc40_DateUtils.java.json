@@ -1,0 +1,306 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\DateUtils.java",
+  "package_name": "com.oddfar.campus.common.utils",
+  "class_name": "DateUtils",
+  "imports": [
+    "org.apache.commons.lang3.time.DateFormatUtils",
+    "java.lang.management.ManagementFactory",
+    "java.text.ParseException",
+    "java.text.SimpleDateFormat",
+    "java.util.Date"
+  ],
+  "extends": "org",
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getNowDate": {
+      "method_name": "getNowDate",
+      "return_type": "Date",
+      "parameters": [],
+      "line_start": 37,
+      "line_end": 39,
+      "body": "    public static Date getNowDate() {\n        return new Date();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.getNowDate",
+        "DateUtils.Date"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getDate": {
+      "method_name": "getDate",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 46,
+      "line_end": 48,
+      "body": "    public static String getDate() {\n        return dateTimeNow(YYYY_MM_DD);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.getDate",
+        "DateUtils.dateTimeNow"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getTime": {
+      "method_name": "getTime",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 50,
+      "line_end": 52,
+      "body": "    public static final String getTime() {\n        return dateTimeNow(YYYY_MM_DD_HH_MM_SS);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.getTime",
+        "DateUtils.dateTimeNow"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "dateTimeNow": {
+      "method_name": "dateTimeNow",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "format",
+          "annotations": []
+        }
+      ],
+      "line_start": 58,
+      "line_end": 60,
+      "body": "    public static final String dateTimeNow(final String format) {\n        return parseDateToStr(format, new Date());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.parseDateToStr",
+        "DateUtils.dateTimeNow",
+        "DateUtils.Date"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "dateTime": {
+      "method_name": "dateTime",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 89,
+      "line_end": 92,
+      "body": "    public static final String dateTime() {\n        Date now = new Date();\n        return DateFormatUtils.format(now, \"yyyyMMdd\");\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.format",
+        "DateFormatUtils.format",
+        "DateUtils.Date",
+        "DateUtils.dateTime"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "parseDateToStr": {
+      "method_name": "parseDateToStr",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "format",
+          "annotations": []
+        },
+        {
+          "type": "Date",
+          "name": "date",
+          "annotations": []
+        }
+      ],
+      "line_start": 66,
+      "line_end": 68,
+      "body": "    public static final String parseDateToStr(final String format, final Date date) {\n        return new SimpleDateFormat(format).format(date);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.format",
+        "DateUtils.parseDateToStr",
+        "DateUtils.SimpleDateFormat"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "datePath": {
+      "method_name": "datePath",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 81,
+      "line_end": 84,
+      "body": "    public static final String datePath() {\n        Date now = new Date();\n        return DateFormatUtils.format(now, \"yyyy/MM/dd\");\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.datePath",
+        "DateUtils.format",
+        "DateFormatUtils.format",
+        "DateUtils.Date"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "parseDate": {
+      "method_name": "parseDate",
+      "return_type": "Date",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "str",
+          "annotations": []
+        }
+      ],
+      "line_start": 97,
+      "line_end": 106,
+      "body": "    public static Date parseDate(Object str) {\n        if (str == null) {\n            return null;\n        }\n        try {\n            return parseDate(str.toString(), parsePatterns);\n        } catch (ParseException e) {\n            return null;\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.toString",
+        "str.toString",
+        "DateUtils.parseDate"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getServerStartDate": {
+      "method_name": "getServerStartDate",
+      "return_type": "Date",
+      "parameters": [],
+      "line_start": 111,
+      "line_end": 114,
+      "body": "    public static Date getServerStartDate() {\n        long time = ManagementFactory.getRuntimeMXBean().getStartTime();\n        return new Date(time);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.getStartTime",
+        "DateUtils.getRuntimeMXBean",
+        "ManagementFactory.getRuntimeMXBean",
+        "DateUtils.Date",
+        "DateUtils.getServerStartDate"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "differentDaysByMillisecond": {
+      "method_name": "differentDaysByMillisecond",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "Date",
+          "name": "date1",
+          "annotations": []
+        },
+        {
+          "type": "Date",
+          "name": "date2",
+          "annotations": []
+        }
+      ],
+      "line_start": 119,
+      "line_end": 121,
+      "body": "    public static int differentDaysByMillisecond(Date date1, Date date2) {\n        return Math.abs((int) ((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24)));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.differentDaysByMillisecond",
+        "date1.getTime",
+        "Math.abs",
+        "DateUtils.getTime",
+        "DateUtils.abs",
+        "date2.getTime"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getDatePoor": {
+      "method_name": "getDatePoor",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "Date",
+          "name": "endDate",
+          "annotations": []
+        },
+        {
+          "type": "Date",
+          "name": "nowDate",
+          "annotations": []
+        }
+      ],
+      "line_start": 126,
+      "line_end": 142,
+      "body": "    public static String getDatePoor(Date endDate, Date nowDate) {\n        long nd = 1000 * 24 * 60 * 60;\n        long nh = 1000 * 60 * 60;\n        long nm = 1000 * 60;\n        // long ns = 1000;\n        // 获得两个时间的毫秒时间差异\n        long diff = endDate.getTime() - nowDate.getTime();\n        // 计算差多少天\n        long day = diff / nd;\n        // 计算差多少小时\n        long hour = diff % nd / nh;\n        // 计算差多少分钟\n        long min = diff % nd % nh / nm;\n        // 计算差多少秒//输出结果\n        // long sec = diff % nd % nh % nm / ns;\n        return day + \"天\" + hour + \"小时\" + min + \"分钟\";\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.getDatePoor",
+        "nowDate.getTime",
+        "endDate.getTime",
+        "DateUtils.getTime"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "toDate": {
+      "method_name": "toDate",
+      "return_type": "Date",
+      "parameters": [
+        {
+          "type": "LocalDate",
+          "name": "temporalAccessor",
+          "annotations": []
+        }
+      ],
+      "line_start": 155,
+      "line_end": 159,
+      "body": "    public static Date toDate(LocalDate temporalAccessor) {\n        LocalDateTime localDateTime = LocalDateTime.of(temporalAccessor, LocalTime.of(0, 0, 0));\n        ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());\n        return Date.from(zdt.toInstant());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DateUtils.toDate",
+        "DateUtils.of",
+        "DateUtils.from",
+        "DateUtils.atZone",
+        "localDateTime.atZone",
+        "LocalDateTime.of",
+        "DateUtils.toInstant",
+        "zdt.toInstant",
+        "Date.from",
+        "ZoneId.systemDefault",
+        "DateUtils.systemDefault",
+        "LocalTime.of"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 16,
+  "line_end": 161
+}

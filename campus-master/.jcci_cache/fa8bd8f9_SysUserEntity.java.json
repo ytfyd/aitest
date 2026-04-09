@@ -1,0 +1,187 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\entity\\SysUserEntity.java",
+  "package_name": "com.oddfar.campus.common.domain.entity",
+  "class_name": "SysUserEntity",
+  "imports": [
+    "com.baomidou.mybatisplus.annotation.TableField",
+    "com.baomidou.mybatisplus.annotation.TableId",
+    "com.baomidou.mybatisplus.annotation.TableName",
+    "com.oddfar.campus.common.domain.BaseEntity",
+    "com.oddfar.campus.common.validator.Xss",
+    "lombok.Data",
+    "lombok.EqualsAndHashCode",
+    "lombok.NoArgsConstructor",
+    "javax.validation.constraints.Email",
+    "javax.validation.constraints.NotBlank",
+    "javax.validation.constraints.Size",
+    "java.util.Date",
+    "java.util.List"
+  ],
+  "extends": "BaseEntity",
+  "implements": [],
+  "fields": {
+    "userId": {
+      "field_name": "userId",
+      "field_type": "Long",
+      "line_number": 34,
+      "annotations": [
+        "Data",
+        "NoArgsConstructor",
+        "TableId"
+      ]
+    },
+    "userName": {
+      "field_name": "userName",
+      "field_type": "String",
+      "line_number": 40,
+      "annotations": [
+        "TableId",
+        "Xss",
+        "NotBlank",
+        "Size"
+      ]
+    },
+    "nickName": {
+      "field_name": "nickName",
+      "field_type": "String",
+      "line_number": 45,
+      "annotations": [
+        "Size",
+        "Xss",
+        "Size"
+      ]
+    },
+    "email": {
+      "field_name": "email",
+      "field_type": "String",
+      "line_number": 50,
+      "annotations": [
+        "Size",
+        "Email",
+        "Size"
+      ]
+    },
+    "phonenumber": {
+      "field_name": "phonenumber",
+      "field_type": "String",
+      "line_number": 54,
+      "annotations": [
+        "Email",
+        "Size",
+        "Size"
+      ]
+    },
+    "sex": {
+      "field_name": "sex",
+      "field_type": "String",
+      "line_number": 57,
+      "annotations": [
+        "Size"
+      ]
+    },
+    "avatar": {
+      "field_name": "avatar",
+      "field_type": "String",
+      "line_number": 60,
+      "annotations": [
+        "Size"
+      ]
+    },
+    "password": {
+      "field_name": "password",
+      "field_type": "String",
+      "line_number": 63,
+      "annotations": [
+        "Size"
+      ]
+    },
+    "status": {
+      "field_name": "status",
+      "field_type": "String",
+      "line_number": 66,
+      "annotations": []
+    },
+    "loginIp": {
+      "field_name": "loginIp",
+      "field_type": "String",
+      "line_number": 69,
+      "annotations": []
+    },
+    "loginDate": {
+      "field_name": "loginDate",
+      "field_type": "Date",
+      "line_number": 72,
+      "annotations": []
+    },
+    "remark": {
+      "field_name": "remark",
+      "field_type": "String",
+      "line_number": 75,
+      "annotations": []
+    },
+    "roles": {
+      "field_name": "roles",
+      "field_type": "List<SysRoleEntity>",
+      "line_number": 79,
+      "annotations": [
+        "TableField"
+      ]
+    },
+    "resources": {
+      "field_name": "resources",
+      "field_type": "List<SysResourceEntity>",
+      "line_number": 83,
+      "annotations": [
+        "TableField",
+        "TableField"
+      ]
+    },
+    "roleId": {
+      "field_name": "roleId",
+      "field_type": "Long",
+      "line_number": 95,
+      "annotations": [
+        "TableField",
+        "TableField",
+        "TableField"
+      ]
+    }
+  },
+  "methods": {
+    "isAdmin": {
+      "method_name": "isAdmin",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 106,
+      "line_end": 109,
+      "body": "    public static boolean isAdmin(Long userId)\n    {\n        return userId != null && 1L == userId;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserEntity.isAdmin"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "since",
+    "TableName",
+    "EqualsAndHashCode",
+    "Data",
+    "NoArgsConstructor"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 29,
+  "line_end": 111
+}

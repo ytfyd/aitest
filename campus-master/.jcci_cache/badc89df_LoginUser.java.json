@@ -1,0 +1,178 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\model\\LoginUser.java",
+  "package_name": "com.oddfar.campus.common.domain.model",
+  "class_name": "LoginUser",
+  "imports": [
+    "com.alibaba.fastjson2.annotation.JSONField",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "lombok.AllArgsConstructor",
+    "lombok.Data",
+    "org.springframework.security.core.GrantedAuthority",
+    "org.springframework.security.core.userdetails.UserDetails",
+    "java.util.Collection",
+    "java.util.Set"
+  ],
+  "extends": null,
+  "implements": [
+    "UserDetails"
+  ],
+  "fields": {
+    "userId": {
+      "field_name": "userId",
+      "field_type": "Long",
+      "line_number": 27,
+      "annotations": [
+        "author",
+        "Data",
+        "AllArgsConstructor"
+      ]
+    },
+    "token": {
+      "field_name": "token",
+      "field_type": "String",
+      "line_number": 32,
+      "annotations": []
+    },
+    "expireTime": {
+      "field_name": "expireTime",
+      "field_type": "Long",
+      "line_number": 38,
+      "annotations": []
+    },
+    "ipaddr": {
+      "field_name": "ipaddr",
+      "field_type": "String",
+      "line_number": 43,
+      "annotations": []
+    },
+    "permissions": {
+      "field_name": "permissions",
+      "field_type": "Set<String>",
+      "line_number": 49,
+      "annotations": []
+    },
+    "resources": {
+      "field_name": "resources",
+      "field_type": "Set<String>",
+      "line_number": 54,
+      "annotations": []
+    },
+    "user": {
+      "field_name": "user",
+      "field_type": "SysUserEntity",
+      "line_number": 59,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "getPassword": {
+      "method_name": "getPassword",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 71,
+      "line_end": 73,
+      "body": "    public String getPassword() {\n        return user.getPassword();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserEntity.getPassword",
+        "LoginUser.getPassword"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getUsername": {
+      "method_name": "getUsername",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 76,
+      "line_end": 78,
+      "body": "    public String getUsername() {\n        return user.getUserName();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LoginUser.getUserName",
+        "LoginUser.getUsername",
+        "SysUserEntity.getUserName"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isAccountNonExpired": {
+      "method_name": "isAccountNonExpired",
+      "return_type": "boolean",
+      "parameters": [],
+      "line_start": 85,
+      "line_end": 87,
+      "body": "    public boolean isAccountNonExpired() {\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LoginUser.isAccountNonExpired"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isAccountNonLocked": {
+      "method_name": "isAccountNonLocked",
+      "return_type": "boolean",
+      "parameters": [],
+      "line_start": 96,
+      "line_end": 98,
+      "body": "    public boolean isAccountNonLocked() {\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LoginUser.isAccountNonLocked"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isCredentialsNonExpired": {
+      "method_name": "isCredentialsNonExpired",
+      "return_type": "boolean",
+      "parameters": [],
+      "line_start": 107,
+      "line_end": 109,
+      "body": "    public boolean isCredentialsNonExpired() {\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LoginUser.isCredentialsNonExpired"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isEnabled": {
+      "method_name": "isEnabled",
+      "return_type": "boolean",
+      "parameters": [],
+      "line_start": 118,
+      "line_end": 120,
+      "body": "    public boolean isEnabled() {\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LoginUser.isEnabled"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Data",
+    "AllArgsConstructor"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 21,
+  "line_end": 128
+}

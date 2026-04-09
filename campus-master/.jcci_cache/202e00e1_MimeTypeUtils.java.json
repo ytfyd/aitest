@@ -1,0 +1,41 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\file\\MimeTypeUtils.java",
+  "package_name": "com.oddfar.campus.framework.api.file",
+  "class_name": "MimeTypeUtils",
+  "imports": [],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getExtension": {
+      "method_name": "getExtension",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "prefix",
+          "annotations": []
+        }
+      ],
+      "line_start": 47,
+      "line_end": 62,
+      "body": "    public static String getExtension(String prefix) {\n        switch (prefix) {\n            case IMAGE_PNG:\n                return \"png\";\n            case IMAGE_JPG:\n                return \"jpg\";\n            case IMAGE_JPEG:\n                return \"jpeg\";\n            case IMAGE_BMP:\n                return \"bmp\";\n            case IMAGE_GIF:\n                return \"gif\";\n            default:\n                return \"\";\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MimeTypeUtils.getExtension"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 8,
+  "line_end": 64
+}

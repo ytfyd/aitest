@@ -1,0 +1,196 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\core\\RedisCache.java",
+  "package_name": "com.oddfar.campus.common.core",
+  "class_name": "RedisCache",
+  "imports": [
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.data.redis.core.BoundSetOperations",
+    "org.springframework.data.redis.core.HashOperations",
+    "org.springframework.data.redis.core.RedisTemplate",
+    "org.springframework.data.redis.core.ValueOperations",
+    "org.springframework.stereotype.Component",
+    "java.util.concurrent.TimeUnit"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "redisTemplate": {
+      "field_name": "redisTemplate",
+      "field_type": "RedisTemplate",
+      "line_number": 21,
+      "annotations": [
+        "author",
+        "SuppressWarnings",
+        "Component"
+      ]
+    }
+  },
+  "methods": {
+    "expire": {
+      "method_name": "expire",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "key",
+          "annotations": []
+        },
+        {
+          "type": "long",
+          "name": "timeout",
+          "annotations": []
+        },
+        {
+          "type": "TimeUnit",
+          "name": "unit",
+          "annotations": []
+        }
+      ],
+      "line_start": 65,
+      "line_end": 67,
+      "body": "    public boolean expire(final String key, final long timeout, final TimeUnit unit) {\n        return redisTemplate.expire(key, timeout, unit);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RedisCache.expire",
+        "RedisTemplate.expire"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getExpire": {
+      "method_name": "getExpire",
+      "return_type": "long",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "key",
+          "annotations": []
+        }
+      ],
+      "line_start": 75,
+      "line_end": 77,
+      "body": "    public long getExpire(final String key) {\n        return redisTemplate.getExpire(key);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RedisCache.getExpire",
+        "RedisTemplate.getExpire"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "hasKey": {
+      "method_name": "hasKey",
+      "return_type": "Boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "key",
+          "annotations": []
+        }
+      ],
+      "line_start": 85,
+      "line_end": 87,
+      "body": "    public Boolean hasKey(String key) {\n        return redisTemplate.hasKey(key);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RedisTemplate.hasKey",
+        "RedisCache.hasKey"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteObject": {
+      "method_name": "deleteObject",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Collection",
+          "name": "collection",
+          "annotations": []
+        }
+      ],
+      "line_start": 115,
+      "line_end": 117,
+      "body": "    public boolean deleteObject(final Collection collection) {\n        return redisTemplate.delete(collection) > 0;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RedisCache.deleteObject",
+        "RedisTemplate.delete",
+        "RedisCache.delete"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteCacheMapValue": {
+      "method_name": "deleteCacheMapValue",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "key",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "hKey",
+          "annotations": []
+        }
+      ],
+      "line_start": 230,
+      "line_end": 232,
+      "body": "    public boolean deleteCacheMapValue(final String key, final String hKey) {\n        return redisTemplate.opsForHash().delete(key, hKey) > 0;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RedisCache.delete",
+        "RedisCache.deleteCacheMapValue",
+        "RedisCache.opsForHash",
+        "RedisTemplate.opsForHash"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "keys": {
+      "method_name": "keys",
+      "return_type": "Collection<String>",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "pattern",
+          "annotations": []
+        }
+      ],
+      "line_start": 240,
+      "line_end": 242,
+      "body": "    public Collection<String> keys(final String pattern) {\n        return redisTemplate.keys(pattern);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RedisTemplate.keys",
+        "RedisCache.keys"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "SuppressWarnings",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 20,
+  "line_end": 244
+}

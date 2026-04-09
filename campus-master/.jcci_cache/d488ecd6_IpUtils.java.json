@@ -1,0 +1,354 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\ip\\IpUtils.java",
+  "package_name": "com.oddfar.campus.common.utils.ip",
+  "class_name": "IpUtils",
+  "imports": [
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "javax.servlet.http.HttpServletRequest",
+    "java.net.InetAddress",
+    "java.net.UnknownHostException"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getIpAddr": {
+      "method_name": "getIpAddr",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 38,
+      "line_end": 61,
+      "body": "    public static String getIpAddr(HttpServletRequest request) {\n        if (request == null) {\n            return \"unknown\";\n        }\n        String ip = request.getHeader(\"x-forwarded-for\");\n        if (ip == null || ip.length() == 0 || \"unknown\".equalsIgnoreCase(ip)) {\n            ip = request.getHeader(\"Proxy-Client-IP\");\n        }\n        if (ip == null || ip.length() == 0 || \"unknown\".equalsIgnoreCase(ip)) {\n            ip = request.getHeader(\"X-Forwarded-For\");\n        }\n        if (ip == null || ip.length() == 0 || \"unknown\".equalsIgnoreCase(ip)) {\n            ip = request.getHeader(\"WL-Proxy-Client-IP\");\n        }\n        if (ip == null || ip.length() == 0 || \"unknown\".equalsIgnoreCase(ip)) {\n            ip = request.getHeader(\"X-Real-IP\");\n        }\n\n        if (ip == null || ip.length() == 0 || \"unknown\".equalsIgnoreCase(ip)) {\n            ip = request.getRemoteAddr();\n        }\n\n        return \"0:0:0:0:0:0:0:1\".equals(ip) ? \"127.0.0.1\" : getMultistageReverseProxyIp(ip);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "IpUtils.equals",
+        "request.getRemoteAddr",
+        "request.getHeader",
+        "IpUtils.getRemoteAddr",
+        "IpUtils.getIpAddr",
+        "IpUtils.getHeader",
+        "ip.length",
+        "IpUtils.getMultistageReverseProxyIp",
+        "IpUtils.equalsIgnoreCase",
+        "IpUtils.length"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "internalIp": {
+      "method_name": "internalIp",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "byte[]",
+          "name": "addr",
+          "annotations": []
+        }
+      ],
+      "line_start": 80,
+      "line_end": 110,
+      "body": "    private static boolean internalIp(byte[] addr) {\n        if (StringUtils.isNull(addr) || addr.length < 2) {\n            return true;\n        }\n        final byte b0 = addr[0];\n        final byte b1 = addr[1];\n        // 10.x.x.x/8\n        final byte SECTION_1 = 0x0A;\n        // 172.16.x.x/12\n        final byte SECTION_2 = (byte) 0xAC;\n        final byte SECTION_3 = (byte) 0x10;\n        final byte SECTION_4 = (byte) 0x1F;\n        // 192.168.x.x/16\n        final byte SECTION_5 = (byte) 0xC0;\n        final byte SECTION_6 = (byte) 0xA8;\n        switch (b0) {\n            case SECTION_1:\n                return true;\n            case SECTION_2:\n                if (b1 >= SECTION_3 && b1 <= SECTION_4) {\n                    return true;\n                }\n            case SECTION_5:\n                switch (b1) {\n                    case SECTION_6:\n                        return true;\n                }\n            default:\n                return false;\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "IpUtils.isNull",
+        "StringUtils.isNull",
+        "IpUtils.internalIp"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getHostIp": {
+      "method_name": "getHostIp",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 191,
+      "line_end": 197,
+      "body": "    public static String getHostIp() {\n        try {\n            return InetAddress.getLocalHost().getHostAddress();\n        } catch (UnknownHostException e) {\n        }\n        return \"127.0.0.1\";\n    }",
+      "annotations": [],
+      "called_methods": [
+        "IpUtils.getLocalHost",
+        "IpUtils.getHostIp",
+        "InetAddress.getLocalHost",
+        "IpUtils.getHostAddress"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getHostName": {
+      "method_name": "getHostName",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 204,
+      "line_end": 210,
+      "body": "    public static String getHostName() {\n        try {\n            return InetAddress.getLocalHost().getHostName();\n        } catch (UnknownHostException e) {\n        }\n        return \"未知\";\n    }",
+      "annotations": [],
+      "called_methods": [
+        "IpUtils.getHostName",
+        "IpUtils.getLocalHost",
+        "InetAddress.getLocalHost"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getMultistageReverseProxyIp": {
+      "method_name": "getMultistageReverseProxyIp",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "ip",
+          "annotations": []
+        }
+      ],
+      "line_start": 218,
+      "line_end": 230,
+      "body": "    public static String getMultistageReverseProxyIp(String ip) {\n        // 多级反向代理检测\n        if (ip != null && ip.indexOf(\",\") > 0) {\n            final String[] ips = ip.trim().split(\",\");\n            for (String subIp : ips) {\n                if (false == isUnknown(subIp)) {\n                    ip = subIp;\n                    break;\n                }\n            }\n        }\n        return StringUtils.substring(ip, 0, 255);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "IpUtils.trim",
+        "ip.trim",
+        "ip.indexOf",
+        "StringUtils.substring",
+        "IpUtils.split",
+        "IpUtils.getMultistageReverseProxyIp",
+        "IpUtils.indexOf",
+        "IpUtils.isUnknown",
+        "IpUtils.substring"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isUnknown": {
+      "method_name": "isUnknown",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "checkString",
+          "annotations": []
+        }
+      ],
+      "line_start": 238,
+      "line_end": 240,
+      "body": "    public static boolean isUnknown(String checkString) {\n        return StringUtils.isBlank(checkString) || \"unknown\".equalsIgnoreCase(checkString);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "IpUtils.isUnknown",
+        "IpUtils.equalsIgnoreCase",
+        "IpUtils.isBlank",
+        "StringUtils.isBlank"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isIP": {
+      "method_name": "isIP",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "ip",
+          "annotations": []
+        }
+      ],
+      "line_start": 245,
+      "line_end": 247,
+      "body": "    public static boolean isIP(String ip) {\n        return StringUtils.isNotBlank(ip) && ip.matches(REGX_IP);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isNotBlank",
+        "ip.matches",
+        "IpUtils.isNotBlank",
+        "IpUtils.isIP",
+        "IpUtils.matches"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isIpWildCard": {
+      "method_name": "isIpWildCard",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "ip",
+          "annotations": []
+        }
+      ],
+      "line_start": 252,
+      "line_end": 254,
+      "body": "    public static boolean isIpWildCard(String ip) {\n        return StringUtils.isNotBlank(ip) && ip.matches(REGX_IP_WILDCARD);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isNotBlank",
+        "ip.matches",
+        "IpUtils.isNotBlank",
+        "IpUtils.isIpWildCard",
+        "IpUtils.matches"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "ipIsInWildCardNoCheck": {
+      "method_name": "ipIsInWildCardNoCheck",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "ipWildCard",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "ip",
+          "annotations": []
+        }
+      ],
+      "line_start": 259,
+      "line_end": 270,
+      "body": "    public static boolean ipIsInWildCardNoCheck(String ipWildCard, String ip) {\n        String[] s1 = ipWildCard.split(\"\\\\.\");\n        String[] s2 = ip.split(\"\\\\.\");\n        boolean isMatchedSeg = true;\n        for (int i = 0; i < s1.length && !s1[i].equals(\"*\"); i++) {\n            if (!s1[i].equals(s2[i])) {\n                isMatchedSeg = false;\n                break;\n            }\n        }\n        return isMatchedSeg;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "IpUtils.equals",
+        "IpUtils.split",
+        "ip.split",
+        "ipWildCard.split",
+        "IpUtils.ipIsInWildCardNoCheck"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isIPSegment": {
+      "method_name": "isIPSegment",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "ipSeg",
+          "annotations": []
+        }
+      ],
+      "line_start": 275,
+      "line_end": 277,
+      "body": "    public static boolean isIPSegment(String ipSeg) {\n        return StringUtils.isNotBlank(ipSeg) && ipSeg.matches(REGX_IP_SEG);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isNotBlank",
+        "IpUtils.isNotBlank",
+        "ipSeg.matches",
+        "IpUtils.isIPSegment",
+        "IpUtils.matches"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "ipIsInNetNoCheck": {
+      "method_name": "ipIsInNetNoCheck",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "iparea",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "ip",
+          "annotations": []
+        }
+      ],
+      "line_start": 282,
+      "line_end": 299,
+      "body": "    public static boolean ipIsInNetNoCheck(String iparea, String ip) {\n        int idx = iparea.indexOf('-');\n        String[] sips = iparea.substring(0, idx).split(\"\\\\.\");\n        String[] sipe = iparea.substring(idx + 1).split(\"\\\\.\");\n        String[] sipt = ip.split(\"\\\\.\");\n        long ips = 0L, ipe = 0L, ipt = 0L;\n        for (int i = 0; i < 4; ++i) {\n            ips = ips << 8 | Integer.parseInt(sips[i]);\n            ipe = ipe << 8 | Integer.parseInt(sipe[i]);\n            ipt = ipt << 8 | Integer.parseInt(sipt[i]);\n        }\n        if (ips > ipe) {\n            long t = ips;\n            ips = ipe;\n            ipe = t;\n        }\n        return ips <= ipt && ipt <= ipe;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "IpUtils.parseInt",
+        "iparea.indexOf",
+        "IpUtils.split",
+        "iparea.substring",
+        "ip.split",
+        "IpUtils.ipIsInNetNoCheck",
+        "IpUtils.indexOf",
+        "IpUtils.substring",
+        "Integer.parseInt"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isMatchedIp": {
+      "method_name": "isMatchedIp",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "filter",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "ip",
+          "annotations": []
+        }
+      ],
+      "line_start": 308,
+      "line_end": 323,
+      "body": "    public static boolean isMatchedIp(String filter, String ip) {\n        if (StringUtils.isEmpty(filter) || StringUtils.isEmpty(ip)) {\n            return false;\n        }\n        String[] ips = filter.split(\";\");\n        for (String iStr : ips) {\n            if (isIP(iStr) && iStr.equals(ip)) {\n                return true;\n            } else if (isIpWildCard(iStr) && ipIsInWildCardNoCheck(iStr, ip)) {\n                return true;\n            } else if (isIPSegment(iStr) && ipIsInNetNoCheck(iStr, ip)) {\n                return true;\n            }\n        }\n        return false;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "IpUtils.equals",
+        "IpUtils.isMatchedIp",
+        "IpUtils.isIPSegment",
+        "filter.split",
+        "IpUtils.split",
+        "IpUtils.isEmpty",
+        "IpUtils.isIpWildCard",
+        "IpUtils.ipIsInNetNoCheck",
+        "iStr.equals",
+        "StringUtils.isEmpty",
+        "IpUtils.isIP",
+        "IpUtils.ipIsInWildCardNoCheck"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 15,
+  "line_end": 324
+}

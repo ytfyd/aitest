@@ -1,0 +1,66 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\config\\MybatisPlusConfig.java",
+  "package_name": "com.oddfar.campus.framework.config",
+  "class_name": "MybatisPlusConfig",
+  "imports": [
+    "com.baomidou.mybatisplus.annotation.DbType",
+    "com.baomidou.mybatisplus.core.handlers.MetaObjectHandler",
+    "com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor",
+    "com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor",
+    "com.oddfar.campus.framework.handler.MyDBFieldHandler",
+    "org.mybatis.spring.annotation.MapperScan",
+    "org.springframework.context.annotation.Bean",
+    "org.springframework.context.annotation.Configuration"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "mybatisPlusInterceptor": {
+      "method_name": "mybatisPlusInterceptor",
+      "return_type": "MybatisPlusInterceptor",
+      "parameters": [],
+      "line_start": 20,
+      "line_end": 24,
+      "body": "    public MybatisPlusInterceptor mybatisPlusInterceptor() {\n        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();\n        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));\n        return interceptor;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MybatisPlusConfig.PaginationInnerInterceptor",
+        "MybatisPlusConfig.mybatisPlusInterceptor",
+        "MybatisPlusConfig.addInnerInterceptor",
+        "MybatisPlusConfig.MybatisPlusInterceptor",
+        "interceptor.addInnerInterceptor"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "defaultMetaObjectHandler": {
+      "method_name": "defaultMetaObjectHandler",
+      "return_type": "MetaObjectHandler",
+      "parameters": [],
+      "line_start": 33,
+      "line_end": 35,
+      "body": "    public MetaObjectHandler defaultMetaObjectHandler() {\n        return new MyDBFieldHandler();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MybatisPlusConfig.defaultMetaObjectHandler",
+        "MybatisPlusConfig.MyDBFieldHandler"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Configuration",
+    "MapperScan"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 14,
+  "line_end": 39
+}

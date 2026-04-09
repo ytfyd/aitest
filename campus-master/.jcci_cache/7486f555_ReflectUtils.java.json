@@ -1,0 +1,250 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\reflect\\ReflectUtils.java",
+  "package_name": "com.oddfar.campus.common.utils.reflect",
+  "class_name": "ReflectUtils",
+  "imports": [
+    "com.oddfar.campus.common.core.text.Convert",
+    "com.oddfar.campus.common.utils.DateUtils",
+    "org.apache.commons.lang3.StringUtils",
+    "org.apache.commons.lang3.Validate",
+    "org.apache.poi.ss.usermodel.DateUtil",
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory",
+    "java.util.Date"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getAccessibleField": {
+      "method_name": "getAccessibleField",
+      "return_type": "Field",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "obj",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "fieldName",
+          "annotations": []
+        }
+      ],
+      "line_start": 174,
+      "line_end": 190,
+      "body": "    public static Field getAccessibleField(final Object obj, final String fieldName) {\n        // 为空不报错。直接返回 null\n        if (obj == null) {\n            return null;\n        }\n        Validate.notBlank(fieldName, \"fieldName can't be blank\");\n        for (Class<?> superClass = obj.getClass(); superClass != Object.class; superClass = superClass.getSuperclass()) {\n            try {\n                Field field = superClass.getDeclaredField(fieldName);\n                makeAccessible(field);\n                return field;\n            } catch (NoSuchFieldException e) {\n                continue;\n            }\n        }\n        return null;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ReflectUtils.getSuperclass",
+        "ReflectUtils.getAccessibleField",
+        "ReflectUtils.getDeclaredField",
+        "ReflectUtils.makeAccessible",
+        "superClass.getDeclaredField",
+        "ReflectUtils.getClass",
+        "obj.getClass",
+        "ReflectUtils.notBlank",
+        "Validate.notBlank",
+        "superClass.getSuperclass"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getAccessibleMethod": {
+      "method_name": "getAccessibleMethod",
+      "return_type": "Method",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "obj",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "methodName",
+          "annotations": []
+        },
+        {
+          "type": "Class<?>...",
+          "name": "parameterTypes",
+          "annotations": []
+        }
+      ],
+      "line_start": 198,
+      "line_end": 215,
+      "body": "    public static Method getAccessibleMethod(final Object obj, final String methodName,\n                                             final Class<?>... parameterTypes) {\n        // 为空不报错。直接返回 null\n        if (obj == null) {\n            return null;\n        }\n        Validate.notBlank(methodName, \"methodName can't be blank\");\n        for (Class<?> searchType = obj.getClass(); searchType != Object.class; searchType = searchType.getSuperclass()) {\n            try {\n                Method method = searchType.getDeclaredMethod(methodName, parameterTypes);\n                makeAccessible(method);\n                return method;\n            } catch (NoSuchMethodException e) {\n                continue;\n            }\n        }\n        return null;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ReflectUtils.getSuperclass",
+        "ReflectUtils.getAccessibleMethod",
+        "ReflectUtils.makeAccessible",
+        "ReflectUtils.getClass",
+        "searchType.getSuperclass",
+        "obj.getClass",
+        "ReflectUtils.notBlank",
+        "Validate.notBlank",
+        "ReflectUtils.getDeclaredMethod",
+        "searchType.getDeclaredMethod"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getAccessibleMethodByName": {
+      "method_name": "getAccessibleMethodByName",
+      "return_type": "Method",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "obj",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "methodName",
+          "annotations": []
+        },
+        {
+          "type": "int",
+          "name": "argsNum",
+          "annotations": []
+        }
+      ],
+      "line_start": 223,
+      "line_end": 239,
+      "body": "    public static Method getAccessibleMethodByName(final Object obj, final String methodName, int argsNum) {\n        // 为空不报错。直接返回 null\n        if (obj == null) {\n            return null;\n        }\n        Validate.notBlank(methodName, \"methodName can't be blank\");\n        for (Class<?> searchType = obj.getClass(); searchType != Object.class; searchType = searchType.getSuperclass()) {\n            Method[] methods = searchType.getDeclaredMethods();\n            for (Method method : methods) {\n                if (method.getName().equals(methodName) && method.getParameterTypes().length == argsNum) {\n                    makeAccessible(method);\n                    return method;\n                }\n            }\n        }\n        return null;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "method.getName",
+        "ReflectUtils.getSuperclass",
+        "ReflectUtils.getAccessibleMethodByName",
+        "method.getParameterTypes",
+        "searchType.getDeclaredMethods",
+        "ReflectUtils.getParameterTypes",
+        "ReflectUtils.equals",
+        "ReflectUtils.makeAccessible",
+        "ReflectUtils.getClass",
+        "searchType.getSuperclass",
+        "obj.getClass",
+        "ReflectUtils.getDeclaredMethods",
+        "ReflectUtils.notBlank",
+        "Validate.notBlank",
+        "ReflectUtils.getName"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "makeAccessible": {
+      "method_name": "makeAccessible",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Field",
+          "name": "field",
+          "annotations": []
+        }
+      ],
+      "line_start": 254,
+      "line_end": 259,
+      "body": "    public static void makeAccessible(Field field) {\n        if ((!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())\n                || Modifier.isFinal(field.getModifiers())) && !field.isAccessible()) {\n            field.setAccessible(true);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Modifier.isFinal",
+        "field.setAccessible",
+        "ReflectUtils.isPublic",
+        "field.isAccessible",
+        "ReflectUtils.makeAccessible",
+        "ReflectUtils.getDeclaringClass",
+        "ReflectUtils.isAccessible",
+        "ReflectUtils.getModifiers",
+        "field.getDeclaringClass",
+        "field.getModifiers",
+        "ReflectUtils.setAccessible",
+        "ReflectUtils.isFinal",
+        "Modifier.isPublic"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getClassGenricType": {
+      "method_name": "getClassGenricType",
+      "return_type": "Class",
+      "parameters": [
+        {
+          "type": "Class",
+          "name": "clazz",
+          "annotations": []
+        },
+        {
+          "type": "int",
+          "name": "index",
+          "annotations": []
+        }
+      ],
+      "line_start": 274,
+      "line_end": 295,
+      "body": "    public static Class getClassGenricType(final Class clazz, final int index) {\n        Type genType = clazz.getGenericSuperclass();\n\n        if (!(genType instanceof ParameterizedType)) {\n            logger.debug(clazz.getSimpleName() + \"'s superclass not ParameterizedType\");\n            return Object.class;\n        }\n\n        Type[] params = ((ParameterizedType) genType).getActualTypeArguments();\n\n        if (index >= params.length || index < 0) {\n            logger.debug(\"Index: \" + index + \", Size of \" + clazz.getSimpleName() + \"'s Parameterized Type: \"\n                    + params.length);\n            return Object.class;\n        }\n        if (!(params[index] instanceof Class)) {\n            logger.debug(clazz.getSimpleName() + \" not set the actual class on superclass generic parameter\");\n            return Object.class;\n        }\n\n        return (Class) params[index];\n    }",
+      "annotations": [],
+      "called_methods": [
+        "clazz.getGenericSuperclass",
+        "ReflectUtils.getSimpleName",
+        "ReflectUtils.debug",
+        "logger.debug",
+        "ReflectUtils.getClassGenricType",
+        "ReflectUtils.getActualTypeArguments",
+        "ReflectUtils.getGenericSuperclass",
+        "clazz.getSimpleName"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "convertReflectionExceptionToUnchecked": {
+      "method_name": "convertReflectionExceptionToUnchecked",
+      "return_type": "RuntimeException",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "msg",
+          "annotations": []
+        },
+        {
+          "type": "Exception",
+          "name": "e",
+          "annotations": []
+        }
+      ],
+      "line_start": 315,
+      "line_end": 323,
+      "body": "    public static RuntimeException convertReflectionExceptionToUnchecked(String msg, Exception e) {\n        if (e instanceof IllegalAccessException || e instanceof IllegalArgumentException\n                || e instanceof NoSuchMethodException) {\n            return new IllegalArgumentException(msg, e);\n        } else if (e instanceof InvocationTargetException) {\n            return new RuntimeException(msg, ((InvocationTargetException) e).getTargetException());\n        }\n        return new RuntimeException(msg, e);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ReflectUtils.IllegalArgumentException",
+        "ReflectUtils.RuntimeException",
+        "ReflectUtils.convertReflectionExceptionToUnchecked",
+        "ReflectUtils.getTargetException"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "SuppressWarnings"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 20,
+  "line_end": 325
+}

@@ -1,0 +1,164 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\constant\\HttpStatus.java",
+  "package_name": "com.oddfar.campus.common.constant",
+  "class_name": "HttpStatus",
+  "imports": [],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "SUCCESS": {
+      "field_name": "SUCCESS",
+      "field_type": "int",
+      "line_number": [
+        12,
+        25
+      ],
+      "annotations": []
+    },
+    "CREATED": {
+      "field_name": "CREATED",
+      "field_type": "int",
+      "line_number": [
+        17,
+        25
+      ],
+      "annotations": []
+    },
+    "ACCEPTED": {
+      "field_name": "ACCEPTED",
+      "field_type": "int",
+      "line_number": [
+        22,
+        25
+      ],
+      "annotations": []
+    },
+    "NO_CONTENT": {
+      "field_name": "NO_CONTENT",
+      "field_type": "int",
+      "line_number": [
+        27,
+        25
+      ],
+      "annotations": []
+    },
+    "MOVED_PERM": {
+      "field_name": "MOVED_PERM",
+      "field_type": "int",
+      "line_number": [
+        32,
+        25
+      ],
+      "annotations": []
+    },
+    "SEE_OTHER": {
+      "field_name": "SEE_OTHER",
+      "field_type": "int",
+      "line_number": [
+        37,
+        25
+      ],
+      "annotations": []
+    },
+    "NOT_MODIFIED": {
+      "field_name": "NOT_MODIFIED",
+      "field_type": "int",
+      "line_number": [
+        42,
+        25
+      ],
+      "annotations": []
+    },
+    "BAD_REQUEST": {
+      "field_name": "BAD_REQUEST",
+      "field_type": "int",
+      "line_number": [
+        47,
+        25
+      ],
+      "annotations": []
+    },
+    "UNAUTHORIZED": {
+      "field_name": "UNAUTHORIZED",
+      "field_type": "int",
+      "line_number": [
+        52,
+        25
+      ],
+      "annotations": []
+    },
+    "FORBIDDEN": {
+      "field_name": "FORBIDDEN",
+      "field_type": "int",
+      "line_number": [
+        57,
+        25
+      ],
+      "annotations": []
+    },
+    "NOT_FOUND": {
+      "field_name": "NOT_FOUND",
+      "field_type": "int",
+      "line_number": [
+        62,
+        25
+      ],
+      "annotations": []
+    },
+    "BAD_METHOD": {
+      "field_name": "BAD_METHOD",
+      "field_type": "int",
+      "line_number": [
+        67,
+        25
+      ],
+      "annotations": []
+    },
+    "CONFLICT": {
+      "field_name": "CONFLICT",
+      "field_type": "int",
+      "line_number": [
+        72,
+        25
+      ],
+      "annotations": []
+    },
+    "UNSUPPORTED_TYPE": {
+      "field_name": "UNSUPPORTED_TYPE",
+      "field_type": "int",
+      "line_number": [
+        77,
+        25
+      ],
+      "annotations": []
+    },
+    "ERROR": {
+      "field_name": "ERROR",
+      "field_type": "int",
+      "line_number": [
+        82,
+        25
+      ],
+      "annotations": []
+    },
+    "NOT_IMPLEMENTED": {
+      "field_name": "NOT_IMPLEMENTED",
+      "field_type": "int",
+      "line_number": [
+        87,
+        25
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    8,
+    8
+  ],
+  "line_end": 0
+}

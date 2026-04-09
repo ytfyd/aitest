@@ -1,0 +1,209 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\constant\\UserConstants.java",
+  "package_name": "com.oddfar.campus.common.constant",
+  "class_name": "UserConstants",
+  "imports": [],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "SYS_USER": {
+      "field_name": "SYS_USER",
+      "field_type": "String",
+      "line_number": [
+        12,
+        25
+      ],
+      "annotations": []
+    },
+    "NORMAL": {
+      "field_name": "NORMAL",
+      "field_type": "String",
+      "line_number": [
+        18,
+        25
+      ],
+      "annotations": []
+    },
+    "EXCEPTION": {
+      "field_name": "EXCEPTION",
+      "field_type": "String",
+      "line_number": [
+        23,
+        25
+      ],
+      "annotations": []
+    },
+    "USER_DISABLE": {
+      "field_name": "USER_DISABLE",
+      "field_type": "String",
+      "line_number": [
+        28,
+        25
+      ],
+      "annotations": []
+    },
+    "ROLE_DISABLE": {
+      "field_name": "ROLE_DISABLE",
+      "field_type": "String",
+      "line_number": [
+        33,
+        25
+      ],
+      "annotations": []
+    },
+    "DICT_NORMAL": {
+      "field_name": "DICT_NORMAL",
+      "field_type": "String",
+      "line_number": [
+        39,
+        25
+      ],
+      "annotations": []
+    },
+    "YES": {
+      "field_name": "YES",
+      "field_type": "String",
+      "line_number": [
+        44,
+        25
+      ],
+      "annotations": []
+    },
+    "YES_FRAME": {
+      "field_name": "YES_FRAME",
+      "field_type": "String",
+      "line_number": [
+        49,
+        25
+      ],
+      "annotations": []
+    },
+    "NO_FRAME": {
+      "field_name": "NO_FRAME",
+      "field_type": "String",
+      "line_number": [
+        54,
+        25
+      ],
+      "annotations": []
+    },
+    "TYPE_DIR": {
+      "field_name": "TYPE_DIR",
+      "field_type": "String",
+      "line_number": [
+        59,
+        25
+      ],
+      "annotations": []
+    },
+    "TYPE_MENU": {
+      "field_name": "TYPE_MENU",
+      "field_type": "String",
+      "line_number": [
+        64,
+        25
+      ],
+      "annotations": []
+    },
+    "TYPE_BUTTON": {
+      "field_name": "TYPE_BUTTON",
+      "field_type": "String",
+      "line_number": [
+        69,
+        25
+      ],
+      "annotations": []
+    },
+    "LAYOUT": {
+      "field_name": "LAYOUT",
+      "field_type": "String",
+      "line_number": [
+        74,
+        25
+      ],
+      "annotations": []
+    },
+    "PARENT_VIEW": {
+      "field_name": "PARENT_VIEW",
+      "field_type": "String",
+      "line_number": [
+        79,
+        25
+      ],
+      "annotations": []
+    },
+    "INNER_LINK": {
+      "field_name": "INNER_LINK",
+      "field_type": "String",
+      "line_number": [
+        84,
+        25
+      ],
+      "annotations": []
+    },
+    "UNIQUE": {
+      "field_name": "UNIQUE",
+      "field_type": "String",
+      "line_number": [
+        89,
+        25
+      ],
+      "annotations": []
+    },
+    "NOT_UNIQUE": {
+      "field_name": "NOT_UNIQUE",
+      "field_type": "String",
+      "line_number": [
+        90,
+        25
+      ],
+      "annotations": []
+    },
+    "USERNAME_MIN_LENGTH": {
+      "field_name": "USERNAME_MIN_LENGTH",
+      "field_type": "int",
+      "line_number": [
+        95,
+        25
+      ],
+      "annotations": []
+    },
+    "USERNAME_MAX_LENGTH": {
+      "field_name": "USERNAME_MAX_LENGTH",
+      "field_type": "int",
+      "line_number": [
+        96,
+        25
+      ],
+      "annotations": []
+    },
+    "PASSWORD_MIN_LENGTH": {
+      "field_name": "PASSWORD_MIN_LENGTH",
+      "field_type": "int",
+      "line_number": [
+        101,
+        25
+      ],
+      "annotations": []
+    },
+    "PASSWORD_MAX_LENGTH": {
+      "field_name": "PASSWORD_MAX_LENGTH",
+      "field_type": "int",
+      "line_number": [
+        102,
+        25
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    8,
+    8
+  ],
+  "line_end": 0
+}

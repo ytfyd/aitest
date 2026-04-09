@@ -1,0 +1,492 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\web\\service\\TokenService.java",
+  "package_name": "com.oddfar.campus.framework.web.service",
+  "class_name": "TokenService",
+  "imports": [
+    "com.oddfar.campus.common.constant.CacheConstants",
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.core.RedisCache",
+    "com.oddfar.campus.common.domain.model.LoginUser",
+    "com.oddfar.campus.common.domain.model.LoginUserToken",
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.common.utils.ip.AddressUtils",
+    "com.oddfar.campus.common.utils.ip.IpUtils",
+    "com.oddfar.campus.common.utils.uuid.IdUtils",
+    "eu.bitwalker.useragentutils.UserAgent",
+    "io.jsonwebtoken.Claims",
+    "io.jsonwebtoken.Jwts",
+    "io.jsonwebtoken.SignatureAlgorithm",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.beans.factory.annotation.Value",
+    "org.springframework.stereotype.Component",
+    "javax.servlet.http.HttpServletRequest",
+    "java.util.HashMap",
+    "java.util.Map",
+    "java.util.concurrent.TimeUnit"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "header": {
+      "field_name": "header",
+      "field_type": "String",
+      "line_number": 36,
+      "annotations": [
+        "author",
+        "Component",
+        "Value"
+      ]
+    },
+    "secret": {
+      "field_name": "secret",
+      "field_type": "String",
+      "line_number": 40,
+      "annotations": [
+        "author",
+        "Component",
+        "Value",
+        "Value"
+      ]
+    },
+    "expireTime": {
+      "field_name": "expireTime",
+      "field_type": "int",
+      "line_number": 44,
+      "annotations": [
+        "Value",
+        "Value",
+        "Value"
+      ]
+    },
+    "redisCache": {
+      "field_name": "redisCache",
+      "field_type": "RedisCache",
+      "line_number": 52,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "getLoginUser": {
+      "method_name": "getLoginUser",
+      "return_type": "LoginUser",
+      "parameters": [
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 60,
+      "line_end": 67,
+      "body": "    public LoginUser getLoginUser(HttpServletRequest request) {\n        LoginUserToken loginUserToken = getLoginUserToken(request);\n        if (StringUtils.isNotNull(loginUserToken)) {\n            LoginUser user = redisCache.getCacheObject(getLoginKey(loginUserToken.getUserId()));\n            return user;\n        }\n        return null;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "loginUserToken.getUserId",
+        "TokenService.getCacheObject",
+        "TokenService.getLoginKey",
+        "TokenService.getLoginUser",
+        "TokenService.getUserId",
+        "TokenService.getLoginUserToken",
+        "StringUtils.isNotNull",
+        "TokenService.isNotNull",
+        "RedisCache.getCacheObject"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getLoginUserToken": {
+      "method_name": "getLoginUserToken",
+      "return_type": "LoginUserToken",
+      "parameters": [
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 74,
+      "line_end": 92,
+      "body": "    public LoginUserToken getLoginUserToken(HttpServletRequest request) {\n        // 获取请求携带的令牌\n        String token = getToken(request);\n        if (StringUtils.isNotEmpty(token)) {\n            try {\n                Claims claims = parseToken(token);\n                // 解析对应的权限以及用户信息\n                String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);\n                String userKey = getTokenKey(uuid);\n                //获取用户id\n                LoginUserToken loginUserToken = redisCache.getCacheObject(userKey);\n\n\n                return loginUserToken;\n            } catch (Exception e) {\n            }\n        }\n        return null;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.getToken",
+        "TokenService.getCacheObject",
+        "claims.get",
+        "RedisCache.getCacheObject",
+        "TokenService.parseToken",
+        "TokenService.getTokenKey",
+        "TokenService.get",
+        "StringUtils.isNotEmpty",
+        "TokenService.getLoginUserToken",
+        "TokenService.isNotEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getLoginUserByUserId": {
+      "method_name": "getLoginUserByUserId",
+      "return_type": "LoginUser",
+      "parameters": [
+        {
+          "type": "long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 99,
+      "line_end": 110,
+      "body": "    public LoginUser getLoginUserByUserId(long userId) {\n\n        String loginKey = getLoginKey(userId);\n        if (redisCache.hasKey(loginKey)) {\n            try {\n                LoginUser user = redisCache.getCacheObject(getLoginKey(userId));\n                return user;\n            } catch (Exception e) {\n            }\n        }\n        return null;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.getCacheObject",
+        "RedisCache.hasKey",
+        "TokenService.hasKey",
+        "TokenService.getLoginKey",
+        "TokenService.getLoginUserByUserId",
+        "RedisCache.getCacheObject"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setLoginUser": {
+      "method_name": "setLoginUser",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "LoginUser",
+          "name": "loginUser",
+          "annotations": []
+        }
+      ],
+      "line_start": 115,
+      "line_end": 119,
+      "body": "    public void setLoginUser(LoginUser loginUser) {\n        if (StringUtils.isNotNull(loginUser) && StringUtils.isNotEmpty(loginUser.getToken())) {\n            refreshToken(loginUser);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.getToken",
+        "StringUtils.isNotEmpty",
+        "TokenService.setLoginUser",
+        "TokenService.refreshToken",
+        "StringUtils.isNotNull",
+        "TokenService.isNotNull",
+        "loginUser.getToken",
+        "TokenService.isNotEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "delLoginUser": {
+      "method_name": "delLoginUser",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "token",
+          "annotations": []
+        }
+      ],
+      "line_start": 124,
+      "line_end": 129,
+      "body": "    public void delLoginUser(String token) {\n        if (StringUtils.isNotEmpty(token)) {\n            String userKey = getTokenKey(token);\n            redisCache.deleteObject(userKey);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.deleteObject",
+        "RedisCache.deleteObject",
+        "TokenService.getTokenKey",
+        "TokenService.delLoginUser",
+        "StringUtils.isNotEmpty",
+        "TokenService.isNotEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "createToken": {
+      "method_name": "createToken",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "Object>",
+          "name": "claims",
+          "annotations": []
+        }
+      ],
+      "line_start": 213,
+      "line_end": 218,
+      "body": "    private String createToken(Map<String, Object> claims) {\n        String token = Jwts.builder()\n                .setClaims(claims)\n                .signWith(SignatureAlgorithm.HS512, secret).compact();\n        return token;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.compact",
+        "TokenService.setClaims",
+        "TokenService.createToken",
+        "Jwts.builder",
+        "TokenService.builder",
+        "TokenService.signWith"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "verifyToken": {
+      "method_name": "verifyToken",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "LoginUser",
+          "name": "loginUser",
+          "annotations": []
+        }
+      ],
+      "line_start": 157,
+      "line_end": 163,
+      "body": "    public void verifyToken(LoginUser loginUser) {\n        long expireTime = loginUser.getExpireTime();\n        long currentTime = System.currentTimeMillis();\n        if (expireTime - currentTime <= MILLIS_MINUTE_TEN) {\n            refreshToken(loginUser);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.verifyToken",
+        "System.currentTimeMillis",
+        "TokenService.refreshToken",
+        "TokenService.currentTimeMillis",
+        "TokenService.getExpireTime",
+        "loginUser.getExpireTime"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "refreshToken": {
+      "method_name": "refreshToken",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "LoginUser",
+          "name": "loginUser",
+          "annotations": []
+        },
+        {
+          "type": "LoginUserToken",
+          "name": "loginUserToken",
+          "annotations": []
+        }
+      ],
+      "line_start": 181,
+      "line_end": 190,
+      "body": "    public void refreshToken(LoginUser loginUser, LoginUserToken loginUserToken) {\n        loginUserToken.setLoginTime(System.currentTimeMillis());\n        loginUser.setExpireTime(loginUserToken.getLoginTime() + expireTime * MILLIS_MINUTE);\n        loginUserToken.setExpireTime(loginUserToken.getLoginTime() + expireTime * MILLIS_MINUTE);\n        // 根据uuid将loginUser登录的缓存\n        String userKey = getTokenKey(loginUser.getToken());\n        redisCache.setCacheObject(userKey, loginUserToken, expireTime, TimeUnit.MINUTES);\n        //设置loginUser缓存\n        redisCache.setCacheObject(getLoginKey(loginUser.getUserId()), loginUser, expireTime, TimeUnit.MINUTES);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.getToken",
+        "loginUser.getUserId",
+        "loginUserToken.setExpireTime",
+        "System.currentTimeMillis",
+        "TokenService.refreshToken",
+        "TokenService.getLoginTime",
+        "RedisCache.setCacheObject",
+        "TokenService.currentTimeMillis",
+        "TokenService.setCacheObject",
+        "TokenService.getTokenKey",
+        "loginUser.setExpireTime",
+        "loginUserToken.setLoginTime",
+        "TokenService.getLoginKey",
+        "TokenService.getUserId",
+        "loginUserToken.getLoginTime",
+        "TokenService.setExpireTime",
+        "loginUser.getToken",
+        "TokenService.setLoginTime"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setUserAgent": {
+      "method_name": "setUserAgent",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "LoginUserToken",
+          "name": "loginUserToken",
+          "annotations": []
+        }
+      ],
+      "line_start": 197,
+      "line_end": 205,
+      "body": "    public void setUserAgent(LoginUserToken loginUserToken) {\n        UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader(\"User-Agent\"));\n        String ip = IpUtils.getIpAddr(ServletUtils.getRequest());\n        loginUserToken.setIpaddr(ip);\n        loginUserToken.setLoginLocation(AddressUtils.getRealAddressByIP(ip));\n        loginUserToken.setBrowser(userAgent.getBrowser().getName());\n        loginUserToken.setOs(userAgent.getOperatingSystem().getName());\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.getRequest",
+        "TokenService.getRealAddressByIP",
+        "AddressUtils.getRealAddressByIP",
+        "TokenService.setOs",
+        "UserAgent.parseUserAgentString",
+        "loginUserToken.setLoginLocation",
+        "TokenService.setIpaddr",
+        "TokenService.setBrowser",
+        "TokenService.getHeader",
+        "loginUserToken.setBrowser",
+        "userAgent.getOperatingSystem",
+        "TokenService.setUserAgent",
+        "userAgent.getBrowser",
+        "loginUserToken.setIpaddr",
+        "loginUserToken.setOs",
+        "TokenService.getOperatingSystem",
+        "TokenService.setLoginLocation",
+        "TokenService.parseUserAgentString",
+        "TokenService.getBrowser",
+        "TokenService.getName",
+        "ServletUtils.getRequest",
+        "TokenService.getIpAddr",
+        "IpUtils.getIpAddr"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "parseToken": {
+      "method_name": "parseToken",
+      "return_type": "Claims",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "token",
+          "annotations": []
+        }
+      ],
+      "line_start": 226,
+      "line_end": 231,
+      "body": "    private Claims parseToken(String token) {\n        return Jwts.parser()\n                .setSigningKey(secret)\n                .parseClaimsJws(token)\n                .getBody();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.parseClaimsJws",
+        "Jwts.parser",
+        "TokenService.parseToken",
+        "TokenService.setSigningKey",
+        "TokenService.parser",
+        "TokenService.getBody"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getUsernameFromToken": {
+      "method_name": "getUsernameFromToken",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "token",
+          "annotations": []
+        }
+      ],
+      "line_start": 239,
+      "line_end": 242,
+      "body": "    public String getUsernameFromToken(String token) {\n        Claims claims = parseToken(token);\n        return claims.getSubject();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.parseToken",
+        "TokenService.getSubject",
+        "claims.getSubject",
+        "TokenService.getUsernameFromToken"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getToken": {
+      "method_name": "getToken",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 250,
+      "line_end": 256,
+      "body": "    private String getToken(HttpServletRequest request) {\n        String token = request.getHeader(header);\n        if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {\n            token = token.replace(Constants.TOKEN_PREFIX, \"\");\n        }\n        return token;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "request.getHeader",
+        "TokenService.getToken",
+        "TokenService.replace",
+        "TokenService.getHeader",
+        "token.startsWith",
+        "token.replace",
+        "TokenService.startsWith",
+        "StringUtils.isNotEmpty",
+        "TokenService.isNotEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getTokenKey": {
+      "method_name": "getTokenKey",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "uuid",
+          "annotations": []
+        }
+      ],
+      "line_start": 258,
+      "line_end": 260,
+      "body": "    private String getTokenKey(String uuid) {\n        return CacheConstants.LOGIN_TOKEN_KEY + uuid;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.getTokenKey"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getLoginKey": {
+      "method_name": "getLoginKey",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 262,
+      "line_end": 264,
+      "body": "    private String getLoginKey(Long userId) {\n        return CacheConstants.LOGIN_USER_KEY + userId;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TokenService.getLoginKey"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 33,
+  "line_end": 266
+}

@@ -1,0 +1,31 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\exception\\user\\UserException.java",
+  "package_name": "com.oddfar.campus.common.exception.user",
+  "class_name": "UserException",
+  "imports": [
+    "com.oddfar.campus.common.exception.base.BaseException"
+  ],
+  "extends": "BaseException",
+  "implements": [],
+  "fields": {
+    "serialVersionUID": {
+      "field_name": "serialVersionUID",
+      "field_type": "long",
+      "line_number": [
+        11,
+        26
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    10,
+    8
+  ],
+  "line_end": 0
+}

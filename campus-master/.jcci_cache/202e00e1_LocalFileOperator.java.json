@@ -1,0 +1,72 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\file\\LocalFileOperator.java",
+  "package_name": "com.oddfar.campus.framework.api.file",
+  "class_name": "LocalFileOperator",
+  "imports": [
+    "org.springframework.web.multipart.MultipartFile"
+  ],
+  "extends": null,
+  "implements": [
+    "FileOperatorApi"
+  ],
+  "fields": {
+    "currentSavePath": {
+      "field_name": "currentSavePath",
+      "field_type": "String",
+      "line_number": [
+        7,
+        13
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {
+    "storageFile": {
+      "method_name": "storageFile",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "bucketName",
+          "varargs": false
+        },
+        {
+          "type": "MultipartFile",
+          "name": "file",
+          "varargs": false
+        },
+        {
+          "type": "String",
+          "name": "allowedExtension",
+          "varargs": false
+        }
+      ],
+      "line_start": [
+        15,
+        12
+      ],
+      "line_end": [
+        15,
+        12
+      ],
+      "body": "",
+      "annotations": [
+        "Override"
+      ],
+      "called_methods": [],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    5,
+    8
+  ],
+  "line_end": 0
+}

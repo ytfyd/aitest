@@ -1,0 +1,165 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\SpringUtils.java",
+  "package_name": "com.oddfar.campus.common.utils",
+  "class_name": "SpringUtils",
+  "imports": [
+    "org.springframework.aop.framework.AopContext",
+    "org.springframework.beans.BeansException",
+    "org.springframework.beans.factory.NoSuchBeanDefinitionException",
+    "org.springframework.beans.factory.config.BeanFactoryPostProcessor",
+    "org.springframework.beans.factory.config.ConfigurableListableBeanFactory",
+    "org.springframework.context.ApplicationContext",
+    "org.springframework.context.ApplicationContextAware",
+    "org.springframework.stereotype.Component"
+  ],
+  "extends": null,
+  "implements": [
+    "BeanFactoryPostProcessor",
+    "ApplicationContextAware"
+  ],
+  "fields": {},
+  "methods": {
+    "postProcessBeanFactory": {
+      "method_name": "postProcessBeanFactory",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "ConfigurableListableBeanFactory",
+          "name": "beanFactory",
+          "annotations": []
+        }
+      ],
+      "line_start": 27,
+      "line_end": 29,
+      "body": "    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {\n        SpringUtils.beanFactory = beanFactory;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SpringUtils.postProcessBeanFactory"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setApplicationContext": {
+      "method_name": "setApplicationContext",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "ApplicationContext",
+          "name": "applicationContext",
+          "annotations": []
+        }
+      ],
+      "line_start": 32,
+      "line_end": 34,
+      "body": "    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {\n        SpringUtils.applicationContext = applicationContext;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SpringUtils.setApplicationContext"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "containsBean": {
+      "method_name": "containsBean",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "name",
+          "annotations": []
+        }
+      ],
+      "line_start": 66,
+      "line_end": 68,
+      "body": "    public static boolean containsBean(String name) {\n        return beanFactory.containsBean(name);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SpringUtils.containsBean",
+        "beanFactory.containsBean"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isSingleton": {
+      "method_name": "isSingleton",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "name",
+          "annotations": []
+        }
+      ],
+      "line_start": 77,
+      "line_end": 79,
+      "body": "    public static boolean isSingleton(String name) throws NoSuchBeanDefinitionException {\n        return beanFactory.isSingleton(name);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SpringUtils.isSingleton",
+        "beanFactory.isSingleton"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getActiveProfile": {
+      "method_name": "getActiveProfile",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 126,
+      "line_end": 129,
+      "body": "    public static String getActiveProfile() {\n        final String[] activeProfiles = getActiveProfiles();\n        return StringUtils.isNotEmpty(activeProfiles) ? activeProfiles[0] : null;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SpringUtils.getActiveProfile",
+        "SpringUtils.isNotEmpty",
+        "SpringUtils.getActiveProfiles",
+        "StringUtils.isNotEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getRequiredProperty": {
+      "method_name": "getRequiredProperty",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "key",
+          "annotations": []
+        }
+      ],
+      "line_start": 137,
+      "line_end": 139,
+      "body": "    public static String getRequiredProperty(String key) {\n        return applicationContext.getEnvironment().getRequiredProperty(key);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SpringUtils.getEnvironment",
+        "applicationContext.getEnvironment",
+        "SpringUtils.getRequiredProperty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 18,
+  "line_end": 141
+}

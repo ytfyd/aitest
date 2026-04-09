@@ -1,0 +1,82 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\config\\AsyncConfig.java",
+  "package_name": "com.oddfar.campus.common.config",
+  "class_name": "AsyncConfig",
+  "imports": [
+    "cn.hutool.core.util.ArrayUtil",
+    "cn.hutool.extra.spring.SpringUtil",
+    "com.oddfar.campus.common.exception.ServiceException",
+    "org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler",
+    "org.springframework.boot.autoconfigure.AutoConfiguration",
+    "org.springframework.scheduling.annotation.AsyncConfigurer",
+    "org.springframework.scheduling.annotation.EnableAsync",
+    "java.util.Arrays",
+    "java.util.concurrent.Executor"
+  ],
+  "extends": null,
+  "implements": [
+    "AsyncConfigurer"
+  ],
+  "fields": {},
+  "methods": {
+    "getAsyncExecutor": {
+      "method_name": "getAsyncExecutor",
+      "return_type": "Executor",
+      "parameters": [],
+      "line_start": 27,
+      "line_end": 29,
+      "body": "    public Executor getAsyncExecutor() {\n        return SpringUtil.getBean(\"scheduledExecutorService\");\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SpringUtil.getBean",
+        "AsyncConfig.getBean",
+        "AsyncConfig.getAsyncExecutor"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getAsyncUncaughtExceptionHandler": {
+      "method_name": "getAsyncUncaughtExceptionHandler",
+      "return_type": "AsyncUncaughtExceptionHandler",
+      "parameters": [],
+      "line_start": 35,
+      "line_end": 46,
+      "body": "    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {\n        return (throwable, method, objects) -> {\n            throwable.printStackTrace();\n            StringBuilder sb = new StringBuilder();\n            sb.append(\"Exception message - \").append(throwable.getMessage())\n                    .append(\", Method name - \").append(method.getName());\n            if (ArrayUtil.isNotEmpty(objects)) {\n                sb.append(\", Parameter value - \").append(Arrays.toString(objects));\n            }\n            throw new ServiceException(sb.toString());\n        };\n    }",
+      "annotations": [],
+      "called_methods": [
+        "method.getName",
+        "AsyncConfig.ServiceException",
+        "sb.append",
+        "Arrays.toString",
+        "sb.toString",
+        "AsyncConfig.getAsyncUncaughtExceptionHandler",
+        "AsyncConfig.getName",
+        "AsyncConfig.StringBuilder",
+        "AsyncConfig.printStackTrace",
+        "ArrayUtil.isNotEmpty",
+        "AsyncConfig.append",
+        "AsyncConfig.getMessage",
+        "AsyncConfig.isNotEmpty",
+        "AsyncConfig.toString",
+        "throwable.getMessage",
+        "throwable.printStackTrace"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "EnableAsync",
+    "AutoConfiguration"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 21,
+  "line_end": 49
+}

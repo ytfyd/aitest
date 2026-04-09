@@ -1,0 +1,80 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\interceptor\\RepeatSubmitInterceptor.java",
+  "package_name": "com.oddfar.campus.framework.interceptor",
+  "class_name": "RepeatSubmitInterceptor",
+  "imports": [
+    "com.alibaba.fastjson2.JSON",
+    "com.oddfar.campus.common.annotation.RepeatSubmit",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "org.springframework.stereotype.Component",
+    "org.springframework.web.method.HandlerMethod",
+    "org.springframework.web.servlet.HandlerInterceptor",
+    "javax.servlet.http.HttpServletRequest",
+    "javax.servlet.http.HttpServletResponse",
+    "java.lang.reflect.Method"
+  ],
+  "extends": null,
+  "implements": [
+    "HandlerInterceptor"
+  ],
+  "fields": {},
+  "methods": {
+    "preHandle": {
+      "method_name": "preHandle",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        },
+        {
+          "type": "HttpServletResponse",
+          "name": "response",
+          "annotations": []
+        },
+        {
+          "type": "Object",
+          "name": "handler",
+          "annotations": []
+        }
+      ],
+      "line_start": 23,
+      "line_end": 39,
+      "body": "    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {\n        if (handler instanceof HandlerMethod) {\n            HandlerMethod handlerMethod = (HandlerMethod) handler;\n            Method method = handlerMethod.getMethod();\n            RepeatSubmit annotation = method.getAnnotation(RepeatSubmit.class);\n            if (annotation != null) {\n                if (this.isRepeatSubmit(request, annotation)) {\n                    R r = R.error(annotation.message());\n                    ServletUtils.renderString(response, JSON.toJSONString(r));\n                    return false;\n                }\n            }\n            return true;\n        } else {\n            return true;\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "R.error",
+        "RepeatSubmitInterceptor.preHandle",
+        "annotation.message",
+        "RepeatSubmitInterceptor.getMethod",
+        "handlerMethod.getMethod",
+        "RepeatSubmitInterceptor.isRepeatSubmit",
+        "RepeatSubmitInterceptor.error",
+        "method.getAnnotation",
+        "JSON.toJSONString",
+        "ServletUtils.renderString",
+        "RepeatSubmitInterceptor.toJSONString",
+        "RepeatSubmitInterceptor.message",
+        "RepeatSubmitInterceptor.getAnnotation",
+        "RepeatSubmitInterceptor.renderString"
+      ],
+      "used_fields": [
+        "isRepeatSubmit"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 21,
+  "line_end": 50
+}

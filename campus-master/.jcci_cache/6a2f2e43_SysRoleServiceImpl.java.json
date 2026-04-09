@@ -1,0 +1,633 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\service\\impl\\SysRoleServiceImpl.java",
+  "package_name": "com.oddfar.campus.framework.service.impl",
+  "class_name": "SysRoleServiceImpl",
+  "imports": [
+    "com.baomidou.mybatisplus.extension.service.impl.ServiceImpl",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.entity.SysRoleEntity",
+    "com.oddfar.campus.common.domain.entity.SysRoleMenuEntity",
+    "com.oddfar.campus.common.domain.entity.SysUserRoleEntity",
+    "com.oddfar.campus.common.domain.model.SysRoleAuth",
+    "com.oddfar.campus.common.exception.ServiceException",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.api.resource.ResourceCollectorApi",
+    "com.oddfar.campus.framework.mapper.SysRoleMapper",
+    "com.oddfar.campus.framework.mapper.SysRoleMenuMapper",
+    "com.oddfar.campus.framework.mapper.SysUserRoleMapper",
+    "com.oddfar.campus.framework.service.SysMenuService",
+    "com.oddfar.campus.framework.service.SysResourceService",
+    "com.oddfar.campus.framework.service.SysRoleService",
+    "org.springframework.context.ApplicationContext",
+    "org.springframework.stereotype.Service",
+    "org.springframework.transaction.annotation.Transactional",
+    "javax.annotation.Resource",
+    "java.util.stream.Collectors"
+  ],
+  "extends": "ServiceImpl",
+  "implements": [],
+  "fields": {
+    "roleMapper": {
+      "field_name": "roleMapper",
+      "field_type": "SysRoleMapper",
+      "line_number": 29,
+      "annotations": [
+        "Service"
+      ]
+    },
+    "userRoleMapper": {
+      "field_name": "userRoleMapper",
+      "field_type": "SysUserRoleMapper",
+      "line_number": 31,
+      "annotations": [
+        "Service",
+        "Resource"
+      ]
+    },
+    "roleMenuMapper": {
+      "field_name": "roleMenuMapper",
+      "field_type": "SysRoleMenuMapper",
+      "line_number": 33,
+      "annotations": [
+        "Resource",
+        "Resource"
+      ]
+    },
+    "menuService": {
+      "field_name": "menuService",
+      "field_type": "SysMenuService",
+      "line_number": 35,
+      "annotations": [
+        "Resource",
+        "Resource",
+        "Resource"
+      ]
+    },
+    "resourceService": {
+      "field_name": "resourceService",
+      "field_type": "SysResourceService",
+      "line_number": 37,
+      "annotations": [
+        "Resource",
+        "Resource",
+        "Resource"
+      ]
+    }
+  },
+  "methods": {
+    "page": {
+      "method_name": "page",
+      "return_type": "PageResult<SysRoleEntity>",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "sysRoleEntity",
+          "annotations": []
+        }
+      ],
+      "line_start": 44,
+      "line_end": 46,
+      "body": "    public PageResult<SysRoleEntity> page(SysRoleEntity sysRoleEntity) {\n        return roleMapper.selectPage(sysRoleEntity);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleServiceImpl.page",
+        "SysRoleServiceImpl.selectPage",
+        "SysRoleMapper.selectPage"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectRoleList": {
+      "method_name": "selectRoleList",
+      "return_type": "List<SysRoleEntity>",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": []
+        }
+      ],
+      "line_start": 49,
+      "line_end": 51,
+      "body": "    public List<SysRoleEntity> selectRoleList(SysRoleEntity role) {\n        return roleMapper.selectRoleList(role);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleServiceImpl.selectRoleList",
+        "SysRoleMapper.selectRoleList"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectRolePermissionByUserId": {
+      "method_name": "selectRolePermissionByUserId",
+      "return_type": "Set<String>",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 60,
+      "line_end": 69,
+      "body": "    public Set<String> selectRolePermissionByUserId(Long userId) {\n        List<SysRoleEntity> perms = roleMapper.selectRolePermissionByUserId(userId);\n        Set<String> permsSet = new HashSet<>();\n        for (SysRoleEntity perm : perms) {\n            if (StringUtils.isNotNull(perm)) {\n                permsSet.addAll(Arrays.asList(perm.getRoleKey().trim().split(\",\")));\n            }\n        }\n        return permsSet;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleServiceImpl.addAll",
+        "SysRoleServiceImpl.trim",
+        "SysRoleServiceImpl.getRoleKey",
+        "permsSet.addAll",
+        "SysRoleServiceImpl.selectRolePermissionByUserId",
+        "perm.getRoleKey",
+        "Arrays.asList",
+        "SysRoleServiceImpl.split",
+        "StringUtils.isNotNull",
+        "SysRoleServiceImpl.isNotNull",
+        "SysRoleServiceImpl.asList",
+        "SysRoleMapper.selectRolePermissionByUserId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectRoleById": {
+      "method_name": "selectRoleById",
+      "return_type": "SysRoleEntity",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        }
+      ],
+      "line_start": 79,
+      "line_end": 81,
+      "body": "    public SysRoleEntity selectRoleById(Long roleId) {\n        return roleMapper.selectRoleById(roleId);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleMapper.selectRoleById",
+        "SysRoleServiceImpl.selectRoleById"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectRoleAll": {
+      "method_name": "selectRoleAll",
+      "return_type": "List<SysRoleEntity>",
+      "parameters": [],
+      "line_start": 84,
+      "line_end": 87,
+      "body": "    public List<SysRoleEntity> selectRoleAll() {\n        return this.selectRoleList(new SysRoleEntity());\n//        return SpringUtils.getAopProxy(this).selectRoleList(new SysRoleEntity());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleServiceImpl.SysRoleEntity",
+        "SpringUtils.getAopProxy",
+        "SysRoleServiceImpl.getAopProxy",
+        "SysRoleServiceImpl.selectRoleList",
+        "SysRoleServiceImpl.selectRoleAll"
+      ],
+      "used_fields": [
+        "selectRoleList"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectRolesByUserId": {
+      "method_name": "selectRolesByUserId",
+      "return_type": "List<SysRoleEntity>",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 90,
+      "line_end": 102,
+      "body": "    public List<SysRoleEntity> selectRolesByUserId(Long userId) {\n        List<SysRoleEntity> userRoles = roleMapper.selectRolePermissionByUserId(userId);\n        List<SysRoleEntity> roles = selectRoleAll();\n        for (SysRoleEntity role : roles) {\n            for (SysRoleEntity userRole : userRoles) {\n                if (role.getRoleId().longValue() == userRole.getRoleId().longValue()) {\n                    role.setFlag(true);\n                    break;\n                }\n            }\n        }\n        return roles;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleServiceImpl.selectRolePermissionByUserId",
+        "SysRoleServiceImpl.longValue",
+        "SysRoleServiceImpl.selectRolesByUserId",
+        "SysRoleServiceImpl.selectRoleAll",
+        "role.getRoleId",
+        "SysRoleServiceImpl.getRoleId",
+        "SysRoleMapper.selectRolePermissionByUserId",
+        "role.setFlag",
+        "SysRoleServiceImpl.setFlag",
+        "userRole.getRoleId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertRole": {
+      "method_name": "insertRole",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": []
+        }
+      ],
+      "line_start": 107,
+      "line_end": 111,
+      "body": "    public int insertRole(SysRoleEntity role) {\n        // 新增角色信息\n        roleMapper.insert(role);\n        return insertRoleMenu(role);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleServiceImpl.insertRole",
+        "SysRoleMapper.insert",
+        "SysRoleServiceImpl.insertRoleMenu",
+        "SysRoleServiceImpl.insert"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "updateRole": {
+      "method_name": "updateRole",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": []
+        }
+      ],
+      "line_start": 114,
+      "line_end": 121,
+      "body": "    public int updateRole(SysRoleEntity role) {\n        // 修改角色信息\n        roleMapper.updateById(role);\n        // 删除角色与菜单关联\n        roleMenuMapper.deleteRoleMenuByRoleId(role.getRoleId());\n\n        return insertRoleMenu(role);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleServiceImpl.updateRole",
+        "SysRoleMenuMapper.deleteRoleMenuByRoleId",
+        "SysRoleServiceImpl.updateById",
+        "SysRoleServiceImpl.deleteRoleMenuByRoleId",
+        "SysRoleMapper.updateById",
+        "SysRoleServiceImpl.getRoleId",
+        "role.getRoleId",
+        "SysRoleServiceImpl.insertRoleMenu"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "updateRoleStatus": {
+      "method_name": "updateRoleStatus",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": []
+        }
+      ],
+      "line_start": 124,
+      "line_end": 126,
+      "body": "    public int updateRoleStatus(SysRoleEntity role) {\n        return roleMapper.updateById(role);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleMapper.updateById",
+        "SysRoleServiceImpl.updateById",
+        "SysRoleServiceImpl.updateRoleStatus"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteRoleByIds": {
+      "method_name": "deleteRoleByIds",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "roleIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 130,
+      "line_end": 142,
+      "body": "    public int deleteRoleByIds(Long[] roleIds) {\n        for (Long roleId : roleIds) {\n            checkRoleAllowed(new SysRoleEntity(roleId));\n            SysRoleEntity role = selectRoleById(roleId);\n            if (countUserRoleByRoleId(roleId) > 0) {\n                throw new ServiceException(String.format(\"%1$s已分配,不能删除\", role.getRoleName()));\n            }\n        }\n        // 删除角色与菜单关联\n        roleMenuMapper.deleteRoleMenu(roleIds);\n        // 删除角色\n        return roleMapper.deleteBatchIds(Arrays.asList(roleIds));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleServiceImpl.SysRoleEntity",
+        "SysRoleServiceImpl.format",
+        "SysRoleMenuMapper.deleteRoleMenu",
+        "SysRoleServiceImpl.deleteRoleMenu",
+        "SysRoleServiceImpl.asList",
+        "role.getRoleName",
+        "SysRoleServiceImpl.ServiceException",
+        "SysRoleMapper.deleteBatchIds",
+        "SysRoleServiceImpl.countUserRoleByRoleId",
+        "Arrays.asList",
+        "String.format",
+        "SysRoleServiceImpl.checkRoleAllowed",
+        "SysRoleServiceImpl.deleteBatchIds",
+        "SysRoleServiceImpl.selectRoleById",
+        "SysRoleServiceImpl.deleteRoleByIds",
+        "SysRoleServiceImpl.getRoleName"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteAuthUser": {
+      "method_name": "deleteAuthUser",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysUserRoleEntity",
+          "name": "userRole",
+          "annotations": []
+        }
+      ],
+      "line_start": 145,
+      "line_end": 147,
+      "body": "    public int deleteAuthUser(SysUserRoleEntity userRole) {\n        return userRoleMapper.deleteUserRoleInfo(userRole);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleServiceImpl.deleteAuthUser",
+        "SysUserRoleMapper.deleteUserRoleInfo",
+        "SysRoleServiceImpl.deleteUserRoleInfo"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteAuthUsers": {
+      "method_name": "deleteAuthUsers",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        },
+        {
+          "type": "Long[]",
+          "name": "userIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 150,
+      "line_end": 152,
+      "body": "    public int deleteAuthUsers(Long roleId, Long[] userIds) {\n        return userRoleMapper.deleteUserRoleInfos(roleId, userIds);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserRoleMapper.deleteUserRoleInfos",
+        "SysRoleServiceImpl.deleteUserRoleInfos",
+        "SysRoleServiceImpl.deleteAuthUsers"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertAuthUsers": {
+      "method_name": "insertAuthUsers",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        },
+        {
+          "type": "Long[]",
+          "name": "userIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 155,
+      "line_end": 166,
+      "body": "    public boolean insertAuthUsers(Long roleId, Long[] userIds) {\n        // 新增用户与角色管理\n        List<SysUserRoleEntity> list = new ArrayList<SysUserRoleEntity>();\n        for (Long userId : userIds) {\n            SysUserRoleEntity ur = new SysUserRoleEntity();\n            ur.setUserId(userId);\n            ur.setRoleId(roleId);\n            list.add(ur);\n        }\n\n        return this.saveBatch(list);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "list.add",
+        "ur.setUserId",
+        "SysRoleServiceImpl.insertAuthUsers",
+        "SysRoleServiceImpl.SysUserRoleEntity",
+        "SysRoleServiceImpl.add",
+        "SysRoleServiceImpl.setRoleId",
+        "SysRoleServiceImpl.setUserId",
+        "ur.setRoleId",
+        "SysRoleServiceImpl.saveBatch"
+      ],
+      "used_fields": [
+        "saveBatch"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "countUserRoleByRoleId": {
+      "method_name": "countUserRoleByRoleId",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        }
+      ],
+      "line_start": 169,
+      "line_end": 171,
+      "body": "    public int countUserRoleByRoleId(Long roleId) {\n        return userRoleMapper.countUserRoleByRoleId(roleId);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserRoleMapper.countUserRoleByRoleId",
+        "SysRoleServiceImpl.countUserRoleByRoleId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkRoleNameUnique": {
+      "method_name": "checkRoleNameUnique",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": []
+        }
+      ],
+      "line_start": 174,
+      "line_end": 181,
+      "body": "    public boolean checkRoleNameUnique(SysRoleEntity role) {\n        Long roleId = StringUtils.isNull(role.getRoleId()) ? -1L : role.getRoleId();\n        SysRoleEntity info = roleMapper.checkRoleNameUnique(role.getRoleName());\n        if (StringUtils.isNotNull(info) && info.getRoleId().longValue() != roleId.longValue()) {\n            return false;\n        }\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "roleId.longValue",
+        "role.getRoleName",
+        "StringUtils.isNull",
+        "SysRoleServiceImpl.longValue",
+        "SysRoleServiceImpl.checkRoleNameUnique",
+        "SysRoleServiceImpl.isNull",
+        "SysRoleServiceImpl.getRoleId",
+        "StringUtils.isNotNull",
+        "SysRoleServiceImpl.getRoleName",
+        "SysRoleServiceImpl.isNotNull",
+        "info.getRoleId",
+        "role.getRoleId",
+        "SysRoleMapper.checkRoleNameUnique"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkRoleKeyUnique": {
+      "method_name": "checkRoleKeyUnique",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": []
+        }
+      ],
+      "line_start": 184,
+      "line_end": 191,
+      "body": "    public boolean checkRoleKeyUnique(SysRoleEntity role) {\n        Long roleId = StringUtils.isNull(role.getRoleId()) ? -1L : role.getRoleId();\n        SysRoleEntity info = roleMapper.checkRoleKeyUnique(role.getRoleKey());\n        if (StringUtils.isNotNull(info) && info.getRoleId().longValue() != roleId.longValue()) {\n            return false;\n        }\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleMapper.checkRoleKeyUnique",
+        "roleId.longValue",
+        "SysRoleServiceImpl.getRoleKey",
+        "role.getRoleKey",
+        "StringUtils.isNull",
+        "SysRoleServiceImpl.longValue",
+        "SysRoleServiceImpl.isNull",
+        "SysRoleServiceImpl.getRoleId",
+        "StringUtils.isNotNull",
+        "SysRoleServiceImpl.isNotNull",
+        "info.getRoleId",
+        "role.getRoleId",
+        "SysRoleServiceImpl.checkRoleKeyUnique"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkRoleAllowed": {
+      "method_name": "checkRoleAllowed",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": []
+        }
+      ],
+      "line_start": 194,
+      "line_end": 198,
+      "body": "    public void checkRoleAllowed(SysRoleEntity role) {\n        if (StringUtils.isNotNull(role.getRoleId()) && role.isAdmin()) {\n            throw new ServiceException(\"不允许操作超级管理员角色\");\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleServiceImpl.ServiceException",
+        "SysRoleServiceImpl.isAdmin",
+        "SysRoleServiceImpl.checkRoleAllowed",
+        "SysRoleServiceImpl.getRoleId",
+        "StringUtils.isNotNull",
+        "SysRoleServiceImpl.isNotNull",
+        "role.getRoleId",
+        "role.isAdmin"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "resetRoleAuthCache": {
+      "method_name": "resetRoleAuthCache",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 201,
+      "line_end": 208,
+      "body": "    public void resetRoleAuthCache() {\n        //把用户资源和权限缓存\n        Map<Long, List<SysRoleAuth>> rolePermsMap = menuService.selectMenuPermsAll();\n        Map<Long, List<SysRoleAuth>> roleResourceMap = resourceService.selectSysRoleAuthAll().stream().collect(Collectors.groupingBy(SysRoleAuth::getRoleID));\n\n        ResourceCollectorApi resourceCollectorApi = applicationContext.getBean(ResourceCollectorApi.class);\n        resourceCollectorApi.setRoleAuthCache(rolePermsMap, roleResourceMap);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleServiceImpl.resetRoleAuthCache",
+        "SysRoleServiceImpl.groupingBy",
+        "resourceCollectorApi.setRoleAuthCache",
+        "applicationContext.getBean",
+        "SysResourceService.selectSysRoleAuthAll",
+        "SysRoleServiceImpl.collect",
+        "SysRoleServiceImpl.selectSysRoleAuthAll",
+        "SysRoleServiceImpl.setRoleAuthCache",
+        "SysRoleServiceImpl.getBean",
+        "SysMenuService.selectMenuPermsAll",
+        "SysRoleServiceImpl.stream",
+        "SysRoleServiceImpl.selectMenuPermsAll",
+        "Collectors.groupingBy"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertRoleMenu": {
+      "method_name": "insertRoleMenu",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysRoleEntity",
+          "name": "role",
+          "annotations": []
+        }
+      ],
+      "line_start": 215,
+      "line_end": 229,
+      "body": "    public int insertRoleMenu(SysRoleEntity role) {\n        int rows = 1;\n        // 新增用户与角色管理\n        List<SysRoleMenuEntity> list = new ArrayList<SysRoleMenuEntity>();\n        for (Long menuId : role.getMenuIds()) {\n            SysRoleMenuEntity rm = new SysRoleMenuEntity();\n            rm.setRoleId(role.getRoleId());\n            rm.setMenuId(menuId);\n            list.add(rm);\n        }\n        if (list.size() > 0) {\n            rows = roleMenuMapper.batchRoleMenu(list);\n        }\n        return rows;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "list.add",
+        "rm.setRoleId",
+        "SysRoleServiceImpl.batchRoleMenu",
+        "SysRoleServiceImpl.setMenuId",
+        "SysRoleServiceImpl.add",
+        "SysRoleServiceImpl.size",
+        "SysRoleServiceImpl.SysRoleMenuEntity",
+        "SysRoleServiceImpl.setRoleId",
+        "SysRoleMenuMapper.batchRoleMenu",
+        "SysRoleServiceImpl.getRoleId",
+        "SysRoleServiceImpl.getMenuIds",
+        "role.getMenuIds",
+        "role.getRoleId",
+        "rm.setMenuId",
+        "SysRoleServiceImpl.insertRoleMenu",
+        "list.size"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Service"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 27,
+  "line_end": 233
+}

@@ -1,0 +1,197 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\service\\impl\\SysOperLogServiceImpl.java",
+  "package_name": "com.oddfar.campus.framework.service.impl",
+  "class_name": "SysOperLogServiceImpl",
+  "imports": [
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.entity.SysOperLogEntity",
+    "com.oddfar.campus.framework.mapper.SysOperLogMapper",
+    "com.oddfar.campus.framework.service.SysOperLogService",
+    "org.springframework.context.event.EventListener",
+    "org.springframework.scheduling.annotation.Async",
+    "org.springframework.stereotype.Service",
+    "javax.annotation.Resource",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [
+    "SysOperLogService"
+  ],
+  "fields": {
+    "operLogMapper": {
+      "field_name": "operLogMapper",
+      "field_type": "SysOperLogMapper",
+      "line_number": 19,
+      "annotations": [
+        "Service"
+      ]
+    }
+  },
+  "methods": {
+    "recordOper": {
+      "method_name": "recordOper",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "SysOperLogEntity",
+          "name": "operLog",
+          "annotations": []
+        }
+      ],
+      "line_start": 29,
+      "line_end": 31,
+      "body": "    public void recordOper(SysOperLogEntity operLog) {\n        insertOperlog(operLog);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysOperLogServiceImpl.insertOperlog",
+        "SysOperLogServiceImpl.recordOper"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertOperlog": {
+      "method_name": "insertOperlog",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "SysOperLogEntity",
+          "name": "operLog",
+          "annotations": []
+        }
+      ],
+      "line_start": 39,
+      "line_end": 41,
+      "body": "    public void insertOperlog(SysOperLogEntity operLog) {\n        operLogMapper.insert(operLog);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysOperLogServiceImpl.insert",
+        "SysOperLogMapper.insert",
+        "SysOperLogServiceImpl.insertOperlog"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectOperLogPage": {
+      "method_name": "selectOperLogPage",
+      "return_type": "PageResult<SysOperLogEntity>",
+      "parameters": [
+        {
+          "type": "SysOperLogEntity",
+          "name": "operLog",
+          "annotations": []
+        }
+      ],
+      "line_start": 50,
+      "line_end": 52,
+      "body": "    public PageResult<SysOperLogEntity> selectOperLogPage(SysOperLogEntity operLog) {\n        return operLogMapper.selectOperLogPage(operLog);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysOperLogMapper.selectOperLogPage",
+        "SysOperLogServiceImpl.selectOperLogPage"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteOperLogByIds": {
+      "method_name": "deleteOperLogByIds",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "operIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 61,
+      "line_end": 63,
+      "body": "    public int deleteOperLogByIds(Long[] operIds) {\n        return operLogMapper.deleteOperLogByIds(operIds);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysOperLogMapper.deleteOperLogByIds",
+        "SysOperLogServiceImpl.deleteOperLogByIds"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectOperLogById": {
+      "method_name": "selectOperLogById",
+      "return_type": "SysOperLogEntity",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "operId",
+          "annotations": []
+        }
+      ],
+      "line_start": 72,
+      "line_end": 74,
+      "body": "    public SysOperLogEntity selectOperLogById(Long operId) {\n        return operLogMapper.selectById(operId);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysOperLogServiceImpl.selectById",
+        "SysOperLogMapper.selectById",
+        "SysOperLogServiceImpl.selectOperLogById"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "cleanOperLog": {
+      "method_name": "cleanOperLog",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 80,
+      "line_end": 82,
+      "body": "    public void cleanOperLog() {\n        operLogMapper.cleanOperLog();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysOperLogServiceImpl.cleanOperLog",
+        "SysOperLogMapper.cleanOperLog"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectOperLogList": {
+      "method_name": "selectOperLogList",
+      "return_type": "List<SysOperLogEntity>",
+      "parameters": [
+        {
+          "type": "SysOperLogEntity",
+          "name": "operLog",
+          "annotations": []
+        }
+      ],
+      "line_start": 85,
+      "line_end": 87,
+      "body": "    public List<SysOperLogEntity> selectOperLogList(SysOperLogEntity operLog) {\n        return operLogMapper.selectOperLogList(operLog);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysOperLogServiceImpl.selectOperLogList",
+        "SysOperLogMapper.selectOperLogList"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Service"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 18,
+  "line_end": 89
+}

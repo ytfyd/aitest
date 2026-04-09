@@ -1,0 +1,138 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\monitor\\SysOperlogController.java",
+  "package_name": "com.oddfar.campus.admin.controller.monitor",
+  "class_name": "SysOperlogController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.annotation.Log",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.entity.SysOperLogEntity",
+    "com.oddfar.campus.common.enums.ResBizTypeEnum",
+    "com.oddfar.campus.framework.service.SysOperLogService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.security.access.prepost.PreAuthorize"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "operLogService": {
+      "field_name": "operLogService",
+      "field_type": "SysOperLogService",
+      "line_number": 23,
+      "annotations": [
+        "RestController",
+        "RequestMapping",
+        "Log",
+        "ApiResource"
+      ]
+    }
+  },
+  "methods": {
+    "list": {
+      "method_name": "list",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysOperLogEntity",
+          "name": "operLog",
+          "annotations": []
+        }
+      ],
+      "line_start": 26,
+      "line_end": 31,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('monitor:operlog:list')\")\n    @GetMapping(value = \"/list\", name = \"操作日志-分页\")\n    public R list(SysOperLogEntity operLog) {\n        PageResult<SysOperLogEntity> page = operLogService.selectOperLogPage(operLog);\n        return R.ok().put(page);\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysOperLogService.selectOperLogPage",
+        "SysOperlogController.GetMapping",
+        "ss.hasPermi",
+        "SysOperlogController.selectOperLogPage",
+        "R.ok",
+        "SysOperlogController.ok",
+        "SysOperlogController.hasPermi",
+        "SysOperlogController.PreAuthorize",
+        "SysOperlogController.list",
+        "SysOperlogController.put"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/list",
+      "http_method": "GET"
+    },
+    "remove": {
+      "method_name": "remove",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "operIds",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 34,
+      "line_end": 35,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('monitor:operlog:remove')\")\n    @DeleteMapping(value = \"/{operIds}\", name = \"操作日志-删除\")",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "DeleteMapping"
+      ],
+      "called_methods": [
+        "SysOperlogController.DeleteMapping",
+        "SysOperlogController.hasPermi",
+        "SysOperlogController.PreAuthorize",
+        "ss.hasPermi"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/{operIds}",
+      "http_method": "DELETE"
+    },
+    "clean": {
+      "method_name": "clean",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 40,
+      "line_end": 45,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('monitor:operlog:remove')\")\n    @DeleteMapping(value = \"/clean\", name = \"操作日志-清空\")\n    public R clean() {\n        operLogService.cleanOperLog();\n        return R.ok();\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "DeleteMapping"
+      ],
+      "called_methods": [
+        "SysOperlogController.DeleteMapping",
+        "ss.hasPermi",
+        "R.ok",
+        "SysOperlogController.ok",
+        "SysOperlogController.hasPermi",
+        "SysOperlogController.PreAuthorize",
+        "SysOperlogController.cleanOperLog",
+        "SysOperLogService.cleanOperLog",
+        "SysOperlogController.clean"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/clean",
+      "http_method": "DELETE"
+    }
+  },
+  "annotations": [
+    "RestController",
+    "RequestMapping",
+    "Log",
+    "ApiResource"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 21,
+  "line_end": 47
+}

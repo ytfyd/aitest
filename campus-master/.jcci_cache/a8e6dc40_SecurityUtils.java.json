@@ -1,0 +1,199 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\SecurityUtils.java",
+  "package_name": "com.oddfar.campus.common.utils",
+  "class_name": "SecurityUtils",
+  "imports": [
+    "com.oddfar.campus.common.constant.HttpStatus",
+    "com.oddfar.campus.common.constant.UserConstants",
+    "com.oddfar.campus.common.domain.model.LoginUser",
+    "com.oddfar.campus.common.exception.ServiceException",
+    "org.springframework.security.authentication.AnonymousAuthenticationToken",
+    "org.springframework.security.core.Authentication",
+    "org.springframework.security.core.context.SecurityContextHolder",
+    "org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getUserId": {
+      "method_name": "getUserId",
+      "return_type": "Long",
+      "parameters": [],
+      "line_start": 21,
+      "line_end": 27,
+      "body": "    public static Long getUserId() {\n        try {\n            return getLoginUser().getUserId();\n        } catch (Exception e) {\n            throw new ServiceException(\"获取用户ID异常\", HttpStatus.UNAUTHORIZED);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SecurityUtils.getUserId",
+        "SecurityUtils.ServiceException",
+        "SecurityUtils.getLoginUser"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getUsername": {
+      "method_name": "getUsername",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 33,
+      "line_end": 39,
+      "body": "    public static String getUsername() {\n        try {\n            return getLoginUser().getUsername();\n        } catch (Exception e) {\n            throw new ServiceException(\"获取用户账户异常\", HttpStatus.UNAUTHORIZED);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SecurityUtils.getLoginUser",
+        "SecurityUtils.getUsername",
+        "SecurityUtils.ServiceException"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getLoginUser": {
+      "method_name": "getLoginUser",
+      "return_type": "LoginUser",
+      "parameters": [],
+      "line_start": 44,
+      "line_end": 55,
+      "body": "    public static LoginUser getLoginUser() {\n        try {\n            LoginUser loginUser = (LoginUser) getAuthentication().getPrincipal();\n            //用户不正常\n            if (!loginUser.getUser().getStatus().equals(UserConstants.NORMAL)) {\n                throw new ServiceException(\"用户被禁止\", HttpStatus.FORBIDDEN);\n            }\n            return loginUser;\n        } catch (Exception e) {\n            throw new ServiceException(\"获取用户信息异常\", HttpStatus.UNAUTHORIZED);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SecurityUtils.equals",
+        "SecurityUtils.getAuthentication",
+        "loginUser.getUser",
+        "SecurityUtils.getStatus",
+        "SecurityUtils.getPrincipal",
+        "SecurityUtils.getLoginUser",
+        "SecurityUtils.ServiceException",
+        "SecurityUtils.getUser"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isLogin": {
+      "method_name": "isLogin",
+      "return_type": "boolean",
+      "parameters": [],
+      "line_start": 62,
+      "line_end": 70,
+      "body": "    public static boolean isLogin() {\n        Authentication auth = getAuthentication();\n        if (auth instanceof AnonymousAuthenticationToken) {\n            return false;\n        } else {\n            return true;\n        }\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SecurityUtils.getAuthentication",
+        "SecurityUtils.isLogin"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getAuthentication": {
+      "method_name": "getAuthentication",
+      "return_type": "Authentication",
+      "parameters": [],
+      "line_start": 75,
+      "line_end": 77,
+      "body": "    public static Authentication getAuthentication() {\n        return SecurityContextHolder.getContext().getAuthentication();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SecurityUtils.getContext",
+        "SecurityUtils.getAuthentication",
+        "SecurityContextHolder.getContext"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "encryptPassword": {
+      "method_name": "encryptPassword",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "password",
+          "annotations": []
+        }
+      ],
+      "line_start": 85,
+      "line_end": 88,
+      "body": "    public static String encryptPassword(String password) {\n        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();\n        return passwordEncoder.encode(password);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "passwordEncoder.encode",
+        "SecurityUtils.BCryptPasswordEncoder",
+        "SecurityUtils.encode",
+        "SecurityUtils.encryptPassword"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "matchesPassword": {
+      "method_name": "matchesPassword",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "rawPassword",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "encodedPassword",
+          "annotations": []
+        }
+      ],
+      "line_start": 97,
+      "line_end": 100,
+      "body": "    public static boolean matchesPassword(String rawPassword, String encodedPassword) {\n        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();\n        return passwordEncoder.matches(rawPassword, encodedPassword);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "passwordEncoder.matches",
+        "SecurityUtils.matches",
+        "SecurityUtils.BCryptPasswordEncoder",
+        "SecurityUtils.matchesPassword"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isAdmin": {
+      "method_name": "isAdmin",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 108,
+      "line_end": 110,
+      "body": "    public static boolean isAdmin(Long userId) {\n        return userId != null && 1L == userId;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SecurityUtils.isAdmin"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 17,
+  "line_end": 112
+}

@@ -1,0 +1,97 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\mail\\MailConfigRead.java",
+  "package_name": "com.oddfar.campus.framework.api.mail",
+  "class_name": "MailConfigRead",
+  "imports": [
+    "com.oddfar.campus.framework.api.sysconfig.ConfigContext"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getSmtpHost": {
+      "method_name": "getSmtpHost",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 12,
+      "line_end": 14,
+      "body": "    public static String getSmtpHost() {\n        return ConfigContext.me().selectConfigByKey(\"sys.email.smtp.host\", String.class);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MailConfigRead.getSmtpHost",
+        "MailConfigRead.selectConfigByKey",
+        "MailConfigRead.me",
+        "ConfigContext.me"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getSmtpPort": {
+      "method_name": "getSmtpPort",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 16,
+      "line_end": 18,
+      "body": "    public static String getSmtpPort() {\n        return ConfigContext.me().selectConfigByKey(\"sys.email.smtp.port\", String.class);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MailConfigRead.getSmtpPort",
+        "MailConfigRead.selectConfigByKey",
+        "MailConfigRead.me",
+        "ConfigContext.me"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getSendAccount": {
+      "method_name": "getSendAccount",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 20,
+      "line_end": 22,
+      "body": "    public static String getSendAccount() {\n        return ConfigContext.me().selectConfigByKey(\"sys.email.send.account\", String.class);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MailConfigRead.me",
+        "MailConfigRead.selectConfigByKey",
+        "MailConfigRead.getSendAccount",
+        "ConfigContext.me"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getPassword": {
+      "method_name": "getPassword",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 24,
+      "line_end": 26,
+      "body": "    public static String getPassword() {\n        return ConfigContext.me().selectConfigByKey(\"sys.email.password\", String.class);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MailConfigRead.selectConfigByKey",
+        "MailConfigRead.me",
+        "ConfigContext.me",
+        "MailConfigRead.getPassword"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 10,
+  "line_end": 29
+}
