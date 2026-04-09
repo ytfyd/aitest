@@ -35,13 +35,13 @@ class AnalysisResult:
 
 
 class EnhancedImpactAnalyzer:
-    """Enhanced impact analyzer using JCCI framework for comprehensive analysis
+    """使用JCCI框架的增强版影响分析器，用于全面分析
     
-    Based on JCCI (Java Code Commit Impact) methodology:
-    - Uses javalang for Java AST parsing
-    - Uses unidiff for Git diff parsing
-    - Builds call graph for impact propagation
-    - Traces impact from changed code to Controller layer
+    基于JCCI（Java代码提交影响）方法论:
+    - 使用javalang进行Java AST解析
+    - 使用unidiff进行Git差异解析
+    - 构建调用图用于影响传播
+    - 从变更代码追踪影响到Controller层
     """
     
     def __init__(self, repo_path: str, project_path: str = None):

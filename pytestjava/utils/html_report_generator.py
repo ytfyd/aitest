@@ -1,6 +1,6 @@
 """
-HTML Report Generator Module
-Generates beautiful HTML test reports with detailed information
+HTML报告生成器模块
+生成包含详细信息的精美HTML测试报告
 """
 
 import re
@@ -14,21 +14,21 @@ logger = logging.getLogger(__name__)
 
 
 class HTMLReportGenerator:
-    """Generate HTML test reports with modern styling and interactive features"""
+    """生成具有现代样式和交互功能的HTML测试报告"""
 
     def __init__(self, base_dir: Path = None):
         self.base_dir = base_dir or Path(__file__).parent.parent
         self.reports_dir = self.base_dir / "test-reports"
 
     def generate(self, test_results: dict, changes: dict) -> str:
-        """Generate a complete HTML test report
+        """生成完整的HTML测试报告
 
-        Args:
-            test_results: Test execution results dictionary
-            changes: Change analysis results dictionary
+        参数:
+            test_results: 测试执行结果字典
+            changes: 变更分析结果字典
 
-        Returns:
-            str: Path to the generated report file
+        返回:
+            str: 生成的报告文件路径
         """
         self.reports_dir.mkdir(parents=True, exist_ok=True)
         report_path = self.reports_dir / "test-report.html"
@@ -61,11 +61,11 @@ class HTMLReportGenerator:
         with open(report_path, 'w', encoding='utf-8') as f:
             f.write(html_content)
 
-        logger.info(f"HTML report generated: {report_path}")
+        logger.info(f"HTML报告已生成: {report_path}")
         return str(report_path)
 
     def _get_real_path_from_swagger(self, path: str, method: str) -> str:
-        """Convert Swagger path to real API path with parameter substitution"""
+        """将Swagger路径转换为带参数替换的真实API路径"""
         real_path = swagger_client.get_real_path(path, method)
         if real_path and real_path != path:
             real_path = re.sub(r'\{[^}]+\}', '1', real_path)
@@ -73,7 +73,7 @@ class HTMLReportGenerator:
         return re.sub(r'\{[^}]+\}', '1', path)
 
     def _generate_test_details_rows(self, test_results: dict) -> str:
-        """Generate HTML rows for test details table"""
+        """生成测试详情表的HTML行"""
         rows = ""
         for detail in test_results.get('test_details', []):
             row_status = "passed" if detail['status'] == 'PASSED' else "failed"
@@ -93,7 +93,7 @@ class HTMLReportGenerator:
         return rows
 
     def _generate_failed_rows(self, test_results: dict) -> str:
-        """Generate HTML rows for failed tests with error details"""
+        """生成包含错误详情的失败测试HTML行"""
         rows = ""
         for idx, fail in enumerate(test_results.get('failed_details', [])):
             error_msg = self._escape_html(fail.get('error', 'N/A'))
@@ -129,7 +129,7 @@ class HTMLReportGenerator:
         return rows
 
     def _generate_passed_rows(self, test_results: dict) -> str:
-        """Generate HTML rows for passed tests with details"""
+        """生成包含详情的通过测试HTML行"""
         rows = ""
         for idx, passed in enumerate(test_results.get('passed_details', [])):
             request_params = self._escape_html(passed.get('request_params', 'N/A'))
@@ -162,7 +162,7 @@ class HTMLReportGenerator:
         return rows
 
     def _generate_impact_analysis_html(self, changes: dict) -> str:
-        """Generate impact analysis section HTML"""
+        """生成影响分析部分的HTML"""
         html = ""
         if 'change_summary' not in changes:
             return html
@@ -232,7 +232,7 @@ class HTMLReportGenerator:
         return html
 
     def _generate_endpoint_rows(self, changes: dict) -> str:
-        """Generate endpoint impact details HTML rows"""
+        """生成接口影响详情的HTML行"""
         rows = ""
         processed_endpoints = set()
 
@@ -274,11 +274,11 @@ class HTMLReportGenerator:
 
     @staticmethod
     def _escape_html(text: str) -> str:
-        """Escape special HTML characters"""
+        """转义特殊HTML字符"""
         return text.replace('`', "'").replace('<', '&lt;').replace('>', '&gt;')
 
     def _build_html_template(self, **kwargs) -> str:
-        """Build the complete HTML template with all sections"""
+        """构建包含所有部分的完整HTML模板"""
         status_color = kwargs['status_color']
         status_text = kwargs['status_text']
         pass_rate = kwargs['pass_rate']

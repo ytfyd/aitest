@@ -21,6 +21,20 @@ except ImportError:
     UNIDIFF_AVAILABLE = False
     logging.warning("unidiff not installed. Install with: pip install unidiff")
 
+try:
+    from tqdm import tqdm
+    TQDM_AVAILABLE = True
+except ImportError:
+    TQDM_AVAILABLE = False
+
+# 导入性能优化模块
+try:
+    from .performance_optimizer import PerformanceOptimizer, get_performance_optimizer
+    OPTIMIZER_AVAILABLE = True
+except ImportError:
+    OPTIMIZER_AVAILABLE = False
+    logging.warning("性能优化模块不可用，将使用标准扫描模式")
+
 
 logger = logging.getLogger(__name__)
 
@@ -182,16 +196,24 @@ class ImpactNode:
 
 
 class JCCIAnalyzer:
-    """JCCI-based Java Code Change Impact Analyzer
+    """基于JCCI的Java代码变更影响分析器
     
-    Based on JCCI (Java Code Commit Impact) methodology:
-    - Uses javalang for Java AST parsing
-    - Uses unidiff for Git diff parsing
-    - Builds call graph for impact propagation
-    - Traces impact from changed code to Controller layer
+    基于JCCI（Java代码提交影响）方法论:
+    - 使用javalang进行Java AST解析
+    - 使用unidiff进行Git差异解析
+    - 构建调用图用于影响传播
+    - 从变更代码追踪影响到Controller层
+    
+    性能优化（6大策略）:
+    - 策略1: 智能缓存（避免重复解析）
+    - 策略2: 多线程并行扫描
+    - 策略3: 智能增量模式
+    - 策略4: 文件过滤（排除target/build等）
+    - 策略5: 两阶段懒加载
+    - 策略6: 动态进度条显示
     """
     
-    def __init__(self, project_path: str):
+    def __init__(self, project_path: str, enable_optimization: bool = True):
         self.project_path = Path(project_path).resolve()
         self.java_classes: Dict[str, JavaClassInfo] = {}
         self.call_graph: Dict[str, Set[str]] = defaultdict(set)
@@ -202,7 +224,39 @@ class JCCIAnalyzer:
         self._incremental_mode = False
         self._scanned_files: Set[str] = set()
         
-    def initialize(self, incremental: bool = False, changed_files: List[str] = None):
+        # 性能优化配置
+        self.enable_optimization = enable_optimization and OPTIMIZER_AVAILABLE
+        self.optimizer: Optional[PerformanceOptimizer] = None
+        
+        if self.enable_optimization:
+            try:
+                # 从 settings 读取性能优化配置
+                from config.settings import settings
+                
+                self.optimizer = PerformanceOptimizer(
+                    project_path=str(self.project_path),
+                    cache_dir=settings.jcci_cache_dir,
+                    max_workers=None if settings.jcci_max_workers == "auto" else int(settings.jcci_max_workers),
+                    enable_cache=settings.jcci_cache_enabled,
+                    enable_parallel=settings.jcci_enable_optimization,
+                    enable_incremental=settings.jcci_incremental_mode in ["auto", "true"],
+                    enable_filter=True,
+                    enable_lazy_loading=settings.jcci_lazy_loading,
+                    cache_max_size_mb=settings.jcci_cache_max_size_mb,
+                    cache_ttl_hours=settings.jcci_cache_ttl_hours
+                )
+            except Exception as e:
+                logger.warning(f"性能优化引擎初始化失败: {e}，将使用标准模式")
+                self.enable_optimization = False
+    
+    def initialize(self, incremental: bool = True, changed_files: List[str] = None):
+        """
+        初始化JCCI分析器（支持超级优化模式）
+        
+        参数:
+            incremental: 是否启用增量模式（默认True）
+            changed_files: 变更文件列表（用于增量模式优化）
+        """
         if self._initialized:
             return
         
@@ -211,12 +265,20 @@ class JCCIAnalyzer:
         
         self._incremental_mode = incremental
         
-        logger.info(f"Initializing JCCI analyzer for project: {self.project_path}")
-        self._scan_java_files()
+        if self.enable_optimization and self.optimizer:
+            # 🚀 使用超级优化引擎
+            logger.info(f"[JCCIAnalyzer] 初始化（🚀 超级优化模式）")
+            self._scan_java_files_optimized(changed_files)
+        else:
+            # 标准模式（原有逻辑）
+            logger.info(f"[JCCIAnalyzer] 初始化（标准模式）")
+            self._scan_java_files()
         
         self._build_call_graph()
         self._initialized = True
-        logger.info(f"JCCI analyzer initialized: {len(self.java_classes)} classes, {len(self.call_graph)} call graph nodes")
+        
+        logger.info(f"[JCCIAnalyzer] 初始化完成: {len(self.java_classes)} 个类, "
+                   f"{len(self.call_graph)} 个调用节点")
     
     def _scan_java_files_incremental(self, changed_files: List[str]):
         files_to_scan = set()
@@ -305,6 +367,69 @@ class JCCIAnalyzer:
         logger.info(f"Found {len(related_controllers)} related controllers for {len(changed_classes)} changed classes")
         return related_controllers
     
+    def _scan_java_files_optimized(self, changed_files: List[str] = None):
+        """
+        🚀 使用超级优化引擎扫描Java文件（整合6大策略）
+        
+        策略组合:
+        1. 智能缓存 - 避免重复解析未变更的文件
+        2. 多线程并行 - 利用多核CPU加速
+        3. 增量模式 - 仅扫描变更文件+相关依赖
+        4. 文件过滤 - 排除target/build/test等目录
+        5. 进度显示 - 实时进度条+性能统计
+        """
+        
+        # 获取所有Java文件
+        java_files = list(self.project_path.rglob("*.java"))
+        
+        logger.info(f"[JCCIAnalyzer] 🚀 开始超级优化扫描")
+        logger.info(f"[JCCIAnalyzer] 发现 {len(java_files)} 个Java文件")
+        
+        # 使用优化器执行扫描
+        result = self.optimizer.optimized_scan(
+            java_files=java_files,
+            parse_func=self._parse_java_file,  # 传入解析函数
+            changed_files=changed_files
+        )
+        
+        # 提取结果
+        optimized_results = result.get('results', {})
+        stats = result.get('stats', {})
+        
+        # 将优化结果转换为java_classes格式
+        for class_name, class_info in optimized_results.items():
+            if isinstance(class_info, dict):
+                # 如果是字典，需要转换回对象（简化处理）
+                self.java_classes[class_name] = class_info
+                if 'file_path' in class_info:
+                    self.class_to_file[class_name] = class_info['file_path']
+            else:
+                # 如果已经是对象
+                self.java_classes[class_info.class_name] = class_info
+                self.class_to_file[class_info.class_name] = str(
+                    Path(class_info.file_path).relative_to(self.project_path)
+                    if hasattr(class_info, 'file_path') and class_info.file_path 
+                    else class_name + ".java"
+                )
+        
+        # 输出优化统计
+        speedup = stats.get('speedup_factor', 0)
+        elapsed = stats.get('elapsed_time', 0)
+        cache_hit_rate = stats.get('cache_hit_rate', 0)
+        
+        controller_count = sum(1 for cls in self.java_classes.values() 
+                             if getattr(cls, 'is_controller', False))
+        service_count = sum(1 for cls in self.java_classes.values() 
+                          if getattr(cls, 'is_service', False))
+        repository_count = sum(1 for cls in self.java_classes.values() 
+                              if getattr(cls, 'is_repository', False))
+        
+        logger.info(f"[JCCIAnalyzer] 🚀 超级优化扫描完成:")
+        logger.info(f"  ✅ 解析类数: {len(self.java_classes)} "
+                   f"(Controllers: {controller_count}, Services: {service_count}, Repositories: {repository_count})")
+        logger.info(f"  ⏱️  总耗时: {elapsed:.3f}秒 (加速 {speedup:.1f}x)")
+        logger.info(f"  💾 缓存命中率: {cache_hit_rate:.1f}%")
+    
     def _scan_java_files(self):
         java_files = list(self.project_path.rglob("*.java"))
         java_files = [f for f in java_files if "target" not in str(f) and "build" not in str(f)]
@@ -315,22 +440,44 @@ class JCCIAnalyzer:
         service_count = 0
         repository_count = 0
         
-        for java_file in java_files:
-            try:
-                class_info = self._parse_java_file(java_file)
-                if class_info:
-                    self.java_classes[class_info.class_name] = class_info
-                    self.class_to_file[class_info.class_name] = str(java_file.relative_to(self.project_path))
-                    
-                    if class_info.is_controller:
-                        controller_count += 1
-                        logger.debug(f"[JCCIAnalyzer] 发现Controller: {class_info.class_name} ({len(class_info.methods)} 个方法)")
-                    elif class_info.is_service:
-                        service_count += 1
-                    elif class_info.is_repository:
-                        repository_count += 1
-            except Exception as e:
-                logger.error(f"Error parsing {java_file}: {e}")
+        if TQDM_AVAILABLE and len(java_files) > 0:
+            pbar = tqdm(java_files, desc="扫描Java文件", unit="个", 
+                       ascii=True, dynamic_ncols=True, leave=True)
+            for java_file in pbar:
+                pbar.set_postfix_str(f"当前: {java_file.name}")
+                try:
+                    class_info = self._parse_java_file(java_file)
+                    if class_info:
+                        self.java_classes[class_info.class_name] = class_info
+                        self.class_to_file[class_info.class_name] = str(java_file.relative_to(self.project_path))
+                        
+                        if class_info.is_controller:
+                            controller_count += 1
+                            logger.debug(f"[JCCIAnalyzer] 发现Controller: {class_info.class_name} ({len(class_info.methods)} 个方法)")
+                        elif class_info.is_service:
+                            service_count += 1
+                        elif class_info.is_repository:
+                            repository_count += 1
+                except Exception as e:
+                    logger.error(f"Error parsing {java_file}: {e}")
+            pbar.close()
+        else:
+            for java_file in java_files:
+                try:
+                    class_info = self._parse_java_file(java_file)
+                    if class_info:
+                        self.java_classes[class_info.class_name] = class_info
+                        self.class_to_file[class_info.class_name] = str(java_file.relative_to(self.project_path))
+                        
+                        if class_info.is_controller:
+                            controller_count += 1
+                            logger.debug(f"[JCCIAnalyzer] 发现Controller: {class_info.class_name} ({len(class_info.methods)} 个方法)")
+                        elif class_info.is_service:
+                            service_count += 1
+                        elif class_info.is_repository:
+                            repository_count += 1
+                except Exception as e:
+                    logger.error(f"Error parsing {java_file}: {e}")
         
         logger.info(f"[JCCIAnalyzer] AST解析完成: {len(self.java_classes)} 个类 "
                    f"(Controllers: {controller_count}, Services: {service_count}, Repositories: {repository_count})")

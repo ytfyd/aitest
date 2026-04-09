@@ -45,7 +45,7 @@ class ClassSignature:
 
 
 class CodeChangeDetector:
-    """Detect code changes using Git and analyze with JCCI"""
+    """使用Git检测代码变更并使用JCCI进行分析"""
     
     def __init__(self, repo_path: str, project_path: str = None):
         try:
@@ -54,8 +54,8 @@ class CodeChangeDetector:
             self.project_path = Path(project_path).resolve() if project_path else self.repo_path
         except InvalidGitRepositoryError:
             raise ValueError(
-                f"'{repo_path}' is not a valid Git repository. "
-                f"Please initialize a Git repository first: cd {repo_path} && git init"
+                f"'{repo_path}' 不是有效的Git仓库。 "
+                f"请先初始化Git仓库: cd {repo_path} && git init"
             )
         
         self.jcci_analyzer = JCCIAnalyzer(str(self.project_path))
@@ -69,7 +69,7 @@ class CodeChangeDetector:
             pass
     
     def get_changed_files(self, commit_range: str = "HEAD~1..HEAD") -> List[str]:
-        """Get list of changed Java files in the specified commit range (committed changes only)"""
+        """获取指定提交范围内变更的Java文件列表（仅包含已提交的变更）"""
         changed_files = []
         
         # Only check for committed changes in the specified range
@@ -134,7 +134,7 @@ class CodeChangeDetector:
         return unique_java_files
     
     def get_file_diff(self, file_path: str, commit_range: str = "HEAD~1..HEAD") -> Tuple[str, str]:
-        """Get old and new content of a file from commits only"""
+        """从提交中获取文件的旧内容和新内容"""
         old_content = ""
         new_content = ""
         
@@ -169,7 +169,7 @@ class CodeChangeDetector:
         return old_content, new_content
     
     def parse_java_class(self, content: str) -> Optional[ClassSignature]:
-        """Parse a Java class and extract its signature"""
+        """解析Java类并提取其签名"""
         if not content:
             return None
         
@@ -212,7 +212,7 @@ class CodeChangeDetector:
         )
     
     def _extract_annotations(self, text: str) -> List[str]:
-        """Extract annotations from text"""
+        """从文本中提取注解"""
         annotations = []
         pattern = r'@\w+(?:\([^)]*\))?'
         for match in re.finditer(pattern, text):
@@ -220,7 +220,7 @@ class CodeChangeDetector:
         return annotations
     
     def _extract_methods(self, content: str, class_start: int, class_end: int) -> List[MethodSignature]:
-        """Extract method signatures from class body"""
+        """从类体中提取方法签名"""
         methods = []
         class_body = content[class_start:class_end]
         
@@ -300,7 +300,7 @@ class CodeChangeDetector:
         return methods
     
     def _extract_fields(self, content: str, class_start: int, class_end: int) -> List[FieldSignature]:
-        """Extract field signatures from class body"""
+        """从类体中提取字段签名"""
         fields = []
         class_body = content[class_start:class_end]
         
@@ -330,7 +330,7 @@ class CodeChangeDetector:
         return fields
     
     def detect_changes(self, file_path: str, old_content: str, new_content: str) -> List[CodeChange]:
-        """Detect changes between old and new versions of a file"""
+        """检测文件旧版本和新版本之间的变更"""
         changes = []
         
         old_class = self.parse_java_class(old_content) if old_content else None
@@ -504,7 +504,7 @@ class CodeChangeDetector:
         return changes
     
     def _get_method_diff(self, old_content: str, new_content: str) -> str:
-        """Get a simple diff between old and new method content"""
+        """获取旧方法内容和新方法内容之间的简单差异"""
         old_lines = old_content.strip().split('\n')
         new_lines = new_content.strip().split('\n')
         
@@ -521,7 +521,7 @@ class CodeChangeDetector:
         return '\n'.join(diff_lines[:20])
     
     def analyze_all_changes(self, commit_range: str = "HEAD~1..HEAD") -> Dict[str, List[CodeChange]]:
-        """Analyze all changes in the specified commit range"""
+        """分析指定提交范围内的所有变更"""
         changed_files = self.get_changed_files(commit_range)
         
         all_changes = {}
@@ -536,7 +536,7 @@ class CodeChangeDetector:
         return all_changes
     
     def get_change_summary(self, commit_range: str = "HEAD~1..HEAD") -> Dict:
-        """Get a summary of all changes"""
+        """获取所有变更的摘要"""
         changed_files = self.get_changed_files(commit_range)
         all_changes = self.analyze_all_changes(commit_range)
         

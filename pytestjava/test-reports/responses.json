@@ -95,7 +95,7 @@
   "test_system_menu_system_menu_positive": {
     "status_code": 404,
     "response": {
-      "timestamp": "2026-04-04 15:35:39",
+      "timestamp": "2026-04-04 17:51:57",
       "status": 404,
       "error": "Not Found",
       "path": "/system/menu/system/menu"
@@ -317,32 +317,6 @@
     },
     "request_params": {}
   },
-  "test_monitor_logininfor_1_positive": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "data": 0
-    },
-    "request_params": {}
-  },
-  "test_monitor_operlog_1_positive": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "data": 0
-    },
-    "request_params": {}
-  },
-  "test_system_config_configkey_test_key_positive": {
-    "status_code": 200,
-    "response": {
-      "msg": "",
-      "code": 200
-    },
-    "request_params": {}
-  },
   "test_system_dict_data_test_code_positive": {
     "status_code": 200,
     "response": {
@@ -370,10 +344,36 @@
   "test_system_user_system_user_positive": {
     "status_code": 404,
     "response": {
-      "timestamp": "2026-04-04 15:35:39",
+      "timestamp": "2026-04-04 17:51:57",
       "status": 404,
       "error": "Not Found",
       "path": "/system/user/system/user"
+    },
+    "request_params": {}
+  },
+  "test_monitor_logininfor_1_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": 0
+    },
+    "request_params": {}
+  },
+  "test_monitor_operlog_1_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": 0
+    },
+    "request_params": {}
+  },
+  "test_system_config_configkey_test_key_positive": {
+    "status_code": 200,
+    "response": {
+      "msg": "",
+      "code": 200
     },
     "request_params": {}
   },
@@ -1699,7 +1699,7 @@
   "test_system_menu_system_menu_negative_missing_required_fields": {
     "status_code": 404,
     "response": {
-      "timestamp": "2026-04-04 15:35:40",
+      "timestamp": "2026-04-04 17:51:57",
       "status": 404,
       "error": "Not Found",
       "path": "/system/menu/system/menu"
@@ -1931,34 +1931,6 @@
     },
     "request_params": {}
   },
-  "test_monitor_logininfor_1_negative_unauthorized": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "data": 0
-    },
-    "request_params": {}
-  },
-  "test_monitor_operlog_1_negative_unauthorized": {
-    "status_code": 200,
-    "response": {
-      "msg": "success",
-      "code": 200,
-      "data": 0
-    },
-    "request_params": {}
-  },
-  "test_system_config_configkey_test_key_negative_invalid_params": {
-    "status_code": 200,
-    "response": {
-      "msg": "",
-      "code": 200
-    },
-    "request_params": {
-      "invalid_param": "invalid_value"
-    }
-  },
   "test_system_dict_data_test_code_negative_unauthorized": {
     "status_code": 200,
     "response": {
@@ -1986,12 +1958,40 @@
   "test_system_user_system_user_negative_missing_required_fields": {
     "status_code": 404,
     "response": {
-      "timestamp": "2026-04-04 15:35:40",
+      "timestamp": "2026-04-04 17:51:57",
       "status": 404,
       "error": "Not Found",
       "path": "/system/user/system/user"
     },
     "request_params": {}
+  },
+  "test_monitor_logininfor_1_negative_unauthorized": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": 0
+    },
+    "request_params": {}
+  },
+  "test_monitor_operlog_1_negative_unauthorized": {
+    "status_code": 200,
+    "response": {
+      "msg": "success",
+      "code": 200,
+      "data": 0
+    },
+    "request_params": {}
+  },
+  "test_system_config_configkey_test_key_negative_invalid_params": {
+    "status_code": 200,
+    "response": {
+      "msg": "",
+      "code": 200
+    },
+    "request_params": {
+      "invalid_param": "invalid_value"
+    }
   },
   "test_system_menu_1_performance": {
     "status_code": 200,
@@ -2023,10 +2023,10 @@
       }
     },
     "request_params": {},
-    "avg_response_time": 0.008629274368286134,
-    "max_response_time": 0.014130115509033203,
-    "min_response_time": 0.006108760833740234,
-    "p95_response_time": 0.016169774532318115,
+    "avg_response_time": 0.0061419010162353516,
+    "max_response_time": 0.01103663444519043,
+    "min_response_time": 0.0031642913818359375,
+    "p95_response_time": 0.011700427532196045,
     "num_requests": 10
   },
   "test_system_menu_rolemenutreeselect_1_performance": {
@@ -2243,10 +2243,10 @@
       "checkedKeys": []
     },
     "request_params": {},
-    "avg_response_time": 0.010848236083984376,
-    "max_response_time": 0.015191316604614258,
-    "min_response_time": 0.007184028625488281,
-    "p95_response_time": 0.015668964385986327,
+    "avg_response_time": 0.009687376022338868,
+    "max_response_time": 0.017403364181518555,
+    "min_response_time": 0.006131887435913086,
+    "p95_response_time": 0.019527029991149903,
     "num_requests": 10
   },
   "test_monitor_operlog_1_performance": {
@@ -2257,10 +2257,10 @@
       "data": 0
     },
     "request_params": {},
-    "avg_response_time": 0.005544853210449219,
-    "max_response_time": 0.006310701370239258,
-    "min_response_time": 0.004579782485961914,
-    "p95_response_time": 0.006355655193328857,
+    "avg_response_time": 0.0037192821502685545,
+    "max_response_time": 0.004778623580932617,
+    "min_response_time": 0.00304412841796875,
+    "p95_response_time": 0.00478581190109253,
     "num_requests": 10
   },
   "test_system_config_configkey_test_key_performance": {
@@ -2270,10 +2270,10 @@
       "code": 200
     },
     "request_params": {},
-    "avg_response_time": 0.0068459749221801754,
-    "max_response_time": 0.015705108642578125,
-    "min_response_time": 0.004609346389770508,
-    "p95_response_time": 0.01953047513961792,
+    "avg_response_time": 0.008208870887756348,
+    "max_response_time": 0.01734137535095215,
+    "min_response_time": 0.0030930042266845703,
+    "p95_response_time": 0.020131301879882813,
     "num_requests": 10
   }
 }

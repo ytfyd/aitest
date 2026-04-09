@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Main test execution script for API testing framework
-Automatically detects API changes, generates tests, executes them, and sends reports
+API自动化测试框架主程序
+自动检测API变更、生成测试用例、执行测试并发送报告
 """
 
 import os
@@ -25,6 +25,7 @@ from utils.html_report_generator import HTMLReportGenerator
 from config.settings import settings
 from utils.enhanced_impact_analyzer import EnhancedImpactAnalyzer
 from utils.code_change_detector import CodeChangeDetector
+from utils.git_manager import GitManager, get_git_manager
 
 
 logging.basicConfig(
@@ -35,9 +36,9 @@ logger = logging.getLogger(__name__)
 
 
 class TestRunner:
-    """Main test runner class"""
+    """测试运行器主类"""
     
-    def __init__(self, git_repo_path: str = None):
+    def __init__(self, git_repo_path: str = None, auto_pull: bool = None, environment: str = None):
         repo_path = git_repo_path or os.getenv("GIT_REPO_PATH", ".")
         self.test_generator = TestCaseGenerator()
         self.wechat_notifier = WeChatWorkNotifier()
@@ -45,48 +46,74 @@ class TestRunner:
         self.test_results = {}
         self.failed_tests_file = Path(__file__).parent / "test-reports" / "failed_tests.json"
         
-        # Initialize enhanced impact analyzer with JCCI
+        # 初始化Git管理器（新增）
+        try:
+            self.git_manager = GitManager(
+                repo_path=repo_path,
+                environment=environment or os.getenv("ENVIRONMENT", "test")
+            )
+            logger.info(f"Git管理器初始化成功 (环境: {self.git_manager.environment.value})")
+            
+            # 如果启用自动拉取或通过参数指定，则执行自动拉取
+            should_auto_pull = auto_pull if auto_pull is not None else (
+                os.getenv("GIT_AUTO_PULL", "false").lower() == "true"
+            )
+            
+            if should_auto_pull:
+                logger.info("🤖 检测到自动拉取模式，开始执行...")
+                success, message = self.git_manager.auto_pull_if_configured()
+                if not success:
+                    logger.warning(f"⚠️ 自动拉取部分失败:\n{message}")
+                    # 不阻塞测试流程，仅记录警告
+                else:
+                    logger.info(f"✅ 自动拉取成功完成")
+                    
+        except Exception as e:
+            logger.warning(f"Git管理器初始化失败: {e}，将使用基础Git功能")
+            self.git_manager = None
+        
+        # 初始化增强版影响分析器（基于JCCI框架）
         try:
             self.enhanced_analyzer = EnhancedImpactAnalyzer(repo_path, repo_path)
             self.code_change_detector = CodeChangeDetector(repo_path, repo_path)
-            logger.info("Enhanced impact analyzer initialized successfully with JCCI framework")
+            logger.info("增强版影响分析器初始化成功（基于JCCI框架）")
         except Exception as e:
-            logger.warning(f"Failed to initialize enhanced analyzer: {e}")
+            logger.warning(f"增强版分析器初始化失败: {e}")
             self.enhanced_analyzer = None
             self.code_change_detector = None
     
     def run(self, commit_range: str = "HEAD~1..HEAD") -> bool:
-        """Run the complete testing workflow"""
-        logger.info("Starting API testing workflow")
+        """执行完整的测试工作流程"""
+        logger.info("开始API自动化测试工作流程")
         
         try:
-            logger.info("Step 1: Detecting API changes")
+            logger.info("步骤1: 检测API变更")
             changes = self.detect_changes(commit_range)
             
             if not changes['affected_endpoints']:
-                logger.info("No API changes detected, skipping test generation")
+                logger.info("未检测到API接口变更，跳过测试生成")
                 self.wechat_notifier.send_simple_message(
                     "API测试报告",
                     "✅ 本次提交未检测到API接口变更，跳过冒烟测试"
                 )
                 return True
             
-            logger.info("Step 2: Generating test cases")
+            logger.info("步骤2: 生成测试用例")
             test_file = self.generate_tests(changes['affected_endpoints'])
             
-            logger.info("Step 3: Executing tests")
+            logger.info("步骤3: 执行测试")
             test_results = self.execute_tests(test_file)
             
-            logger.info("Step 4: Generating reports")
+            logger.info("步骤4: 生成报告")
             self.generate_html_report(test_results, changes)
             
-            logger.info("Step 5: Sending notifications")
+            logger.info("步骤5: 发送通知")
             self.send_notifications(test_results, changes)
             
             return test_results.get('failed_tests', 0) == 0
             
         except Exception as e:
-            logger.error(f"Test workflow failed: {e}")
+            logger.error(f"测试工作流程执行失败: {e}")
             self.wechat_notifier.send_simple_message(
                 "API测试报告 - 执行失败",
                 f"❌ 测试执行失败: {str(e)}"
@@ -94,35 +121,35 @@ class TestRunner:
             return False
     
     def detect_changes(self, commit_range: str) -> dict:
-        """Detect API changes in the specified commit range using JCCI enhanced analyzer"""
+        """使用JCCI增强版分析器检测指定提交范围内的API变更"""
         if self.enhanced_analyzer:
             try:
-                logger.info("Using enhanced impact analyzer with JCCI framework")
+                logger.info("使用JCCI增强版影响分析器进行变更检测")
                 
-                # Get affected endpoints from enhanced analyzer
+                # 从增强版分析器获取受影响的接口
                 affected_endpoints = self.enhanced_analyzer.get_affected_endpoints_for_testing(commit_range)
                 
-                # Get change summary
+                # 获取变更摘要
                 change_summary = self.enhanced_analyzer.get_change_summary(commit_range)
                 
-                # Get changed files from code change detector
+                # 从代码变更检测器获取变更文件列表
                 changed_files = []
                 if self.code_change_detector:
                     changed_files = self.code_change_detector.get_changed_files(commit_range)
                 
-                logger.info(f"JCCI analysis detected {len(affected_endpoints)} affected endpoints")
+                logger.info(f"JCCI分析检测到 {len(affected_endpoints)} 个受影响的接口")
                 for endpoint in affected_endpoints:
-                    logger.info(f"  - {endpoint['method']} {endpoint['path']} (impact: {endpoint['impact_type']}, confidence: {endpoint['confidence']:.2f})")
+                    logger.info(f"  - {endpoint['method']} {endpoint['path']} (影响类型: {endpoint['impact_type']}, 置信度: {endpoint['confidence']:.2f})")
                 
-                # Save detailed analysis report
+                # 保存详细分析报告
                 try:
                     reports_dir = Path(__file__).parent / "test-reports"
                     reports_dir.mkdir(parents=True, exist_ok=True)
                     analysis_file = reports_dir / "impact_analysis.json"
                     self.enhanced_analyzer.save_analysis_report(str(analysis_file), commit_range)
-                    logger.info(f"Detailed analysis saved to {analysis_file}")
+                    logger.info(f"详细分析报告已保存至 {analysis_file}")
                 except Exception as e:
-                    logger.warning(f"Failed to save analysis report: {e}")
+                    logger.warning(f"保存分析报告失败: {e}")
                 
                 return {
                     'changed_files': changed_files,
@@ -130,14 +157,14 @@ class TestRunner:
                     'change_summary': change_summary
                 }
             except Exception as e:
-                logger.error(f"Enhanced analyzer failed: {e}")
+                logger.error(f"增强版分析器执行失败: {e}")
                 return {
                     'changed_files': [],
                     'affected_endpoints': [],
                     'change_summary': {}
                 }
         
-        logger.warning("Enhanced analyzer not available")
+        logger.warning("增强版分析器不可用")
         return {
             'changed_files': [],
             'affected_endpoints': [],
@@ -145,17 +172,17 @@ class TestRunner:
         }
     
     def generate_tests(self, endpoints: list) -> str:
-        """Generate test cases for affected endpoints"""
+        """为受影响的接口生成测试用例"""
         tests_dir = Path(__file__).parent / "tests" / "generated"
         tests_dir.mkdir(parents=True, exist_ok=True)
         
-        # Clean old test files
+        # 清理旧的测试文件
         self._clean_old_test_files(tests_dir)
         
-        # Load failed test cases from last run
+        # 加载上次运行失败的测试用例
         failed_endpoints = self._load_failed_tests()
         
-        # Merge current endpoints with failed endpoints (avoid duplicates)
+        # 合并当前接口与失败接口（去重）
         all_endpoints = []
         endpoint_set = set()
         
@@ -171,7 +198,7 @@ class TestRunner:
                 endpoint_set.add(endpoint_key)
                 all_endpoints.append(endpoint)
         
-        logger.info(f"Generating tests for {len(endpoints)} new endpoints + {len(failed_endpoints)} failed endpoints = {len(all_endpoints)} total")
+        logger.info(f"正在为 {len(endpoints)} 个新接口 + {len(failed_endpoints)} 个失败接口 = 共 {len(all_endpoints)} 个接口生成测试")
         
         test_cases = self.test_generator.generate_test_cases(all_endpoints)
         
@@ -183,7 +210,7 @@ class TestRunner:
         return str(test_file)
     
     def execute_tests(self, test_file: str) -> dict:
-        """Execute the generated tests using pytest"""
+        """使用pytest执行生成的测试"""
         cmd = [
             "pytest",
             test_file,
@@ -191,36 +218,36 @@ class TestRunner:
             "--tb=long"
         ]
         
-        logger.info(f"Executing: {' '.join(cmd)}")
+        logger.info(f"执行命令: {' '.join(cmd)}")
         
         try:
             result = subprocess.run(cmd, capture_output=True, text=True)
             test_results = self._parse_test_results(result)
             
-            logger.info(f"Test execution completed:")
-            logger.info(f"  - Total: {test_results['total_tests']}")
-            logger.info(f"  - Passed: {test_results['passed_tests']}")
-            logger.info(f"  - Failed: {test_results['failed_tests']}")
-            logger.info(f"  - Skipped: {test_results['skipped_tests']}")
+            logger.info(f"测试执行完成:")
+            logger.info(f"  - 总数: {test_results['total_tests']}")
+            logger.info(f"  - 通过: {test_results['passed_tests']}")
+            logger.info(f"  - 失败: {test_results['failed_tests']}")
+            logger.info(f"  - 跳过: {test_results['skipped_tests']}")
             
-            # Save failed test cases for next run
+            # 保存失败的测试用例供下次运行使用
             self._save_failed_tests(test_results)
             
             return test_results
             
         except Exception as e:
-            logger.error(f"Test execution failed: {e}")
+            logger.error(f"测试执行失败: {e}")
             return {
                 'total_tests': 0,
                 'passed_tests': 0,
                 'failed_tests': 0,
                 'skipped_tests': 0,
-                'failed_details': [{'name': 'Execution Error', 'error': str(e)}],
+                'failed_details': [{'name': '执行错误', 'error': str(e)}],
                 'test_details': []
             }
     
     def _parse_test_results(self, result: subprocess.CompletedProcess) -> dict:
-        """Parse pytest output to extract test results with detailed info"""
+        """解析pytest输出，提取详细的测试结果"""
         output = result.stdout + result.stderr
         
         total_tests = 0
@@ -228,15 +255,15 @@ class TestRunner:
         failed_tests = 0
         skipped_tests = 0
         
-        # Use dict to avoid duplicates
+        # 使用字典避免重复
         test_details_dict = {}
         failed_details_dict = {}
         passed_details_dict = {}
         
-        # Extract test data from test file for request parameters
+        # 从测试文件中提取请求数据用于获取请求参数
         test_data_map = self._extract_test_data_from_file()
         
-        # Parse summary from output
+        # 从输出中解析汇总信息
         lines = output.split('\n')
         for line in lines:
             if 'passed' in line.lower() or 'failed' in line.lower() or 'skipped' in line.lower():
@@ -353,7 +380,7 @@ class TestRunner:
                             'path': test_info.get('path', 'N/A')
                         }
             
-            # Detect passed/failed tests from test session output (like tests/file.py::test_name PASSED)
+            # 从测试会话输出中检测通过/失败的测试（如 tests/file.py::test_name PASSED）
             if (' PASSED' in line or ' FAILED' in line) and '::' in line and 'test_' in line:
                 parts = line.split('::')
                 if len(parts) >= 2:
@@ -373,14 +400,14 @@ class TestRunner:
                     if status == 'PASSED':
                         passed_details_dict[test_name] = test_detail
         
-        # Assign error messages to failed tests
+        # 为失败的测试分配错误信息
         for test_name, fail in failed_details_dict.items():
             if test_name in error_messages:
                 fail['error'] = error_messages[test_name]
             elif not fail['error']:
                 fail['error'] = '连接超时或服务器未响应'
         
-        # Load stored responses from file
+        # 从文件加载存储的响应数据
         responses_file = Path(__file__).parent / "test-reports" / "responses.json"
         stored_responses = {}
         if responses_file.exists():
@@ -390,7 +417,7 @@ class TestRunner:
             except Exception as e:
                 logger.warning(f"Failed to load responses: {e}")
         
-        # Update test details with actual responses
+        # 用实际响应数据更新测试详情
         for test_name, detail in test_details_dict.items():
             if test_name in stored_responses:
                 resp_data = stored_responses[test_name]
@@ -398,7 +425,7 @@ class TestRunner:
                 if 'request_params' in resp_data:
                     detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
         
-        # Update passed details with actual responses
+        # 用实际响应数据更新通过的测试详情
         for test_name, detail in passed_details_dict.items():
             if test_name in stored_responses:
                 resp_data = stored_responses[test_name]
@@ -406,7 +433,7 @@ class TestRunner:
                 if 'request_params' in resp_data:
                     detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
         
-        # Update failed details with actual responses
+        # 用实际响应数据更新失败的测试详情
         for test_name, detail in failed_details_dict.items():
             if test_name in stored_responses:
                 resp_data = stored_responses[test_name]
@@ -414,18 +441,18 @@ class TestRunner:
                 if 'request_params' in resp_data:
                     detail['request_params'] = json.dumps(resp_data['request_params'], ensure_ascii=False)
         
-        # Convert dicts to lists
+        # 将字典转换为列表
         test_details = list(test_details_dict.values())
         failed_details = list(failed_details_dict.values())
         passed_details = list(passed_details_dict.values())
         
-        # Use actual counts from parsed details instead of summary line
+        # 使用从解析详情中获取的实际数量，而不是汇总行
         actual_total = len(test_details)
         actual_passed = len(passed_details)
         actual_failed = len(failed_details)
         actual_skipped = total_tests - actual_passed - actual_failed if total_tests > 0 else 0
         
-        # If no details were parsed but we have counts from summary, use summary counts
+        # 如果没有解析到详情但有汇总数量，则使用汇总数量
         if actual_total == 0 and total_tests > 0:
             logger.warning("No test details parsed, using summary counts")
             actual_total = total_tests
@@ -433,7 +460,7 @@ class TestRunner:
             actual_failed = failed_tests
             actual_skipped = skipped_tests
         else:
-            # Use actual parsed counts
+            # 使用实际解析的数量
             total_tests = actual_total
             passed_tests = actual_passed
             failed_tests = actual_failed
@@ -451,11 +478,11 @@ class TestRunner:
         }
     
     def _extract_test_data_from_file(self) -> dict:
-        """Extract test data from the generated test file"""
+        """从生成的测试文件中提取测试数据"""
         test_data_map = {}
         
         try:
-            # Find the latest generated test file
+            # 查找最新生成的测试文件
             tests_dir = Path(__file__).parent / "tests" / "generated"
             test_files = list(tests_dir.glob("test_generated_*.py"))
             
@@ -467,15 +494,15 @@ class TestRunner:
             with open(latest_file, 'r', encoding='utf-8') as f:
                 content = f.read()
             
-            # Parse test functions to extract request data
+            # 解析测试函数以提取请求数据
             import re
             
-            # Find all test functions - improved pattern
+            # 查找所有测试函数 - 改进的正则表达式模式
             test_pattern = r'def\s+(test_\w+)\s*\(\s*\)\s*:\s*"""(.*?)"""(.*?)\n\n\n|def\s+(test_\w+)\s*\(\s*\)\s*:\s*"""(.*?)"""(.*?)\Z'
             matches = re.findall(test_pattern, content, re.DOTALL)
             
             for match in matches:
-                # Handle both pattern groups
+                # 处理两种模式匹配组
                 if match[0]:  # First pattern matched
                     test_name = match[0]
                     docstring = match[1]
@@ -485,18 +512,18 @@ class TestRunner:
                     docstring = match[4]
                     func_body = match[5]
                 
-                # Extract method and path from docstring
+                # 从文档字符串中提取方法和路径
                 method_match = re.search(r'(get|post|put|delete|patch).*?(/\S+)', docstring.lower())
                 method = method_match.group(1).upper() if method_match else 'GET'
                 path = method_match.group(2) if method_match else '/'
                 
-                # Extract data parameter from api_client call
-                # Look for data={...} in the function body
+                # 从api_client调用中提取data参数
+                # 在函数体中查找 data={...}
                 data_match = re.search(r'api_client\.\w+\s*\(\s*[\'"][^\'"]+[\'"]\s*,\s*data\s*=\s*(\{[^}]+\})', func_body)
                 if data_match:
                     request_params = data_match.group(1)
                 else:
-                    # Fallback to test_data variable
+                    # 回退到test_data变量
                     test_data_match = re.search(r'test_data\s*=\s*(\{[^}]*\})', func_body)
                     request_params = test_data_match.group(1) if test_data_match else '{}'
                 
@@ -504,7 +531,7 @@ class TestRunner:
                     'method': method,
                     'path': path,
                     'request_params': request_params,
-                    'response': '待获取'  # Will be populated during actual test execution
+                    'response': '待获取'  # 将在实际测试执行时填充
                 }
         
         except Exception as e:
@@ -512,12 +539,69 @@ class TestRunner:
         
         return test_data_map
     
-    def generate_html_report(self, test_results: dict, changes: dict):
-        """Generate a beautiful HTML test report"""
+    def generate_html_report(self, test_results: dict, changes: dict) -> str:
+        """生成美观的HTML测试报告"""
         return self.html_report_generator.generate(test_results, changes)
     
+    def _generate_report_image(self, report_path: str = None) -> str:
+        """将HTML报告转换为图片用于企业微信通知
+        
+        参数:
+            report_path: HTML报告文件路径（可选，未提供时使用默认值）
+            
+        返回:
+            str: 生成的图片文件路径，如果转换失败则返回None
+        """
+        from utils.html_to_image import HTMLToImageConverter, FallbackImageGenerator
+        
+        try:
+            if report_path is None:
+                report_path = self.reports_dir / "test-report.html"
+            
+            report_path = Path(report_path)
+            
+            if not report_path.exists():
+                logger.warning(f"HTML report not found: {report_path}")
+                return None
+            
+            # 生成截图
+            image_path = report_path.with_suffix('.png')
+            
+            converter = HTMLToImageConverter()
+            converter.convert_to_image(report_path, image_path)
+            
+            if image_path.exists():
+                logger.info(f"Report screenshot generated: {image_path}")
+                return str(image_path)
+            else:
+                logger.warning("截图生成失败")
+                
+                # 尝试回退方案
+                return None
+                
+        except Exception as e:
+            logger.error(f"Failed to generate report image: {e}")
+            
+            # 尝试基于PIL的回退方案
+            try:
+                fallback_image = self.reports_dir / "test-report-fallback.png"
+                result = FallbackImageGenerator.generate_text_report_image(
+                    getattr(self, '_last_test_results', {}), 
+                    fallback_image
+                )
+                if result:
+                    logger.info("生成了基于文本的回退报告图片")
+                    return result
+            except Exception as fallback_err:
+                logger.error(f"Fallback image generation also failed: {fallback_err}")
+            
+            return None
+    
     def send_notifications(self, test_results: dict, changes: dict):
-        """Send test results to WeChat Work"""
+        """发送测试结果到企业微信（包含报告截图）"""
+        # 存储测试结果供潜在的回退使用
+        self._last_test_results = test_results.copy()
+        
         test_results.update({
             'changed_files': changes.get('changed_files', []),
             'affected_endpoints': changes.get('affected_endpoints', []),
@@ -526,15 +610,33 @@ class TestRunner:
             'timestamp': datetime.now().isoformat()
         })
         
-        success = self.wechat_notifier.send_test_report(test_results)
+        # 尝试生成并发送带图片的通知
+        report_image_path = None
+        report_html_path = None
+        
+        # 获取报告路径（从html_report_generator或默认值）
+        reports_dir = Path(__file__).parent / "test-reports"
+        html_report_path = reports_dir / "test-report.html"
+        
+        if html_report_path.exists():
+            logger.info("正在生成报告截图用于通知...")
+            report_image_path = self._generate_report_image(html_report_path)
+            report_html_path = str(html_report_path) if html_report_path.exists() else None
+        
+        # 发送带图片和HTML文件的通知
+        success = self.wechat_notifier.send_test_report(
+            test_results, 
+            report_image_path=report_image_path,
+            report_html_path=report_html_path
+        )
         
         if success:
-            logger.info("Test report sent successfully")
+            logger.info("测试报告发送成功")
         else:
-            logger.warning("Failed to send test report")
+            logger.warning("发送测试报告失败")
     
     def _clean_old_test_files(self, tests_dir: Path):
-        """Clean old test files from previous runs"""
+        """清理之前运行的旧测试文件"""
         try:
             test_files = list(tests_dir.glob("test_generated_*.py"))
             for test_file in test_files:
@@ -544,7 +646,7 @@ class TestRunner:
             logger.warning(f"Failed to clean old test files: {e}")
     
     def _load_failed_tests(self) -> list:
-        """Load failed test cases from last run"""
+        """加载上次运行的失败测试用例"""
         if not self.failed_tests_file.exists():
             return []
         
@@ -558,7 +660,7 @@ class TestRunner:
             return []
     
     def _save_failed_tests(self, test_results: dict):
-        """Save failed test cases for next run"""
+        """保存失败测试用例供下次运行使用"""
         failed_endpoints = []
         endpoint_set = set()
         
@@ -588,10 +690,10 @@ class TestRunner:
 
 
 def main():
-    """Main entry point"""
+    """主入口函数"""
     import argparse
     
-    parser = argparse.ArgumentParser(description='API Test Runner', 
+    parser = argparse.ArgumentParser(description='API测试运行器', 
                                      formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog="""
 使用示例:
@@ -599,16 +701,34 @@ def main():
   python run_tests.py --commit-range HEAD~5..HEAD  # 分析最近5次提交
   python run_tests.py --branch test-feature main   # 对比test-feature与main分支
   python run_tests.py --branch feature-xxx origin/main  # 对比本地分支与远程分支
+  
+Git管理功能（新增）:
+  python run_tests.py --auto-pull                  # 自动拉取最新代码
+  python run_tests.py --environment production      # 使用生产环境配置
+  python run_tests.py --branch origin/test-feature origin/main \\
+                   --auto-pull --git-repo-path ./campus-master
 """)
     
     parser.add_argument('--commit-range', default='HEAD~1..HEAD', 
-                       help='Git commit range to analyze (default: HEAD~1..HEAD)')
+                       help='要分析的Git提交范围（默认: HEAD~1..HEAD）')
     parser.add_argument('--branch', nargs=2, metavar=('SOURCE', 'TARGET'),
-                       help='Compare two branches (e.g., --branch test-feature main)')
+                       help='比较两个分支（例如: --branch test-feature main）')
     parser.add_argument('--config', default='.env', 
-                       help='Configuration file path (default: .env)')
+                       help='配置文件路径（默认: .env）')
     parser.add_argument('--git-repo-path', default=None,
-                       help='Git repository path to analyze (overrides .env setting)')
+                       help='要分析的Git仓库路径（覆盖.env设置）')
+    
+    # 新增Git管理相关参数
+    parser.add_argument('--auto-pull', action='store_true', default=None,
+                       help='自动拉取最新代码（覆盖.env中的GIT_AUTO_PULL设置）')
+    parser.add_argument('--no-auto-pull', action='store_true',
+                       help='禁用自动拉取（即使.env中GIT_AUTO_PULL=true）')
+    parser.add_argument('--environment', choices=['development', 'test', 'production'],
+                       help='指定运行环境（加载对应的.env.{environment}配置文件）')
+    parser.add_argument('--git-status', action='store_true',
+                       help='显示Git仓库状态信息并退出')
+    parser.add_argument('--force-sync', action='store_true',
+                       help='强制同步到远程状态（git reset --hard，会丢失本地修改！）')
     
     args = parser.parse_args()
     
@@ -618,18 +738,51 @@ def main():
     if args.git_repo_path:
         os.environ['GIT_REPO_PATH'] = args.git_repo_path
     
+    # 设置环境模式（新增）
+    if args.environment:
+        os.environ['ENVIRONMENT'] = args.environment
+        logger.info(f"🌍 环境模式: {args.environment}")
+        
+        # 加载特定环境的配置文件
+        settings.load_environment_specific(args.environment)
+    
+    # 处理自动拉取参数（新增）
+    auto_pull = None
+    if args.auto_pull:
+        auto_pull = True
+        logger.info("✅ 已启用自动拉取（命令行参数）")
+    elif args.no_auto_pull:
+        auto_pull = False
+        logger.info("❌ 已禁用自动拉取（命令行参数）")
+    
+    # 如果只是查看Git状态，则显示后退出
+    if args.git_status:
+        repo_path = args.git_repo_path or os.getenv("GIT_REPO_PATH", ".")
+        try:
+            git_mgr = GitManager(repo_path=repo_path)
+            git_mgr.print_summary()
+            sys.exit(0)
+        except Exception as e:
+            print(f"❌ 获取Git状态失败: {e}")
+            sys.exit(1)
+    
+    # 处理强制同步参数（新增）
+    if args.force_sync:
+        os.environ['GIT_FORCE_SYNC'] = 'true'
+        logger.warning("⚠️  已启用强制同步模式（将使用git reset --hard）")
+    
     commit_range = args.commit_range
     if args.branch:
         source_branch, target_branch = args.branch
         commit_range = f"{target_branch}..{source_branch}"
-        logger.info(f"Branch comparison mode: {source_branch} vs {target_branch}")
-        logger.info(f"Converted to commit range: {commit_range}")
+        logger.info(f"分支对比模式: {source_branch} vs {target_branch}")
+        logger.info(f"转换为提交范围: {commit_range}")
         
         is_remote_branch = '/' in source_branch or '/' in target_branch
         if is_remote_branch:
             import subprocess
             repo_path = args.git_repo_path or os.getenv("GIT_REPO_PATH", ".")
-            logger.info(f"Detected remote branch(es), running 'git fetch' to update remote references...")
+            logger.info(f"检测到远程分支，正在执行 'git fetch' 以更新远程引用...")
             try:
                 fetch_result = subprocess.run(
                     ['git', 'fetch', '--all'],
@@ -639,15 +792,19 @@ def main():
                     timeout=60
                 )
                 if fetch_result.returncode == 0:
-                    logger.info(f"Git fetch completed successfully")
+                    logger.info(f"Git fetch 执行成功")
                 else:
-                    logger.warning(f"Git fetch warning: {fetch_result.stderr}")
+                    logger.warning(f"Git fetch 警告: {fetch_result.stderr}")
             except subprocess.TimeoutExpired:
-                logger.warning("Git fetch timed out (60s), using cached remote references")
+                logger.warning("Git fetch 超时（60秒），使用缓存的远程引用")
             except Exception as e:
-                logger.warning(f"Git fetch failed: {e}, using cached remote references")
+                logger.warning(f"Git fetch 失败: {e}，使用缓存的远程引用")
     
-    runner = TestRunner(git_repo_path=args.git_repo_path)
+    runner = TestRunner(
+        git_repo_path=args.git_repo_path,
+        auto_pull=auto_pull,
+        environment=args.environment
+    )
     success = runner.run(commit_range)
     
     sys.exit(0 if success else 1)
