@@ -1,80 +1,8 @@
 [
   {
     "method": "GET",
-    "path": "/system/menu/list",
-    "full_endpoint": "GET /system/menu/list",
-    "test_name": "test_system_menu_list_positive"
-  },
-  {
-    "method": "GET",
-    "path": "/system/menu/treeselect",
-    "full_endpoint": "GET /system/menu/treeselect",
-    "test_name": "test_system_menu_treeselect_positive"
-  },
-  {
-    "method": "POST",
-    "path": "/system/menu/system/menu",
-    "full_endpoint": "POST /system/menu/system/menu",
-    "test_name": "test_system_menu_system_menu_positive"
-  },
-  {
-    "method": "DELETE",
-    "path": "/system/dict/data/test_code",
-    "full_endpoint": "DELETE /system/dict/data/test_code",
-    "test_name": "test_system_dict_data_test_code_positive"
-  },
-  {
-    "method": "DELETE",
-    "path": "/system/dict/type/1",
-    "full_endpoint": "DELETE /system/dict/type/1",
-    "test_name": "test_system_dict_type_1_positive"
-  },
-  {
-    "method": "DELETE",
-    "path": "/system/role/1",
-    "full_endpoint": "DELETE /system/role/1",
-    "test_name": "test_system_role_1_positive"
-  },
-  {
-    "method": "POST",
-    "path": "/system/user/system/user",
-    "full_endpoint": "POST /system/user/system/user",
-    "test_name": "test_system_user_system_user_positive"
-  },
-  {
-    "method": "GET",
-    "path": "/system/menu/1",
-    "full_endpoint": "GET /system/menu/1",
-    "test_name": "test_system_menu_1_negative_invalid_params"
-  },
-  {
-    "method": "GET",
-    "path": "/system/menu/rolemenutreeselect/1",
-    "full_endpoint": "GET /system/menu/rolemenutreeselect/1",
-    "test_name": "test_system_menu_rolemenutreeselect_1_negative_invalid_params"
-  },
-  {
-    "method": "DELETE",
-    "path": "/system/menu/1",
-    "full_endpoint": "DELETE /system/menu/1",
-    "test_name": "test_system_menu_1_negative_unauthorized"
-  },
-  {
-    "method": "DELETE",
-    "path": "/monitor/logininfor/1",
-    "full_endpoint": "DELETE /monitor/logininfor/1",
-    "test_name": "test_monitor_logininfor_1_negative_unauthorized"
-  },
-  {
-    "method": "DELETE",
-    "path": "/monitor/operlog/1",
-    "full_endpoint": "DELETE /monitor/operlog/1",
-    "test_name": "test_monitor_operlog_1_negative_unauthorized"
-  },
-  {
-    "method": "GET",
-    "path": "/system/config/configkey/test_key",
-    "full_endpoint": "GET /system/config/configkey/test_key",
-    "test_name": "test_system_config_configkey_test_key_negative_invalid_params"
+    "path": "/",
+    "full_endpoint": "GET /",
+    "test_name": "test_list_positive"
   }
 ]

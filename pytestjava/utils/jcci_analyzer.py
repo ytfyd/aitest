@@ -327,7 +327,13 @@ class JCCIAnalyzer:
             if not file_path.endswith('.java'):
                 continue
             
-            java_file = self.project_path / file_path
+            normalized = file_path.replace('/', '\\')
+            for prefix in ['campus-master\\', 'campus-master/']:
+                if normalized.startswith(prefix):
+                    normalized = normalized[len(prefix):]
+                    break
+            
+            java_file = self.project_path / normalized
             if java_file.exists():
                 try:
                     with open(java_file, 'r', encoding='utf-8') as f:
@@ -399,10 +405,10 @@ class JCCIAnalyzer:
         # 将优化结果转换为java_classes格式
         for class_name, class_info in optimized_results.items():
             if isinstance(class_info, dict):
-                # 如果是字典，需要转换回对象（简化处理）
-                self.java_classes[class_name] = class_info
-                if 'file_path' in class_info:
-                    self.class_to_file[class_name] = class_info['file_path']
+                # 如果是字典，需要转换回 JavaClassInfo 对象
+                converted_info = self._dict_to_java_class_info(class_name, class_info)
+                self.java_classes[class_name] = converted_info
+                self.class_to_file[class_name] = converted_info.file_path
             else:
                 # 如果已经是对象
                 self.java_classes[class_info.class_name] = class_info
@@ -481,6 +487,57 @@ class JCCIAnalyzer:
         
         logger.info(f"[JCCIAnalyzer] AST解析完成: {len(self.java_classes)} 个类 "
                    f"(Controllers: {controller_count}, Services: {service_count}, Repositories: {repository_count})")
+    
+    def _dict_to_java_class_info(self, class_name: str, class_dict: Dict) -> JavaClassInfo:
+        methods = {}
+        for m_name, m_data in class_dict.get('methods', {}).items():
+            if isinstance(m_data, dict):
+                methods[m_name] = JavaMethodInfo(
+                    method_name=m_data.get('method_name', m_name),
+                    return_type=m_data.get('return_type', 'void'),
+                    parameters=m_data.get('parameters', []),
+                    line_start=m_data.get('line_start', 0),
+                    line_end=m_data.get('line_end', 0),
+                    body=m_data.get('body', ''),
+                    annotations=m_data.get('annotations', []),
+                    called_methods=m_data.get('called_methods', []),
+                    used_fields=m_data.get('used_fields', []),
+                    is_api=m_data.get('is_api', False),
+                    api_path=m_data.get('api_path'),
+                    http_method=m_data.get('http_method')
+                )
+            else:
+                methods[m_name] = m_data
+        
+        fields = {}
+        for f_name, f_data in class_dict.get('fields', {}).items():
+            if isinstance(f_data, dict):
+                fields[f_name] = JavaFieldInfo(
+                    field_name=f_data.get('field_name', f_name),
+                    field_type=f_data.get('field_type', ''),
+                    line_number=f_data.get('line_number', 0),
+                    annotations=f_data.get('annotations', [])
+                )
+            else:
+                fields[f_name] = f_data
+        
+        return JavaClassInfo(
+            file_path=class_dict.get('file_path', ''),
+            package_name=class_dict.get('package_name', ''),
+            class_name=class_name,
+            imports=class_dict.get('imports', []),
+            extends=class_dict.get('extends'),
+            implements=class_dict.get('implements', []),
+            fields=fields,
+            methods=methods,
+            annotations=class_dict.get('annotations', []),
+            is_controller=class_dict.get('is_controller', False),
+            is_service=class_dict.get('is_service', False),
+            is_repository=class_dict.get('is_repository', False),
+            line_start=class_dict.get('line_start', 0),
+            line_end=class_dict.get('line_end', 0),
+            base_path=class_dict.get('base_path', '')
+        )
     
     def _parse_java_file(self, java_file: Path) -> Optional[JavaClassInfo]:
         try:

@@ -1,36 +1,92 @@
 {
-  "timestamp": "2026-04-04T17:51:54.721599",
+  "timestamp": "2026-04-10T15:25:24.272059",
   "commit_range": "origin/main..origin/test-feature",
   "changed_files": [
     "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysMenuController.java"
   ],
-  "code_changes": [],
+  "code_changes": [
+    {
+      "change_type": "modified",
+      "element": {
+        "element_type": "method",
+        "name": "remove",
+        "qualified_name": "SysMenuController.remove",
+        "file_path": "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysMenuController.java",
+        "line_number": 80,
+        "signature": "R remove(Long)",
+        "annotations": [
+          "@DeleteMapping(value = \"/{menuId}\", name = \"菜单管理-删除\")"
+        ]
+      },
+      "diff_content": "-             return R.error(\"存在子菜单,不允许删除.\");\n-             return R.error(\"菜单已分配,不允许删除.\");\n+             return R.error(\"存在子菜单,不允许删除..\");\n+             return R.error(\"菜单已分配,不允许删除..\");"
+    }
+  ],
   "impact_summary": {
-    "total_impacts": 0,
-    "direct_impacts": 0,
+    "total_impacts": 1,
+    "direct_impacts": 1,
     "indirect_impacts": 0,
     "method_dependency_impacts": 0,
     "field_impacts": 0,
-    "affected_methods": [],
-    "affected_classes": [],
-    "impact_by_depth": {},
-    "impact_by_type": {}
+    "affected_methods": [
+      "2831013098880.remove"
+    ],
+    "affected_classes": [
+      "2831013098880"
+    ],
+    "impact_by_depth": {
+      "1": 1
+    },
+    "impact_by_type": {
+      "direct_impact": 1
+    }
   },
-  "affected_endpoints": [],
+  "affected_endpoints": [
+    {
+      "endpoint": {
+        "method": "DELETE /{menuId}",
+        "path": "/{menuId}",
+        "http_method": "DELETE",
+        "controller_class": "2831013098880",
+        "method_name": "remove",
+        "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysMenuController.java",
+        "line_number": 102,
+        "parameters": [],
+        "return_type": "",
+        "annotations": [
+          "@PreAuthorize(\"@ss.hasPermi('system:menu:remove')\")",
+          "@DeleteMapping(value = \"/{menuId}\", name = \"菜单管理-删除\")"
+        ]
+      },
+      "impact_type": "direct_impact",
+      "impact_source": "SysMenuController.remove",
+      "confidence": 0.95,
+      "impact_path": [
+        "SysMenuController.remove",
+        "2831013098880.remove"
+      ],
+      "depth": 1
+    }
+  ],
   "endpoint_summary": {
-    "total_affected_endpoints": 0,
-    "direct_impacts": 0,
+    "total_affected_endpoints": 1,
+    "direct_impacts": 1,
     "indirect_impacts": 0,
     "method_dependency_impacts": 0,
     "service_dependencies": 0,
-    "endpoints_by_http_method": {},
-    "affected_controllers": [],
-    "impact_by_depth": {}
+    "endpoints_by_http_method": {
+      "DELETE": 1
+    },
+    "affected_controllers": [
+      "2831013098880"
+    ],
+    "impact_by_depth": {
+      "1": 1
+    }
   },
   "analysis_metadata": {
     "max_impact_depth": 5,
-    "project_path": "C:\\Users\\DELL\\Desktop\\aitest",
-    "repo_path": "C:\\Users\\DELL\\Desktop\\aitest",
+    "project_path": "C:\\Users\\DELL\\Desktop\\aitest\\campus-master",
+    "repo_path": "C:\\Users\\DELL\\Desktop\\aitest\\campus-master",
     "analyzer": "JCCI"
   }
 }
