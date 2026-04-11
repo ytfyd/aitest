@@ -104,7 +104,7 @@ public class SysUserController {
     @PreAuthorize("@ss.hasPermi('system:user:remove')")
     public R remove(@PathVariable Long[] userIds) {
         if (ArrayUtils.contains(userIds, SecurityUtils.getUserId())) {
-            return R.error("当前用户不能删除.");
+            return R.error("当前用户不能删除！");
         }
         return R.ok(userService.deleteUserByIds(userIds));
     }
