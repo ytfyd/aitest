@@ -94,9 +94,7 @@ python run_tests.py --branch origin/test-feature origin/main --git-repo-path "c:
                             ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │  步骤8: 生成测试用例                                              │
-│  - 正向测试 (positive)                                            │
-│  - 负向测试 (negative)                                            │
-│  - 性能测试 (performance)                                         │
+│  - 正向测试 (positive)                                            │                                    │
 └───────────────────────────┬──────────────────────────────────────┘
                             │
                             ▼
@@ -128,15 +126,196 @@ python run_tests.py --branch origin/test-feature origin/main --git-repo-path "c:
 
 | 组件 | 文件路径 | 职责 |
 |------|----------|------|
-| TestRunner | `run_tests.py` | 主入口，协调全流程 |
-| EnhancedImpactAnalyzer | `utils/enhanced_impact_analyzer.py` | 整合四大分析组件 |
-| JCCIAnalyzer | `utils/jcci_analyzer.py` | AST 解析，构建调用图 |
-| ImpactAnalyzer | `utils/impact_analyzer.py` | 影响传播分析 |
-| APIEndpointAnalyzer | `utils/api_endpoint_analyzer.py` | API 端点提取与关联 |
-| CodeChangeDetector | `utils/code_change_detector.py` | Git 差异检测与变更解析 |
-| TestCaseGenerator | `utils/test_generator.py` | 生成 pytest 测试用例 |
-| HTMLReportGenerator | `utils/html_report_generator.py` | 生成 HTML 测试报告 |
-| WeChatWorkNotifier | `utils/wechat_notifier.py` | 企业微信通知 |
+| TestRunner | `run_tests.py` | 主入口，协调全流程（变更检测→测试生成→执行→报告→通知） |
+| Settings | `config/settings.py` | 配置管理，支持环境变量和.env文件 |
+| EnhancedImpactAnalyzer | `utils/enhanced_impact_analyzer.py` | 整合JCCI/Impact/APIEndpoint/CodeChange四大组件，4类影响分析 |
+| JCCIAnalyzer | `utils/jcci_analyzer.py` | 基于javalang的AST解析，构建调用图，支持6大性能优化策略 |
+| ImpactAnalyzer | `utils/impact_analyzer.py` | 影响传播分析，BFS遍历调用图查找调用者/被调用者 |
+| APIEndpointAnalyzer | `utils/api_endpoint_analyzer.py` | API端点提取、Service依赖追踪、影响置信度计算 |
+| CodeChangeDetector | `utils/code_change_detector.py` | Git差异检测与变更解析，支持分支对比和提交范围两种模式 |
+| TestCaseGenerator | `utils/test_generator.py` | 生成正向/pytest测试用例 |
+| HTMLReportGenerator | `utils/html_report_generator.py` | 生成HTML测试报告，包含成功详情、失败详情、影响分析 |
+| WeChatWorkNotifier | `utils/wechat_notifier.py` | 企业微信Webhook通知，支持Markdown和图片消息 |
+| SwaggerClient | `utils/swagger_client.py` | Swagger API文档客户端，自动获取接口定义和生成测试数据 |
+| CacheManager | `utils/cache_manager.py` | JCCI缓存管理，LRU淘汰策略 |
+| PerformanceOptimizer | `utils/performance_optimizer.py` | 性能优化器，缓存/并行/增量扫描等 |
+| HtmlToImage | `utils/html_to_image.py` | HTML报告转图片，用于企业微信通知 |
+
+---
+
+## Utils 模块详解
+
+### `utils/jcci_analyzer.py` - JCCI分析器
+
+基于javalang的Java AST解析器，是整个系统的核心基础组件。
+
+**主要功能：**
+- 使用javalang进行Java AST解析，提取类、方法、字段信息
+- 使用unidiff进行Git差异解析
+- 构建方法调用图（正向和反向），用于影响传播分析
+- 从变更代码追踪影响到Controller层API端点
+
+**核心数据结构：**
+- `JavaClassInfo`：Java类信息（包名、注解、方法、字段、是否Controller/Service/Repository等）
+- `JavaMethodInfo`：方法信息（参数、返回值、调用关系、API路径、HTTP方法等）
+- `JavaFieldInfo`：字段信息（类型、注解等）
+- `DiffResult`：Git差异结果（新增行、删除行、变更方法等）
+- `ImpactNode`：影响节点（影响类型、深度、子节点等）
+- `APIEndpoint`：API端点信息（路径、HTTP方法、Controller类、参数等）
+
+**6大性能优化策略：**
+1. 缓存机制（`.jcci_cache`目录，缓存命中率78%+）
+2. 并行扫描（多线程，加速比10x+）
+3. 增量模式（仅解析变更文件，阈值<50文件时启用）
+4. 目录过滤（跳过target/build/test目录）
+5. 文件大小限制（默认5MB）
+6. 懒加载（按需解析）
+
+---
+
+### `utils/impact_analyzer.py` - 影响传播分析器
+
+基于JCCI调用图的影响传播分析组件。
+
+**主要功能：**
+- 从JCCI获取调用图，构建方法依赖关系和反向依赖索引
+- `find_callers(method_key, depth=5)`：向上传播，查找谁调用了该方法
+- `find_callees(method_key, depth=5)`：向下传播，查找该方法调用了谁
+- BFS遍历调用图，最大传播深度默认5层
+- 计算影响路径和置信度
+
+---
+
+### `utils/api_endpoint_analyzer.py` - API端点分析器
+
+基于JCCI分析结果，提取Controller方法、追踪服务依赖、计算影响置信度。
+
+**主要功能：**
+- 从JCCI解析结果中提取Controller方法信息
+- 追踪Controller方法调用的Service方法（@Autowired字段）
+- 分析代码变更对API端点的影响
+- 计算影响置信度（基于影响路径深度）
+- 生成端点影响摘要统计
+
+**影响类型与置信度：**
+- `direct_impact`（1.0）：直接修改的Controller方法
+- `service_dependency`（0.9）：Controller调用的Service被修改
+- `method_dependency`（0.85）：方法直接调用依赖
+- `indirect_impact`（0.5-0.7）：间接影响
+
+---
+
+### `utils/enhanced_impact_analyzer.py` - 增强版影响分析器
+
+整合JCCI/Impact/APIEndpoint/CodeChange四大组件，提供完整的代码变更影响分析。
+
+**主要功能：**
+- 检测代码变更（Git diff + JCCI AST解析）
+- 追踪影响传播链（调用图BFS遍历）
+- 识别受影响的API端点（4类影响分析）
+- 生成分析报告和测试建议
+
+**4类影响分析：**
+1. 直接变更Controller中的接口 → `direct_impact`
+2. 影响传播链上的接口 → 根据深度计算置信度
+3. 相关Controller接口 → `service_dependency`
+4. 通过Service调用关系的Controller → `service_dependency`
+
+---
+
+### `utils/code_change_detector.py` - 代码变更检测器
+
+Git差异检测与变更解析组件。
+
+**主要功能：**
+- 支持分支对比模式（`origin/main..origin/test-feature`）
+- 支持提交范围模式（`HEAD~1..HEAD`）
+- 获取变更的Java文件列表
+- 逐文件获取old/new内容
+- 解析Java签名，识别变更的方法/字段/类
+- 排除非Java文件和测试文件
+
+---
+
+### `utils/test_generator.py` - 测试用例生成器
+
+根据API端点信息自动生成pytest测试用例。
+
+**主要功能：**
+- 正向测试（positive）：验证接口正常功能，断言状态码200
+- 集成Swagger文档自动获取测试数据
+- 支持登录接口特殊处理（自动获取token）
+- 生成包含认证fixture和响应存储函数的完整测试文件
+
+---
+
+### `utils/swagger_client.py` - Swagger API文档客户端
+
+从Swagger/OpenAPI文档获取接口定义，自动生成测试数据。
+
+**主要功能：**
+- 获取Swagger API文档（`/v3/api-docs`）
+- 根据路径和HTTP方法查找接口信息
+- 根据Schema定义自动生成测试数据
+- 支持路径参数匹配和模糊查询
+
+---
+
+### `utils/html_report_generator.py` - HTML测试报告生成器
+
+生成可视化的HTML测试报告。
+
+**主要功能：**
+- 生成包含测试统计、成功详情、失败详情的HTML报告
+- 变更接口列表和影响分析信息
+- 响应数据展示（请求参数、响应内容）
+- 支持自定义模板
+
+---
+
+### `utils/wechat_notifier.py` - 企业微信通知模块
+
+通过企业微信Webhook发送测试报告通知。
+
+**主要功能：**
+- 发送Markdown格式消息（包含测试统计、失败详情）
+- 发送图片消息（测试报告截图）
+- 支持通过环境变量配置Webhook URL
+
+---
+
+### `utils/cache_manager.py` - 缓存管理器
+
+JCCI缓存管理组件。
+
+**主要功能：**
+- LRU淘汰策略
+- 缓存TTL过期检测
+- 缓存容量限制（默认500MB）
+- 缓存命中率统计
+
+---
+
+### `utils/performance_optimizer.py` - 性能优化器
+
+系统性能优化组件。
+
+**主要功能：**
+- 缓存优化
+- 并行扫描优化
+- 增量分析优化
+- 性能指标采集和警告
+
+---
+
+### `utils/html_to_image.py` - HTML转图片工具
+
+将HTML报告转换为图片，用于企业微信通知。
+
+**主要功能：**
+- HTML内容渲染为图片
+- 支持自定义宽度和缩放比例
+- Base64编码输出
 
 ---
 
@@ -316,15 +495,13 @@ def _build_from_jcci(self):
 
 **位置**：`utils/test_generator.py::TestCaseGenerator`
 
-**规则**：每个受影响接口生成三类测试用例
+**规则**：每个受影响接口生成正向测试用例
 
 | 类型 | pytest marker | 说明 |
 |------|---------------|------|
 | 正向测试 | `@pytest.mark.positive` `@pytest.mark.smoke` | 验证正常请求返回 200 |
-| 负向测试 | `@pytest.mark.negative` `@pytest.mark.regression` | 验证异常参数返回错误码 |
-| 性能测试 | `@pytest.mark.performance` `@pytest.mark.slow` | 验证响应时间在阈值内 |
 
-**命名规范**：`test_{endpoint_path}_{test_type}`
+**命名规范**：`test_{endpoint_path}_positive`
 
 ---
 

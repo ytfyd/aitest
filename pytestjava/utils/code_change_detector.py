@@ -1,3 +1,9 @@
+"""代码变更检测器模块
+
+基于Git差异检测Java代码变更，支持分支对比和提交范围两种模式，
+解析Java文件的新增/修改/删除方法、字段和类。
+"""
+
 import os
 import re
 import logging
@@ -15,39 +21,62 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class MethodSignature:
-    name: str
-    return_type: str
-    parameters: List[str]
-    annotations: List[str]
-    line_number: int
-    body_start: int
-    body_end: int
-    content: str
+    """方法签名信息"""
+    name: str              # 方法名
+    return_type: str       # 返回类型
+    parameters: List[str]  # 参数类型列表
+    annotations: List[str] # 注解列表
+    line_number: int       # 行号
+    body_start: int        # 方法体开始位置
+    body_end: int          # 方法体结束位置
+    content: str           # 方法完整内容
 
 
 @dataclass
 class FieldSignature:
-    name: str
-    type: str
-    annotations: List[str]
-    line_number: int
-    content: str
+    """字段签名信息"""
+    name: str              # 字段名
+    type: str              # 字段类型
+    annotations: List[str] # 注解列表
+    line_number: int       # 行号
+    content: str           # 字段声明内容
 
 
 @dataclass
 class ClassSignature:
-    name: str
-    annotations: List[str]
-    methods: List[MethodSignature]
-    fields: List[FieldSignature]
-    line_number: int
-    content: str
+    """类签名信息"""
+    name: str                    # 类名
+    annotations: List[str]       # 类注解列表
+    methods: List[MethodSignature] # 方法列表
+    fields: List[FieldSignature]   # 字段列表
+    line_number: int             # 行号
+    content: str                 # 类完整内容
 
 
 class CodeChangeDetector:
-    """使用Git检测代码变更并使用JCCI进行分析"""
+    """使用Git检测代码变更并使用JCCI进行分析
+    
+    支持两种差异检测模式：
+    - 分支对比模式：对比两个分支的差异（如 origin/main..origin/test-feature）
+    - 提交范围模式：对比指定提交范围内的差异（如 HEAD~1..HEAD）
+    
+    变更检测流程：
+    1. 获取变更的Java文件列表
+    2. 获取每个文件的旧/新内容
+    3. 解析Java类签名（方法、字段、注解）
+    4. 对比新旧版本，识别新增/修改/删除的元素
+    """
     
     def __init__(self, repo_path: str, project_path: str = None):
+        """初始化代码变更检测器
+        
+        参数:
+            repo_path: Git仓库路径
+            project_path: Java项目路径（可选，默认与repo_path相同）
+            
+        异常:
+            ValueError: 如果repo_path不是有效的Git仓库
+        """
         try:
             self.repo = Repo(repo_path)
             self.repo_path = Path(repo_path).resolve()
@@ -58,6 +87,7 @@ class CodeChangeDetector:
         self.jcci_analyzer = JCCIAnalyzer(str(self.project_path))
     
     def __del__(self):
+        """析构函数，关闭Git仓库连接"""
         try:
             if hasattr(self, 'repo') and self.repo:
                 self.repo.close()
@@ -65,6 +95,18 @@ class CodeChangeDetector:
             pass
     
     def get_changed_files(self, commit_range: str = "HEAD~1..HEAD") -> List[str]:
+        """获取指定范围内变更的Java文件列表
+        
+        自动检测commit_range格式：
+        - 分支对比模式：如 "origin/main..origin/test-feature"
+        - 提交范围模式：如 "HEAD~1..HEAD"
+        
+        参数:
+            commit_range: Git提交范围或分支范围
+            
+        返回:
+            变更的Java文件路径列表（去重）
+        """
         is_branch_comparison = ('..' in commit_range and 
                                 not commit_range.startswith('HEAD') and
                                 not any(c.isdigit() for c in commit_range.split('..')[0][:7]))
@@ -543,12 +585,21 @@ class CodeChangeDetector:
                     key = f"{change.change_type.value}_{change.element.element_type}s"
                     if key in summary:
                         summary[key] += 1
+                    # 元素类型中文映射
+                    element_type_map = {
+                        'method': '方法',
+                        'field': '字段',
+                        'class': '类'
+                    }
+                    element_type_cn = element_type_map.get(change.element.element_type, change.element.element_type)
+                    # 格式: "元素类型: 元素名" 如 "方法: remove"，用于报告tooltip展示
+                    display_name = f"{element_type_cn}: {change.element.name}"
                     if change.change_type == ChangeType.ADDED:
-                        file_summary['added'].append(change.element.name)
+                        file_summary['added'].append(display_name)
                     elif change.change_type == ChangeType.MODIFIED:
-                        file_summary['modified'].append(change.element.name)
+                        file_summary['modified'].append(display_name)
                     elif change.change_type == ChangeType.DELETED:
-                        file_summary['deleted'].append(change.element.name)
+                        file_summary['deleted'].append(display_name)
             summary['files'][file_path] = file_summary
         
         return summary

@@ -85,6 +85,11 @@ class TestRunner:
     """测试运行器主类"""
     
     def __init__(self, git_repo_path: str = None):
+        """初始化测试运行器
+        
+        参数:
+            git_repo_path: Git仓库路径（默认从环境变量读取）
+        """
         repo_path = git_repo_path or os.getenv("GIT_REPO_PATH", ".")
         self.repo_path = repo_path
         self.test_generator = TestCaseGenerator()
@@ -100,6 +105,14 @@ class TestRunner:
             self.enhanced_analyzer = None
     
     def run(self, commit_range: str = "HEAD~1..HEAD") -> bool:
+        """执行完整的API自动化测试工作流程
+        
+        流程: 检测变更 → 生成测试 → 执行测试 → 生成报告 → 发送通知
+        参数:
+            commit_range: Git提交范围
+        返回:
+            测试是否全部通过
+        """
         logger.info("开始API自动化测试工作流程")
         
         try:
@@ -135,6 +148,7 @@ class TestRunner:
             return False
     
     def detect_changes(self, commit_range: str) -> dict:
+        """使用增强版影响分析器检测代码变更和受影响的API端点"""
         if not self.enhanced_analyzer:
             logger.warning("增强版分析器不可用")
             return {'changed_files': [], 'affected_endpoints': [], 'change_summary': {}}
@@ -170,6 +184,10 @@ class TestRunner:
             return {'changed_files': [], 'affected_endpoints': [], 'change_summary': {}}
     
     def generate_tests(self, endpoints: list) -> str:
+        """为受影响的API端点生成测试用例文件
+        
+        合并新变更端点和之前失败的端点，生成pytest测试文件
+        """
         tests_dir = Path(__file__).parent / "tests" / "generated"
         tests_dir.mkdir(parents=True, exist_ok=True)
         
@@ -192,9 +210,12 @@ class TestRunner:
         test_file = tests_dir / f"test_generated_{timestamp}.py"
         self.test_generator.write_test_file(test_cases, str(test_file))
         
+        logger.info(f"已生成 {len(test_cases)} 个正向测试用例")
+        
         return str(test_file)
     
     def execute_tests(self, test_file: str) -> dict:
+        """执行pytest测试并返回测试结果"""
         cmd = ["pytest", test_file, "-v", "--tb=long"]
         logger.info(f"执行命令: {' '.join(cmd)}")
         
@@ -215,6 +236,7 @@ class TestRunner:
             }
     
     def _parse_test_results(self, result: subprocess.CompletedProcess) -> dict:
+        """解析pytest输出结果，提取通过/失败/跳过信息和详细数据"""
         output = result.stdout + result.stderr
         lines = output.split('\n')
         
@@ -243,6 +265,7 @@ class TestRunner:
         
         test_details = []
         failed_details = []
+        passed_details = []
         error_messages = {}
         current_test = None
         error_buffer = []
@@ -254,12 +277,15 @@ class TestRunner:
                 parts = line.split('::')
                 test_name = parts[-1].split()[0].strip()
                 test_details.append({'name': test_name, 'status': 'PASSED'})
+                passed_details.append({'name': test_name, 'method': 'N/A', 'path': 'N/A', 
+                                       'request_params': 'N/A', 'response': 'N/A'})
             
             elif ' FAILED' in line and '::' in line and 'test_' in line:
                 parts = line.split('::')
                 test_name = parts[-1].split()[0].strip()
                 test_details.append({'name': test_name, 'status': 'FAILED'})
-                failed_details.append({'name': test_name, 'error': ''})
+                failed_details.append({'name': test_name, 'error': '', 'method': 'N/A', 
+                                       'path': 'N/A', 'request_params': 'N/A', 'response': 'N/A'})
                 current_test = test_name
                 error_buffer = []
             
@@ -278,15 +304,33 @@ class TestRunner:
         for fail in failed_details:
             fail['error'] = error_messages.get(fail['name'], '连接超时或服务器未响应')
         
+        # 从responses.json中读取详细的请求和响应数据，补充到passed_details和failed_details中
         responses_file = Path(__file__).parent / "test-reports" / "responses.json"
         if responses_file.exists():
             try:
                 with open(responses_file, 'r', encoding='utf-8') as f:
                     stored_responses = json.load(f)
+                # 补充test_details中的response数据
                 for detail in test_details:
                     if detail['name'] in stored_responses:
                         resp = stored_responses[detail['name']]
                         detail['response'] = json.dumps(resp.get('response', {}), ensure_ascii=False)
+                # 补充passed_details中的详细数据
+                for passed in passed_details:
+                    if passed['name'] in stored_responses:
+                        resp = stored_responses[passed['name']]
+                        passed['method'] = resp.get('method', 'N/A')
+                        passed['path'] = resp.get('path', 'N/A')
+                        passed['request_params'] = json.dumps(resp.get('request_params', {}), ensure_ascii=False)
+                        passed['response'] = json.dumps(resp.get('response', {}), ensure_ascii=False)
+                # 补充failed_details中的详细数据
+                for fail in failed_details:
+                    if fail['name'] in stored_responses:
+                        resp = stored_responses[fail['name']]
+                        fail['method'] = resp.get('method', 'N/A')
+                        fail['path'] = resp.get('path', 'N/A')
+                        fail['request_params'] = json.dumps(resp.get('request_params', {}), ensure_ascii=False)
+                        fail['response'] = json.dumps(resp.get('response', {}), ensure_ascii=False)
             except Exception:
                 pass
         
@@ -296,14 +340,17 @@ class TestRunner:
             'failed_tests': failed_tests,
             'skipped_tests': skipped_tests,
             'failed_details': failed_details,
+            'passed_details': passed_details,
             'test_details': test_details,
             'return_code': result.returncode
         }
     
     def generate_html_report(self, test_results: dict, changes: dict) -> str:
+        """生成HTML格式的测试报告"""
         return self.html_report_generator.generate(test_results, changes)
     
     def send_notifications(self, test_results: dict, changes: dict):
+        """通过企业微信发送测试结果通知"""
         test_results.update({
             'changed_files': changes.get('changed_files', []),
             'affected_endpoints': changes.get('affected_endpoints', []),
@@ -317,6 +364,7 @@ class TestRunner:
             logger.warning("发送测试报告失败")
     
     def _clean_old_test_files(self, tests_dir: Path):
+        """清理旧的自动生成测试文件"""
         try:
             for test_file in tests_dir.glob("test_generated_*.py"):
                 test_file.unlink()
@@ -324,6 +372,7 @@ class TestRunner:
             logger.warning(f"清理旧测试文件失败: {e}")
     
     def _load_failed_tests(self) -> list:
+        """加载上次失败的测试用例列表，用于回归测试"""
         if not self.failed_tests_file.exists():
             return []
         try:
@@ -333,19 +382,20 @@ class TestRunner:
             return []
     
     def _save_failed_tests(self, test_results: dict):
+        """保存失败的测试用例列表，用于下次回归测试"""
         failed_endpoints = []
         endpoint_set = set()
         for fail in test_results.get('failed_details', []):
-            method = fail.get('method', 'GET')
-            path = fail.get('path', '/')
-            if method != 'N/A' and path != 'N/A':
+            test_name = fail.get('name', '')
+            method, path = self._extract_endpoint_from_test_name(test_name)
+            if method and path:
                 key = f"{method}_{path}"
                 if key not in endpoint_set:
                     endpoint_set.add(key)
                     failed_endpoints.append({
                         'method': method, 'path': path,
                         'full_endpoint': f"{method} {path}",
-                        'test_name': fail.get('name', '')
+                        'test_name': test_name
                     })
         try:
             self.failed_tests_file.parent.mkdir(parents=True, exist_ok=True)
@@ -353,9 +403,43 @@ class TestRunner:
                 json.dump(failed_endpoints, f, ensure_ascii=False, indent=2)
         except Exception as e:
             logger.warning(f"保存失败测试用例失败: {e}")
+    
+    def _extract_endpoint_from_test_name(self, test_name: str) -> tuple:
+        """从测试名称中提取HTTP方法和API路径"""
+        responses_file = Path(__file__).parent / "test-reports" / "responses.json"
+        if responses_file.exists():
+            try:
+                with open(responses_file, 'r', encoding='utf-8') as f:
+                    responses = json.load(f)
+                if test_name in responses:
+                    resp = responses[test_name]
+                    return resp.get('method', ''), resp.get('path', '')
+            except Exception:
+                pass
+        
+        method = 'GET'
+        path = '/'
+        
+        name_lower = test_name.lower()
+        if 'post_' in name_lower:
+            method = 'POST'
+        elif 'put_' in name_lower:
+            method = 'PUT'
+        elif 'delete_' in name_lower:
+            method = 'DELETE'
+        elif 'patch_' in name_lower:
+            method = 'PATCH'
+        
+        return method, path
 
 
 def main():
+    """主入口函数，解析命令行参数并启动测试流程
+    
+    支持两种模式：
+    1. 提交范围模式：--commit-range HEAD~1..HEAD
+    2. 分支对比模式：--branch origin/test-feature origin/main
+    """
     import argparse
     
     parser = argparse.ArgumentParser(description='API测试运行器')

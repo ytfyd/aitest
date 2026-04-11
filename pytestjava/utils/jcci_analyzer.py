@@ -1,3 +1,20 @@
+"""JCCI (Java Code Commit Impact) 分析器模块
+
+基于javalang的Java AST解析器，用于构建调用图并追踪代码变更影响。
+核心功能：
+- 使用javalang进行Java AST解析，提取类、方法、字段信息
+- 使用unidiff进行Git差异解析
+- 构建方法调用图（正向和反向），用于影响传播分析
+- 从变更代码追踪影响到Controller层API端点
+- 支持超级优化模式（缓存、多线程、增量扫描等6大策略）
+
+主要数据结构：
+- JavaClassInfo: Java类信息（包名、注解、方法、字段等）
+- JavaMethodInfo: 方法信息（参数、返回值、调用关系、API路径等）
+- JavaFieldInfo: 字段信息（类型、注解等）
+- DiffResult: Git差异结果（新增行、删除行、变更方法等）
+- ImpactNode: 影响节点（影响类型、深度、子节点等）
+"""
 import os
 import re
 import logging
@@ -39,32 +56,35 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+# 代码变更类型枚举
 class ChangeType(Enum):
     ADDED = "added"
     MODIFIED = "modified"
     DELETED = "deleted"
 
 
+# Java元素（类、方法、字段）的基本信息
 @dataclass
 class JavaElement:
-    element_type: str
-    name: str
-    qualified_name: str
-    file_path: str
-    line_number: int
-    signature: str
-    annotations: List[str] = field(default_factory=list)
+    element_type: str  # 元素类型（class/method/field）
+    name: str  # 元素名称
+    qualified_name: str  # 限定名（类名.方法名）
+    file_path: str  # 文件路径
+    line_number: int  # 行号
+    signature: str  # 方法签名
+    annotations: List[str] = field(default_factory=list)  # 注解列表
     
     def to_dict(self) -> Dict:
         return asdict(self)
 
 
+# 代码变更记录，包含变更类型和变更前后的元素信息
 @dataclass
 class CodeChange:
-    change_type: ChangeType
-    element: JavaElement
-    old_element: Optional[JavaElement] = None
-    diff_content: str = ""
+    change_type: ChangeType  # 变更类型
+    element: JavaElement  # 变更后的元素
+    old_element: Optional[JavaElement] = None  # 变更前的元素
+    diff_content: str = ""  # 差异内容
     
     def to_dict(self) -> Dict:
         result = {
@@ -77,40 +97,42 @@ class CodeChange:
         return result
 
 
+# API端点信息，描述一个HTTP接口
 @dataclass
 class APIEndpoint:
-    method: str
-    path: str
-    http_method: str
-    controller_class: str
-    method_name: str
-    file_path: str
-    line_number: int
-    parameters: List[Dict] = field(default_factory=list)
-    return_type: str = ""
-    annotations: List[str] = field(default_factory=list)
+    method: str  # 接口标识（如 "GET /api/list"）
+    path: str  # API路径
+    http_method: str  # HTTP方法（GET/POST/PUT/DELETE等）
+    controller_class: str  # Controller类名
+    method_name: str  # 方法名
+    file_path: str  # 文件路径
+    line_number: int  # 行号
+    parameters: List[Dict] = field(default_factory=list)  # 参数列表
+    return_type: str = ""  # 返回值类型
+    annotations: List[str] = field(default_factory=list)  # 注解列表
     
     def to_dict(self) -> Dict:
         return asdict(self)
 
 
+# Java类信息，包含类的完整解析结果
 @dataclass
 class JavaClassInfo:
-    file_path: str
-    package_name: str
-    class_name: str
-    imports: List[str]
-    extends: Optional[str]
-    implements: List[str]
-    fields: Dict[str, 'JavaFieldInfo']
-    methods: Dict[str, 'JavaMethodInfo']
-    annotations: List[str]
-    is_controller: bool
-    is_service: bool
-    is_repository: bool
-    line_start: int
-    line_end: int
-    base_path: str = ""
+    file_path: str  # 文件路径
+    package_name: str  # 包名
+    class_name: str  # 类名
+    imports: List[str]  # 导入列表
+    extends: Optional[str]  # 父类名
+    implements: List[str]  # 实现的接口列表
+    fields: Dict[str, 'JavaFieldInfo']  # 字段字典
+    methods: Dict[str, 'JavaMethodInfo']  # 方法字典
+    annotations: List[str]  # 类注解列表
+    is_controller: bool  # 是否Controller类
+    is_service: bool  # 是否Service类
+    is_repository: bool  # 是否Repository类
+    line_start: int  # 起始行号
+    line_end: int  # 结束行号
+    base_path: str = ""  # Controller基础路径（@RequestMapping值）
     
     def to_dict(self) -> Dict:
         return {
@@ -127,62 +149,67 @@ class JavaClassInfo:
             'is_service': self.is_service,
             'is_repository': self.is_repository,
             'line_start': self.line_start,
-            'line_end': self.line_end
+            'line_end': self.line_end,
+            'base_path': self.base_path
         }
 
 
+# Java方法信息，包含方法签名、调用关系和API映射
 @dataclass
 class JavaMethodInfo:
-    method_name: str
-    return_type: str
-    parameters: List[Dict]
-    line_start: int
-    line_end: int
-    body: str
-    annotations: List[str]
-    called_methods: List[str]
-    used_fields: List[str]
-    is_api: bool
-    api_path: Optional[str]
-    http_method: Optional[str]
+    method_name: str  # 方法名
+    return_type: str  # 返回值类型
+    parameters: List[Dict]  # 参数列表
+    line_start: int  # 起始行号
+    line_end: int  # 结束行号
+    body: str  # 方法体内容
+    annotations: List[str]  # 方法注解列表
+    called_methods: List[str]  # 调用的方法列表
+    used_fields: List[str]  # 使用的字段列表
+    is_api: bool  # 是否API接口方法
+    api_path: Optional[str]  # API路径
+    http_method: Optional[str]  # HTTP方法
     
     def to_dict(self) -> Dict:
         return asdict(self)
 
 
+# Java字段信息
 @dataclass
 class JavaFieldInfo:
-    field_name: str
-    field_type: str
-    line_number: int
-    annotations: List[str]
+    field_name: str  # 字段名
+    field_type: str  # 字段类型
+    line_number: int  # 行号
+    annotations: List[str]  # 字段注解列表
     
     def to_dict(self) -> Dict:
         return asdict(self)
 
 
+# Git差异解析结果，记录文件的变更行和变更方法
 @dataclass
 class DiffResult:
-    file_path: str
-    lines_added: List[int]
-    lines_removed: List[int]
-    content_added: List[str]
-    content_removed: List[str]
-    changed_methods: Dict[str, Dict]
-    changed_fields: Dict[str, Dict]
+    file_path: str  # 文件路径
+    lines_added: List[int]  # 新增行号列表
+    lines_removed: List[int]  # 删除行号列表
+    content_added: List[str]  # 新增内容列表
+    content_removed: List[str]  # 删除内容列表
+    changed_methods: Dict[str, Dict]  # 变更方法字典
+    changed_fields: Dict[str, Dict]  # 变更字段字典
     
     def to_dict(self) -> Dict:
         return asdict(self)
 
 
+# 影响传播节点，描述代码变更的影响链路
 @dataclass
 class ImpactNode:
-    class_name: str
-    method_name: str
-    file_path: str
-    impact_type: str
-    depth: int
-    children: List['ImpactNode'] = field(default_factory=list)
+    class_name: str  # 类名
+    method_name: str  # 方法名
+    file_path: str  # 文件路径
+    impact_type: str  # 影响类型（direct_impact/service_dependency/indirect_impact）
+    depth: int  # 影响深度（距离变更点的跳数）
+    children: List['ImpactNode'] = field(default_factory=list)  # 子影响节点列表
     
     def to_dict(self) -> Dict:
         return {
@@ -281,6 +308,7 @@ class JCCIAnalyzer:
                    f"{len(self.call_graph)} 个调用节点")
     
     def _scan_java_files_incremental(self, changed_files: List[str]):
+        """增量扫描Java文件，仅解析变更文件和相关Controller"""
         files_to_scan = set()
         
         for file_path in changed_files:
@@ -308,6 +336,7 @@ class JCCIAnalyzer:
                 logger.error(f"Error parsing {java_file}: {e}")
     
     def _find_controller_files(self) -> Set[str]:
+        """查找项目中所有Controller文件"""
         controller_files = set()
         
         java_files = list(self.project_path.rglob("*Controller.java"))
@@ -320,6 +349,7 @@ class JCCIAnalyzer:
         return controller_files
     
     def _find_related_controllers(self, changed_files: List[str]) -> Set[str]:
+        """查找与变更文件相关的Controller文件"""
         related_controllers = set()
         
         changed_classes = set()
@@ -412,11 +442,11 @@ class JCCIAnalyzer:
             else:
                 # 如果已经是对象
                 self.java_classes[class_info.class_name] = class_info
-                self.class_to_file[class_info.class_name] = str(
-                    Path(class_info.file_path).relative_to(self.project_path)
-                    if hasattr(class_info, 'file_path') and class_info.file_path 
-                    else class_name + ".java"
-                )
+                file_path_str = class_info.file_path if hasattr(class_info, 'file_path') and class_info.file_path else class_name + ".java"
+                try:
+                    self.class_to_file[class_info.class_name] = str(Path(file_path_str).relative_to(self.project_path))
+                except ValueError:
+                    self.class_to_file[class_info.class_name] = file_path_str
         
         # 输出优化统计
         speedup = stats.get('speedup_factor', 0)
@@ -437,6 +467,7 @@ class JCCIAnalyzer:
         logger.info(f"  💾 缓存命中率: {cache_hit_rate:.1f}%")
     
     def _scan_java_files(self):
+        """标准模式扫描所有Java文件"""
         java_files = list(self.project_path.rglob("*.java"))
         java_files = [f for f in java_files if "target" not in str(f) and "build" not in str(f)]
         
@@ -489,6 +520,7 @@ class JCCIAnalyzer:
                    f"(Controllers: {controller_count}, Services: {service_count}, Repositories: {repository_count})")
     
     def _dict_to_java_class_info(self, class_name: str, class_dict: Dict) -> JavaClassInfo:
+        """将字典转换为JavaClassInfo对象，用于缓存结果的反序列化"""
         methods = {}
         for m_name, m_data in class_dict.get('methods', {}).items():
             if isinstance(m_data, dict):
@@ -540,6 +572,7 @@ class JCCIAnalyzer:
         )
     
     def _parse_java_file(self, java_file: Path) -> Optional[JavaClassInfo]:
+        """解析单个Java文件，优先使用javalang AST解析，失败则回退到正则解析"""
         try:
             with open(java_file, 'r', encoding='utf-8') as f:
                 content = f.read()
@@ -554,6 +587,7 @@ class JCCIAnalyzer:
             return None
     
     def _parse_with_javalang(self, java_file: Path, content: str) -> Optional[JavaClassInfo]:
+        """使用javalang进行AST解析Java文件，提取类、方法、字段信息"""
         try:
             tree = javalang.parse.parse(content)
             
@@ -566,7 +600,7 @@ class JCCIAnalyzer:
                 imports = [imp.path for imp in tree.imports]
             
             for type_decl in tree.types:
-                if not isinstance(type_decl, javalang.tree.ClassDeclaration):
+                if not isinstance(type_decl, (javalang.tree.ClassDeclaration, javalang.tree.InterfaceDeclaration)):
                     continue
                 
                 class_name = type_decl.name
@@ -576,11 +610,13 @@ class JCCIAnalyzer:
                 
                 extends = None
                 if type_decl.extends:
-                    extends = type_decl.extends.name
+                    extends = type_decl.extends.name if hasattr(type_decl.extends, 'name') else str(type_decl.extends)
                 
                 implements = []
                 if type_decl.implements:
-                    implements = [impl.name for impl in type_decl.implements]
+                    for impl in type_decl.implements:
+                        impl_name = impl.name if hasattr(impl, 'name') else str(impl)
+                        implements.append(impl_name)
                 
                 fields = {}
                 methods = {}
@@ -588,10 +624,13 @@ class JCCIAnalyzer:
                 for member in type_decl.body:
                     if isinstance(member, javalang.tree.FieldDeclaration):
                         for declarator in member.declarators:
+                            pos = member.position if member.position else 0
+                            if isinstance(pos, tuple):
+                                pos = pos[0] if pos else 0
                             field_info = JavaFieldInfo(
                                 field_name=declarator.name,
-                                field_type=member.type.name if member.type else "unknown",
-                                line_number=member.position if member.position else 0,
+                                field_type=member.type.name if member.type and hasattr(member.type, 'name') else ("unknown" if not member.type else str(member.type)),
+                                line_number=pos,
                                 annotations=[ann.name for ann in (member.annotations or [])]
                             )
                             fields[declarator.name] = field_info
@@ -604,6 +643,13 @@ class JCCIAnalyzer:
                 is_controller = any(ann in ['RestController', 'Controller'] for ann in annotations)
                 is_service = 'Service' in annotations
                 is_repository = 'Repository' in annotations
+                
+                base_path = ""
+                if type_decl.annotations:
+                    for ann in type_decl.annotations:
+                        if ann.name == 'RequestMapping':
+                            base_path = self._extract_path_from_javalang_annotation(ann) or ""
+                            break
                 
                 return JavaClassInfo(
                     file_path=str(java_file.relative_to(self.project_path)),
@@ -618,25 +664,39 @@ class JCCIAnalyzer:
                     is_controller=is_controller,
                     is_service=is_service,
                     is_repository=is_repository,
-                    line_start=type_decl.position if type_decl.position else 0,
-                    line_end=0
+                    line_start=type_decl.position[0] if isinstance(type_decl.position, tuple) else (type_decl.position if type_decl.position else 0),
+                    line_end=0,
+                    base_path=base_path
                 )
             
             return None
             
+        except TypeError as e:
+            logger.debug(f"javalang type error (likely NoneType unpack) for {java_file}: {e}, falling back to regex")
+            return self._parse_with_regex(java_file, content)
         except Exception as e:
             logger.debug(f"javalang parsing failed for {java_file}, falling back to regex: {e}")
             return self._parse_with_regex(java_file, content)
     
     def _parse_method_with_javalang(self, method_decl, content: str, class_name: str, class_annotations: List[str], fields: Dict[str, JavaFieldInfo] = None) -> JavaMethodInfo:
+        """使用javalang解析方法声明，提取方法信息和调用关系"""
         method_name = method_decl.name
-        return_type = method_decl.return_type.name if method_decl.return_type else "void"
+        if method_decl.return_type:
+            return_type = method_decl.return_type.name if hasattr(method_decl.return_type, 'name') else str(method_decl.return_type)
+        else:
+            return_type = "void"
         
         parameters = []
         if method_decl.parameters:
             for param in method_decl.parameters:
+                param_type_name = "unknown"
+                if param.type:
+                    if hasattr(param.type, 'name'):
+                        param_type_name = param.type.name
+                    else:
+                        param_type_name = str(param.type)
                 parameters.append({
-                    'type': param.type.name if param.type else "unknown",
+                    'type': param_type_name,
                     'name': param.name,
                     'varargs': param.varargs if hasattr(param, 'varargs') else False
                 })
@@ -646,6 +706,8 @@ class JCCIAnalyzer:
             annotations = [ann.name for ann in method_decl.annotations]
         
         line_start = method_decl.position if method_decl.position else 0
+        if isinstance(line_start, tuple):
+            line_start = line_start[0] if line_start else 0
         line_end = line_start
         
         body = ""
@@ -656,7 +718,7 @@ class JCCIAnalyzer:
         called_methods = self._extract_method_calls(body, class_name, fields)
         used_fields = self._extract_field_usages(body)
         
-        is_api, api_path, http_method = self._extract_api_info(annotations, class_annotations)
+        is_api, api_path, http_method = self._extract_api_info_from_javalang_annotations(method_decl.annotations, class_annotations)
         
         return JavaMethodInfo(
             method_name=method_name,
@@ -674,12 +736,13 @@ class JCCIAnalyzer:
         )
     
     def _parse_with_regex(self, java_file: Path, content: str) -> Optional[JavaClassInfo]:
+        """正则表达式回退解析Java文件，当javalang不可用或解析失败时使用"""
         package_match = re.search(r'package\s+([\w.]+)\s*;', content)
         package_name = package_match.group(1) if package_match else ""
         
         imports = re.findall(r'import\s+([\w.]+)\s*;', content)
         
-        class_match = re.search(r'(?:public\s+|private\s+|protected\s+)?(?:abstract\s+|final\s+)?class\s+(\w+)(?:\s+extends\s+(\w+))?(?:\s+implements\s+([\w\s,]+))?', content)
+        class_match = re.search(r'(?:public\s+|private\s+|protected\s+)?(?:abstract\s+|final\s+)?(?:class|interface)\s+(\w+)(?:\s+extends\s+([\w,.\s]+?))?(?:\s+implements\s+([\w\s,]+))?\s*\{', content)
         if not class_match:
             return None
         
@@ -716,12 +779,14 @@ class JCCIAnalyzer:
         )
     
     def _extract_class_base_path(self, content_before_class: str) -> str:
+        """从类声明前的内容中提取@RequestMapping的基础路径"""
         match = re.search(r'@RequestMapping\s*\(\s*(?:value\s*=\s*)?"([^"]+)"', content_before_class)
         if match:
             return match.group(1)
         return ""
     
     def _extract_fields_regex(self, content: str) -> Dict[str, JavaFieldInfo]:
+        """使用正则表达式提取类中的字段信息"""
         fields = {}
         
         field_pattern = r'(?:@[\w.]+\s*)*(?:private|public|protected)\s+(\w+(?:<[\w\s,<>]+>)?)\s+(\w+)\s*[;=]'
@@ -744,6 +809,7 @@ class JCCIAnalyzer:
         return fields
     
     def _extract_methods_regex(self, content: str, class_name: str, class_annotations: List[str], class_base_path: str = "", fields: Dict[str, JavaFieldInfo] = None) -> Dict[str, JavaMethodInfo]:
+        """使用正则表达式提取类中的方法信息"""
         methods = {}
         
         if fields is None:
@@ -800,6 +866,7 @@ class JCCIAnalyzer:
         return methods
     
     def _extract_methods_with_nested_params(self, content: str, class_name: str, class_annotations: List[str], class_base_path: str = "", fields: Dict[str, JavaFieldInfo] = None) -> Dict[str, JavaMethodInfo]:
+        """提取包含嵌套参数注解的方法（正则回退方案）"""
         methods = {}
         
         if fields is None:
@@ -889,6 +956,7 @@ class JCCIAnalyzer:
         return methods
     
     def _extract_method_params(self, content: str, line_num: int) -> str:
+        """从指定行提取方法参数字符串"""
         lines = content.split('\n')
         if line_num > len(lines):
             return ""
@@ -929,6 +997,7 @@ class JCCIAnalyzer:
         return ''.join(params)
     
     def _extract_method_body_from_line(self, content: str, line_start: int) -> str:
+        """从指定行号提取方法体"""
         lines = content.split('\n')
         if line_start > len(lines):
             return ""
@@ -957,6 +1026,7 @@ class JCCIAnalyzer:
         return '\n'.join(body_lines)
     
     def _extract_method_body(self, content: str, line_start: int) -> str:
+        """根据起始行号提取方法体内容"""
         lines = content.split('\n')
         if line_start > len(lines):
             return ""
@@ -985,6 +1055,7 @@ class JCCIAnalyzer:
         return '\n'.join(body_lines)
     
     def _parse_parameters(self, params_str: str) -> List[Dict]:
+        """解析方法参数字符串，提取参数类型和名称"""
         parameters = []
         
         if not params_str.strip():
@@ -1011,6 +1082,7 @@ class JCCIAnalyzer:
         return parameters
     
     def _extract_method_calls(self, body: str, current_class: str, fields: Dict[str, JavaFieldInfo] = None) -> List[str]:
+        """从方法体中提取方法调用关系"""
         called_methods = []
         
         if fields is None:
@@ -1047,6 +1119,7 @@ class JCCIAnalyzer:
         return list(set(called_methods))
     
     def _extract_field_usages(self, body: str) -> List[str]:
+        """从方法体中提取字段使用情况"""
         used_fields = []
         
         pattern = r'\bthis\.(\w+)\b'
@@ -1054,7 +1127,122 @@ class JCCIAnalyzer:
         
         return list(set(used_fields))
     
+    def _extract_api_info_from_javalang_annotations(self, method_annotations, class_annotations: List[str]) -> Tuple[bool, Optional[str], Optional[str]]:
+        """从javalang注解对象中提取API信息（路径、HTTP方法）"""
+        is_api = False
+        api_path = None
+        http_method = None
+        
+        http_mappings = {
+            'GetMapping': 'GET',
+            'PostMapping': 'POST',
+            'PutMapping': 'PUT',
+            'DeleteMapping': 'DELETE',
+            'PatchMapping': 'PATCH'
+        }
+        
+        if method_annotations:
+            for ann in method_annotations:
+                if ann.name in http_mappings:
+                    is_api = True
+                    http_method = http_mappings[ann.name]
+                    api_path = self._extract_path_from_javalang_annotation(ann)
+                    break
+                elif ann.name == 'RequestMapping':
+                    is_api = True
+                    method_match = None
+                    if ann.element and isinstance(ann.element, list):
+                        for elem in ann.element:
+                            if hasattr(elem, 'name') and elem.name == 'method':
+                                val = getattr(elem, 'value', None)
+                                if val and hasattr(val, 'member'):
+                                    method_match = val.member
+                                break
+                    http_method = method_match or 'GET'
+                    api_path = self._extract_path_from_javalang_annotation(ann)
+                    break
+        
+        if not is_api and 'RequestMapping' in class_annotations:
+            is_api = True
+            http_method = http_method or 'GET'
+        
+        if api_path and not api_path.startswith('/'):
+            api_path = f"/{api_path}"
+        elif is_api and api_path is None:
+            api_path = ""
+        
+        return is_api, api_path, http_method
+    
+    def _extract_path_from_javalang_annotation(self, ann) -> Optional[str]:
+        """从javalang注解对象中提取路径值，处理Literal/Element/list/str四种类型"""
+        if ann.element is None:
+            return None
+        
+        try:
+            # 情况1：注解值为Literal，如@GetMapping("/list")
+            if isinstance(ann.element, javalang.tree.Literal):
+                val = ann.element.value
+                if isinstance(val, str):
+                    return val.strip('"').strip("'")
+                return None
+            
+            # 情况2：注解值为Element列表，如@RequestMapping(value="/list", method=RequestMethod.GET)
+            if isinstance(ann.element, list):
+                for elem in ann.element:
+                    if not hasattr(elem, 'name'):
+                        continue
+                    if elem.name in ('value', 'path'):
+                        val = getattr(elem, 'value', None)
+                        if val is None:
+                            continue
+                        # value可能是Literal对象
+                        if isinstance(val, javalang.tree.Literal):
+                            if isinstance(val.value, str):
+                                return val.value.strip('"').strip("'")
+                        # value可能直接是字符串
+                        elif isinstance(val, str):
+                            return val.strip('"').strip("'")
+                        # value可能有.value属性
+                        elif hasattr(val, 'value'):
+                            inner_val = val.value
+                            if isinstance(inner_val, str):
+                                return inner_val.strip('"').strip("'")
+                # 如果没找到value/path，检查第一个元素是否是Literal（简写形式）
+                if len(ann.element) > 0:
+                    first_elem = ann.element[0]
+                    if isinstance(first_elem, javalang.tree.Element):
+                        val = getattr(first_elem, 'value', None)
+                        if val and isinstance(val, javalang.tree.Literal) and isinstance(val.value, str):
+                            return val.value.strip('"').strip("'")
+                return None
+            
+            # 情况3：注解值为单个Element对象
+            if hasattr(ann.element, 'name'):
+                if ann.element.name in ('value', 'path'):
+                    val = getattr(ann.element, 'value', None)
+                    if val is None:
+                        return None
+                    if isinstance(val, javalang.tree.Literal):
+                        if isinstance(val.value, str):
+                            return val.value.strip('"').strip("'")
+                    elif isinstance(val, str):
+                        return val.strip('"').strip("'")
+                    elif hasattr(val, 'value'):
+                        inner_val = val.value
+                        if isinstance(inner_val, str):
+                            return inner_val.strip('"').strip("'")
+            
+            # 情况4：注解值直接是字符串
+            if isinstance(ann.element, str):
+                return ann.element.strip('"').strip("'")
+            
+        except Exception as e:
+            logger.debug(f"提取注解路径失败: {e}, ann.name={ann.name}, ann.element type={type(ann.element)}")
+        
+        return None
+
     def _extract_api_info(self, method_annotations: List[str], class_annotations: List[str]) -> Tuple[bool, Optional[str], Optional[str]]:
+        """从注解名称列表中提取API信息（简化版，不提取路径）"""
         is_api = False
         api_path = None
         http_method = None
@@ -1082,6 +1270,7 @@ class JCCIAnalyzer:
         return is_api, api_path, http_method
     
     def _extract_api_info_from_annotations(self, annotations_str: str, class_base_path: str = "") -> Tuple[bool, Optional[str], Optional[str]]:
+        """从注解字符串中提取API信息（路径、HTTP方法）"""
         is_api = False
         api_path = None
         http_method = None
@@ -1125,12 +1314,13 @@ class JCCIAnalyzer:
         if api_path:
             if not api_path.startswith('/'):
                 api_path = f"/{api_path}"
-        elif class_base_path and is_api:
-            api_path = class_base_path
+        elif is_api:
+            api_path = ""
         
         return is_api, api_path, http_method
     
     def _extract_base_path_from_annotations(self, class_annotations: List[str], annotations_str: str) -> str:
+        """从类注解中提取基础路径"""
         base_path = ""
         
         for ann in class_annotations:
@@ -1141,6 +1331,7 @@ class JCCIAnalyzer:
         return base_path
     
     def _build_call_graph(self):
+        """构建方法调用图（正向和反向），用于影响传播分析"""
         logger.info(f"[JCCIAnalyzer] 开始构建调用图...")
         
         method_count = 0
@@ -1159,6 +1350,7 @@ class JCCIAnalyzer:
         logger.info(f"[JCCIAnalyzer] 调用图构建完成: {method_count} 个方法, {call_relation_count} 个调用关系")
     
     def parse_diff(self, diff_content: str) -> List[DiffResult]:
+        """解析Git差异内容，提取文件变更信息"""
         if not UNIDIFF_AVAILABLE:
             logger.warning("unidiff not available, using fallback diff parsing")
             return self._parse_diff_regex(diff_content)
@@ -1208,6 +1400,7 @@ class JCCIAnalyzer:
         return results
     
     def _parse_diff_regex(self, diff_content: str) -> List[DiffResult]:
+        """使用正则表达式解析Git差异（unidiff不可用时的回退方案）"""
         results = []
         
         file_pattern = r'diff --git a/(.*?) b/(.*?)\n'
@@ -1258,6 +1451,7 @@ class JCCIAnalyzer:
         return results
     
     def _find_changed_methods(self, file_path: str, changed_lines: List[int]) -> Dict[str, Dict]:
+        """根据变更行号查找受影响的方法"""
         changed_methods = {}
         
         class_name = Path(file_path).stem
@@ -1282,6 +1476,7 @@ class JCCIAnalyzer:
         return changed_methods
     
     def _find_changed_fields(self, file_path: str, changed_lines: List[int]) -> Dict[str, Dict]:
+        """根据变更行号查找受影响的字段"""
         changed_fields = {}
         
         class_name = Path(file_path).stem
@@ -1301,6 +1496,7 @@ class JCCIAnalyzer:
         return changed_fields
     
     def analyze_impact(self, diff_results: List[DiffResult], max_depth: int = 5) -> List[ImpactNode]:
+        """分析代码变更的影响，返回影响节点列表"""
         impact_nodes = []
         
         for diff_result in diff_results:
@@ -1317,6 +1513,7 @@ class JCCIAnalyzer:
         return impact_nodes
     
     def _trace_impact_chain(self, changed_method: str, max_depth: int) -> List[ImpactNode]:
+        """追踪影响链，通过反向调用图查找所有受影响的调用者"""
         impact_nodes = []
         visited = set()
         
@@ -1346,6 +1543,7 @@ class JCCIAnalyzer:
         return impact_nodes
     
     def _find_all_callers(self, method_key: str, max_depth: int, visited: Set[str]) -> List[Tuple[str, int]]:
+        """使用BFS查找方法的所有调用者"""
         callers = []
         queue = [(method_key, 0)]
         
@@ -1369,6 +1567,7 @@ class JCCIAnalyzer:
         return callers
     
     def get_api_endpoints(self) -> List[APIEndpoint]:
+        """获取项目中所有API端点信息"""
         endpoints = []
         
         for class_name, class_info in self.java_classes.items():
@@ -1398,12 +1597,13 @@ class JCCIAnalyzer:
         return endpoints
     
     def _extract_base_path(self, class_info: JavaClassInfo) -> str:
-        for ann in class_info.annotations:
-            if ann == 'RequestMapping':
-                return ""
+        """从JavaClassInfo中提取Controller类的base_path"""
+        if hasattr(class_info, 'base_path') and class_info.base_path:
+            return class_info.base_path
         return ""
     
     def _extract_method_path(self, method_info: JavaMethodInfo, base_path: str) -> str:
+        """拼接Controller基础路径和方法路径"""
         if method_info.api_path:
             return f"{base_path}{method_info.api_path}".replace("//", "/")
         
@@ -1419,7 +1619,9 @@ class JCCIAnalyzer:
         return None
     
     def get_call_graph(self) -> Dict[str, Set[str]]:
+        """获取正向调用图"""
         return dict(self.call_graph)
     
     def get_reverse_call_graph(self) -> Dict[str, Set[str]]:
+        """获取反向调用图"""
         return dict(self.reverse_call_graph)

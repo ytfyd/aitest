@@ -80,7 +80,7 @@ class APIClient:
         self.auth_token: Optional[str] = None
     
     def login(self, username: Optional[str] = None, password: Optional[str] = None) -> bool:
-        """登录并获取认证令牌"""
+        """登录并获取认证令牌（适配RuoYi框架）"""
         username = username or os.getenv("USERNAME")
         password = password or os.getenv("PASSWORD")
         
@@ -92,21 +92,28 @@ class APIClient:
             login_data = {"username": username, "password": password}
             response = self.session.post(
                 f"{self.base_url}/login",
-                data=json.dumps(login_data),
-                timeout=(3, 5)
+                json=login_data,
+                timeout=(3, 10)
             )
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get("code") == 200 and data.get("token"):
-                    self.auth_token = f"Bearer {data['token']}"
+                # 适配RuoYi框架：token可能在data字段或直接在顶层
+                token = None
+                if data.get("code") == 200:
+                    token = data.get("token") or data.get("data", {}).get("token") if isinstance(data.get("data"), dict) else data.get("token")
+                elif data.get("token"):
+                    token = data.get("token")
+                
+                if token:
+                    self.auth_token = f"Bearer {token}"
                     self.session.headers.update({
                         "Authorization": self.auth_token
                     })
                     logger.info(f"登录成功，已获取令牌")
                     return True
                 else:
-                    logger.warning(f"登录失败: {data.get('msg', '未知错误')}")
+                    logger.warning(f"登录失败: {data.get('msg', '未获取到token')}, 响应: {data}")
                     return False
             else:
                 logger.warning(f"登录请求失败，状态码: {response.status_code}")
@@ -166,23 +173,46 @@ class APIClient:
             raise
     
     def get(self, endpoint: str, **kwargs) -> Response:
+        """发送GET请求"""
         return self._request("GET", endpoint, **kwargs)
     
     def post(self, endpoint: str, data: Optional[Dict[str, Any]] = None, **kwargs) -> Response:
+        """发送POST请求
+        
+        参数:
+            endpoint: API端点路径
+            data: 请求体JSON数据
+        """
         if data:
             kwargs["data"] = json.dumps(data)
         return self._request("POST", endpoint, **kwargs)
     
     def put(self, endpoint: str, data: Optional[Dict[str, Any]] = None, **kwargs) -> Response:
+        """发送PUT请求
+        
+        参数:
+            endpoint: API端点路径
+            data: 请求体JSON数据
+        """
         if data:
             kwargs["data"] = json.dumps(data)
         return self._request("PUT", endpoint, **kwargs)
     
     def delete(self, endpoint: str, **kwargs) -> Response:
+        """发送DELETE请求"""
         return self._request("DELETE", endpoint, **kwargs)
     
     def validate_response(self, response: Response, expected_status: int = 200) -> Dict[str, Any]:
-        """验证响应状态并返回JSON数据"""
+        """验证响应状态码并返回JSON数据
+        
+        参数:
+            response: HTTP响应对象
+            expected_status: 期望的HTTP状态码（默认200）
+        返回:
+            响应JSON数据字典
+        抛出:
+            AssertionError: 状态码不匹配时
+        """
         assert response.status_code == expected_status, (
             f"期望状态码 {expected_status}，实际得到 {response.status_code}"
         )

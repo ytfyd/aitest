@@ -1,3 +1,10 @@
+"""企业微信通知模块
+
+通过企业微信Webhook发送测试报告通知。
+支持消息类型：
+- Markdown消息：包含测试统计、失败详情
+- 图片消息：测试报告截图
+"""
 import os
 import base64
 import hashlib
@@ -21,6 +28,7 @@ class WeChatWorkNotifier:
         pass
 
     def _get_webhook_url(self) -> Optional[str]:
+        """从环境变量获取企业微信Webhook URL"""
         webhook_url = os.getenv("WECHAT_WORK_WEBHOOK_URL")
         webhook_key = os.getenv("WECHAT_WORK_KEY")
         if not webhook_url or not webhook_key:
@@ -157,6 +165,7 @@ class WeChatWorkNotifier:
             return False
 
     def _send_markdown(self, webhook_url: str, content: str) -> bool:
+        """发送Markdown格式消息到企业微信"""
         message = {
             "msgtype": "markdown",
             "markdown": {"content": content}
@@ -165,6 +174,7 @@ class WeChatWorkNotifier:
         return response.status_code == 200
 
     def send_simple_message(self, title: str, content: str) -> bool:
+        """发送简单的Markdown格式消息"""
         webhook_url = self._get_webhook_url()
         if not webhook_url:
             return False

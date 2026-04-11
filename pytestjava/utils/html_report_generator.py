@@ -199,25 +199,34 @@ class HTMLReportGenerator:
                 <thead>
                     <tr>
                         <th>文件路径</th>
-                        <th style="width: 150px;">新增</th>
-                        <th style="width: 150px;">修改</th>
-                        <th style="width: 150px;">删除</th>
+                        <th style="width: 200px;">🟢 新增</th>
+                        <th style="width: 200px;">🟡 修改</th>
+                        <th style="width: 200px;">🔴 删除</th>
                     </tr>
                 </thead>
                 <tbody>
             """
 
             for file_path, file_changes in summary['files'].items():
-                added = ', '.join(file_changes['added']) if file_changes['added'] else '-'
-                modified = ', '.join(file_changes['modified']) if file_changes['modified'] else '-'
-                deleted = ', '.join(file_changes['deleted']) if file_changes['deleted'] else '-'
+                added_items = file_changes['added']
+                modified_items = file_changes['modified']
+                deleted_items = file_changes['deleted']
+
+                # 有变更则打钩✓，无变更则显示-；鼠标悬停显示具体变更元素
+                added_tooltip = ', '.join(added_items) if added_items else ''
+                modified_tooltip = ', '.join(modified_items) if modified_items else ''
+                deleted_tooltip = ', '.join(deleted_items) if deleted_items else ''
+
+                added_cell = f'<span title="{added_tooltip}" style="color:#10b981;font-size:1.2em;font-weight:bold;">✓</span>' if added_items else '<span style="color:#555;">-</span>'
+                modified_cell = f'<span title="{modified_tooltip}" style="color:#f59e0b;font-size:1.2em;font-weight:bold;">✓</span>' if modified_items else '<span style="color:#555;">-</span>'
+                deleted_cell = f'<span title="{deleted_tooltip}" style="color:#ef4444;font-size:1.2em;font-weight:bold;">✓</span>' if deleted_items else '<span style="color:#555;">-</span>'
 
                 html += f"""
                     <tr>
                         <td style="font-family: monospace; font-size: 0.9em;">{file_path}</td>
-                        <td style="color: #10b981;">{added}</td>
-                        <td style="color: #f59e0b;">{modified}</td>
-                        <td style="color: #ef4444;">{deleted}</td>
+                        <td style="text-align:center;">{added_cell}</td>
+                        <td style="text-align:center;">{modified_cell}</td>
+                        <td style="text-align:center;">{deleted_cell}</td>
                     </tr>
                 """
 

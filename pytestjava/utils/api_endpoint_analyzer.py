@@ -1,3 +1,13 @@
+"""API端点分析器模块
+
+基于JCCI分析结果，提取Controller方法、追踪服务依赖、计算影响置信度。
+核心功能：
+- 从JCCI解析结果中提取Controller方法信息
+- 追踪Controller方法调用的Service方法
+- 分析代码变更对API端点的影响
+- 计算影响置信度（基于影响路径深度）
+- 生成端点影响摘要统计
+"""
 import os
 import re
 import logging
@@ -12,19 +22,20 @@ from .impact_analyzer import ImpactPath
 logger = logging.getLogger(__name__)
 
 
+# Controller方法信息，包含HTTP接口和服务调用关系
 @dataclass
 class ControllerMethod:
-    class_name: str
-    method_name: str
-    http_method: str
-    path: str
-    file_path: str
-    line_number: int
-    annotations: List[str]
-    parameters: List[Dict]
-    return_type: str
-    called_services: List[str] = field(default_factory=list)
-    called_methods: List[str] = field(default_factory=list)
+    class_name: str  # Controller类名
+    method_name: str  # 方法名
+    http_method: str  # HTTP方法（GET/POST/PUT/DELETE等）
+    path: str  # API路径
+    file_path: str  # 文件路径
+    line_number: int  # 行号
+    annotations: List[str]  # 注解列表
+    parameters: List[Dict]  # 参数列表
+    return_type: str  # 返回值类型
+    called_services: List[str] = field(default_factory=list)  # 调用的Service方法列表
+    called_methods: List[str] = field(default_factory=list)  # 调用的所有方法列表
     
     def to_dict(self) -> Dict:
         return {
@@ -42,14 +53,15 @@ class ControllerMethod:
         }
 
 
+# API端点影响信息，描述代码变更对端点的影响程度
 @dataclass
 class EndpointImpact:
-    endpoint: APIEndpoint
-    impact_type: str
-    impact_source: str
-    confidence: float
-    impact_path: List[str]
-    depth: int = 0
+    endpoint: APIEndpoint  # 受影响的API端点
+    impact_type: str  # 影响类型（direct_impact/service_dependency/indirect_impact）
+    impact_source: str  # 影响来源方法
+    confidence: float  # 影响置信度（0-1）
+    impact_path: List[str]  # 影响路径
+    depth: int = 0  # 影响深度
     
     def to_dict(self) -> Dict:
         return {
@@ -81,6 +93,7 @@ class APIEndpointAnalyzer:
         self._initialized = False
     
     def initialize(self):
+        """初始化端点分析器，从JCCI构建或直接扫描Controller文件"""
         if self._initialized:
             return
         
@@ -95,6 +108,7 @@ class APIEndpointAnalyzer:
                    f"{sum(len(cm.called_services) for cm in self.controllers.values())} 个Service调用关系")
     
     def _build_from_jcci(self):
+        """从JCCI分析结果构建端点信息，提取Controller方法和Service调用关系"""
         logger.info(f"[APIEndpointAnalyzer] 从JCCI构建端点分析...")
         
         if not self.jcci._initialized:
@@ -143,13 +157,13 @@ class APIEndpointAnalyzer:
         logger.info(f"[APIEndpointAnalyzer] 端点分析完成: {controller_count} 个Controller类, {endpoint_count} 个API端点, {service_call_count} 个Service调用")
     
     def _extract_base_path_from_class(self, class_info: JavaClassInfo) -> str:
+        """从JavaClassInfo中提取Controller类的基础路径"""
         if hasattr(class_info, 'base_path') and class_info.base_path:
             return class_info.base_path
-        if 'RequestMapping' in class_info.annotations:
-            return ""
         return ""
     
     def _extract_method_path_from_info(self, method_info: JavaMethodInfo, base_path: str) -> str:
+        """拼接Controller基础路径和方法注解路径"""
         if method_info.api_path:
             if method_info.api_path.startswith('/'):
                 if base_path:
@@ -160,6 +174,7 @@ class APIEndpointAnalyzer:
         return base_path if base_path else "/"
     
     def _extract_service_calls_from_info(self, method_info: JavaMethodInfo, class_info: JavaClassInfo) -> List[str]:
+        """从方法调用关系中提取对@Autowired Service字段的调用"""
         service_calls = []
         
         autowired_fields = {}
@@ -176,6 +191,7 @@ class APIEndpointAnalyzer:
         return service_calls
     
     def _scan_controllers(self):
+        """扫描项目中所有Java文件，查找Controller类"""
         java_files = list(self.project_path.rglob("*.java"))
         java_files = [f for f in java_files if "target" not in str(f) and "build" not in str(f)]
         
@@ -188,6 +204,7 @@ class APIEndpointAnalyzer:
                 logger.error(f"Error analyzing {java_file}: {e}")
     
     def _analyze_controller_file(self, java_file: Path):
+        """分析单个Controller文件，提取所有API端点方法"""
         try:
             with open(java_file, 'r', encoding='utf-8') as f:
                 content = f.read()
@@ -217,16 +234,19 @@ class APIEndpointAnalyzer:
                 self.service_to_controllers[service_call].append(key)
     
     def _extract_class_name(self, content: str) -> Optional[str]:
+        """从Java文件内容中提取类名"""
         pattern = r'(?:public\s+|private\s+|protected\s+)?(?:abstract\s+|final\s+)?class\s+(\w+)'
         match = re.search(pattern, content)
         return match.group(1) if match else None
     
     def _extract_base_path(self, content: str) -> str:
+        """从类注解中提取@RequestMapping基础路径"""
         pattern = r'@RequestMapping\s*\(\s*(?:value\s*=\s*)?"([^"]+)"'
         match = re.search(pattern, content)
         return match.group(1) if match else ""
     
     def _extract_controller_methods(self, content: str, class_name: str, base_path: str, java_file: Path) -> List[ControllerMethod]:
+        """从Controller文件内容中提取所有API端点方法（@GetMapping/@PostMapping等）"""
         methods = []
         
         method_mappings = [
@@ -316,6 +336,7 @@ class APIEndpointAnalyzer:
         return methods
     
     def _extract_path_from_annotation(self, annotation_content: str) -> str:
+        """从注解内容中提取API路径"""
         value_match = re.search(r'value\s*=\s*"([^"]+)"', annotation_content)
         if value_match:
             return value_match.group(1)
@@ -327,6 +348,7 @@ class APIEndpointAnalyzer:
         return ""
     
     def _parse_parameters(self, params_str: str) -> List[Dict]:
+        """解析方法参数字符串，提取参数类型和名称"""
         parameters = []
         
         if not params_str.strip():
@@ -356,6 +378,7 @@ class APIEndpointAnalyzer:
         return parameters
     
     def _extract_method_body(self, content: str, start_pos: int) -> str:
+        """根据起始位置提取方法体内容"""
         brace_start = content.find('{', start_pos)
         if brace_start == -1:
             return ""
@@ -375,6 +398,7 @@ class APIEndpointAnalyzer:
         return content[brace_start:body_end]
     
     def _extract_service_calls(self, method_body: str, class_content: str) -> List[str]:
+        """从方法体中提取对@Autowired Service字段的调用"""
         service_calls = []
         
         autowired_fields = self._find_autowired_fields(class_content)
@@ -388,6 +412,7 @@ class APIEndpointAnalyzer:
         return service_calls
     
     def _extract_all_method_calls(self, method_body: str, class_name: str) -> List[str]:
+        """从方法体中提取所有方法调用"""
         calls = []
         
         pattern = r'(\w+)\s*\.\s*(\w+)\s*\('
@@ -399,6 +424,7 @@ class APIEndpointAnalyzer:
         return list(set(calls))
     
     def _find_autowired_fields(self, content: str) -> Dict[str, str]:
+        """查找类中所有@Autowired字段，返回字段名到类型的映射"""
         fields = {}
         
         pattern = r'@Autowired\s+(?:private|public|protected)?\s+(\w+)\s+(\w+)\s*;'
@@ -410,6 +436,13 @@ class APIEndpointAnalyzer:
         return fields
     
     def find_affected_endpoints(self, changes: List[CodeChange], impact_paths: List[ImpactPath]) -> List[EndpointImpact]:
+        """根据代码变更和影响路径，查找所有受影响的API端点
+        
+        查找策略：
+        1. 直接变更的Controller方法 → direct_impact
+        2. 影响传播链到达的Controller方法 → 根据深度计算置信度
+        3. 变更方法被Controller调用的Service → service_dependency
+        """
         self.initialize()
         
         affected_endpoints = []
@@ -514,6 +547,7 @@ class APIEndpointAnalyzer:
         return affected_endpoints
     
     def _calculate_impact_from_path(self, impact_path: ImpactPath) -> Tuple[str, float]:
+        """根据影响路径深度计算影响类型和置信度"""
         depth = impact_path.depth
         
         if depth == 0:
@@ -528,6 +562,7 @@ class APIEndpointAnalyzer:
             return ('indirect_impact', max(0.5, 0.9 - depth * 0.1))
     
     def get_all_endpoints(self) -> List[APIEndpoint]:
+        """获取项目中所有API端点信息"""
         self.initialize()
         
         endpoints = []
@@ -548,6 +583,7 @@ class APIEndpointAnalyzer:
         return endpoints
     
     def get_endpoint_summary(self, affected_endpoints: List[EndpointImpact]) -> Dict:
+        """生成受影响端点的摘要统计信息"""
         summary = {
             'total_affected_endpoints': len(affected_endpoints),
             'direct_impacts': 0,
@@ -580,6 +616,7 @@ class APIEndpointAnalyzer:
         return summary
     
     def get_controller_methods_in_file(self, file_path: str) -> List[ControllerMethod]:
+        """根据文件路径获取该文件中所有Controller方法"""
         self.initialize()
         
         methods = []

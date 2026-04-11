@@ -1,3 +1,12 @@
+"""Swagger API文档客户端模块
+
+从Swagger/OpenAPI文档获取接口定义，自动生成测试数据。
+核心功能：
+- 获取Swagger API文档（/v3/api-docs）
+- 根据路径和HTTP方法查找接口信息
+- 根据Schema定义自动生成测试数据
+- 支持路径参数匹配和模糊查询
+"""
 import json
 import logging
 import requests
@@ -12,6 +21,11 @@ class SwaggerClient:
     """Swagger API 文档客户端"""
     
     def __init__(self, base_url: str = "http://localhost:8160"):
+        """初始化Swagger客户端
+        
+        参数:
+            base_url: 服务基础URL
+        """
         self.base_url = base_url
         self.api_docs_url = f"{base_url}/v3/api-docs"
         self._api_docs: Optional[Dict] = None

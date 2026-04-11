@@ -402,7 +402,10 @@ class PerformanceOptimizer:
                 result, from_cache = self._parse_single_with_cache(java_file, parse_func, stats)
                 
                 if result:
-                    class_name = getattr(result, 'class_name', None) or str(id(result))
+                    if isinstance(result, dict):
+                        class_name = result.get('class_name', str(id(result)))
+                    else:
+                        class_name = getattr(result, 'class_name', None) or str(id(result))
                     results[class_name] = result
         
         return results
@@ -451,7 +454,10 @@ class PerformanceOptimizer:
                         result, from_cache = future.result()
                         
                         if result:
-                            class_name = getattr(result, 'class_name', None) or str(id(result))
+                            if isinstance(result, dict):
+                                class_name = result.get('class_name', str(id(result)))
+                            else:
+                                class_name = getattr(result, 'class_name', None) or str(id(result))
                             results[class_name] = result
                     
                     except Exception as e:
@@ -512,12 +518,13 @@ class PerformanceOptimizer:
                         elif isinstance(result, dict):
                             data = result
                         else:
-                            # 如果无法序列化，则不缓存
                             return result, False
                         
                         self.cache_manager.set(file_str, data)
                     
                     return result, False
+                
+                return None, False
                     
             except Exception as e:
                 stats.parse_errors += 1

@@ -1,8 +1,9 @@
 {
-  "timestamp": "2026-04-10T15:25:24.272059",
+  "timestamp": "2026-04-11T09:51:30.116914",
   "commit_range": "origin/main..origin/test-feature",
   "changed_files": [
-    "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysMenuController.java"
+    "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysMenuController.java",
+    "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysUserController.java"
   ],
   "code_changes": [
     {
@@ -18,7 +19,20 @@
           "@DeleteMapping(value = \"/{menuId}\", name = \"菜单管理-删除\")"
         ]
       },
-      "diff_content": "-             return R.error(\"存在子菜单,不允许删除.\");\n-             return R.error(\"菜单已分配,不允许删除.\");\n+             return R.error(\"存在子菜单,不允许删除..\");\n+             return R.error(\"菜单已分配,不允许删除..\");"
+      "diff_content": "-             return R.error(\"存在子菜单,不允许删除..\");\n-             return R.error(\"菜单已分配,不允许删除..\");\n+             return R.error(\"存在子菜单,不允许删除.\");\n+             return R.error(\"菜单已分配,不允许删除.\");"
+    },
+    {
+      "change_type": "modified",
+      "element": {
+        "element_type": "method",
+        "name": "remove",
+        "qualified_name": "SysUserController.remove",
+        "file_path": "campus-master/campus-admin/src/main/java/com/oddfar/campus/admin/controller/system/SysUserController.java",
+        "line_number": 75,
+        "signature": "R remove(Long[])",
+        "annotations": []
+      },
+      "diff_content": "-             return R.error(\"当前用户不能删除\");\n+             return R.error(\"当前用户不能删除.\");"
     }
   ],
   "impact_summary": {
@@ -28,10 +42,10 @@
     "method_dependency_impacts": 0,
     "field_impacts": 0,
     "affected_methods": [
-      "2831013098880.remove"
+      "SysUserController.page"
     ],
     "affected_classes": [
-      "2831013098880"
+      "SysUserController"
     ],
     "impact_by_depth": {
       "1": 1
@@ -43,10 +57,10 @@
   "affected_endpoints": [
     {
       "endpoint": {
-        "method": "DELETE /{menuId}",
-        "path": "/{menuId}",
+        "method": "DELETE /system/menu/{menuId}",
+        "path": "/system/menu/{menuId}",
         "http_method": "DELETE",
-        "controller_class": "2831013098880",
+        "controller_class": "SysMenuController",
         "method_name": "remove",
         "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysMenuController.java",
         "line_number": 102,
@@ -59,27 +73,98 @@
       },
       "impact_type": "direct_impact",
       "impact_source": "SysMenuController.remove",
+      "confidence": 1.0,
+      "impact_path": [
+        "SysMenuController.remove"
+      ],
+      "depth": 0
+    },
+    {
+      "endpoint": {
+        "method": "POST /system/user",
+        "path": "/system/user",
+        "http_method": "POST",
+        "controller_class": "SysUserController",
+        "method_name": "remove",
+        "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysUserController.java",
+        "line_number": 54,
+        "parameters": [],
+        "return_type": "",
+        "annotations": [
+          "ss",
+          "PathVariable",
+          "PostMapping",
+          "PreAuthorize",
+          "ss",
+          "Validated",
+          "RequestBody",
+          "PutMapping",
+          "PreAuthorize",
+          "ss",
+          "Validated",
+          "RequestBody",
+          "DeleteMapping",
+          "PreAuthorize",
+          "ss"
+        ]
+      },
+      "impact_type": "direct_impact",
+      "impact_source": "SysUserController.remove",
+      "confidence": 1.0,
+      "impact_path": [
+        "SysUserController.remove"
+      ],
+      "depth": 0
+    },
+    {
+      "endpoint": {
+        "method": "GET /system/user/list",
+        "path": "/system/user/list",
+        "http_method": "GET",
+        "controller_class": "SysUserController",
+        "method_name": "page",
+        "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysUserController.java",
+        "line_number": 29,
+        "parameters": [],
+        "return_type": "",
+        "annotations": [
+          "RequestMapping",
+          "ApiResource",
+          "Autowired",
+          "Autowired",
+          "Autowired",
+          "GetMapping",
+          "PreAuthorize",
+          "ss"
+        ]
+      },
+      "impact_type": "direct_impact",
+      "impact_source": "SysUserController.remove",
       "confidence": 0.95,
       "impact_path": [
-        "SysMenuController.remove",
-        "2831013098880.remove"
+        "SysUserController.remove",
+        "SysUserController.page"
       ],
       "depth": 1
     }
   ],
   "endpoint_summary": {
-    "total_affected_endpoints": 1,
-    "direct_impacts": 1,
+    "total_affected_endpoints": 3,
+    "direct_impacts": 3,
     "indirect_impacts": 0,
     "method_dependency_impacts": 0,
     "service_dependencies": 0,
     "endpoints_by_http_method": {
-      "DELETE": 1
+      "DELETE": 1,
+      "POST": 1,
+      "GET": 1
     },
     "affected_controllers": [
-      "2831013098880"
+      "SysUserController",
+      "SysMenuController"
     ],
     "impact_by_depth": {
+      "0": 2,
       "1": 1
     }
   },
