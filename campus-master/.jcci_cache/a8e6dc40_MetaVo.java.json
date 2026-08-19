@@ -1,0 +1,208 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\MetaVo.java",
+  "package_name": "com.oddfar.campus.common.utils",
+  "class_name": "MetaVo",
+  "imports": [],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "title": {
+      "field_name": "title",
+      "field_type": "String",
+      "line_number": 15,
+      "annotations": [
+        "author"
+      ]
+    },
+    "icon": {
+      "field_name": "icon",
+      "field_type": "String",
+      "line_number": 20,
+      "annotations": [
+        "author"
+      ]
+    },
+    "noCache": {
+      "field_name": "noCache",
+      "field_type": "boolean",
+      "line_number": 25,
+      "annotations": []
+    },
+    "link": {
+      "field_name": "link",
+      "field_type": "String",
+      "line_number": 30,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "isNoCache": {
+      "method_name": "isNoCache",
+      "return_type": "boolean",
+      "parameters": [],
+      "line_start": 67,
+      "line_end": 70,
+      "body": "    public boolean isNoCache()\n    {\n        return noCache;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MetaVo.isNoCache"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setNoCache": {
+      "method_name": "setNoCache",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "boolean",
+          "name": "noCache",
+          "annotations": []
+        }
+      ],
+      "line_start": 72,
+      "line_end": 75,
+      "body": "    public void setNoCache(boolean noCache)\n    {\n        this.noCache = noCache;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MetaVo.setNoCache"
+      ],
+      "used_fields": [
+        "noCache"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getTitle": {
+      "method_name": "getTitle",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 77,
+      "line_end": 80,
+      "body": "    public String getTitle()\n    {\n        return title;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MetaVo.getTitle"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setTitle": {
+      "method_name": "setTitle",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "title",
+          "annotations": []
+        }
+      ],
+      "line_start": 82,
+      "line_end": 85,
+      "body": "    public void setTitle(String title)\n    {\n        this.title = title;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MetaVo.setTitle"
+      ],
+      "used_fields": [
+        "title"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getIcon": {
+      "method_name": "getIcon",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 87,
+      "line_end": 90,
+      "body": "    public String getIcon()\n    {\n        return icon;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MetaVo.getIcon"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setIcon": {
+      "method_name": "setIcon",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "icon",
+          "annotations": []
+        }
+      ],
+      "line_start": 92,
+      "line_end": 95,
+      "body": "    public void setIcon(String icon)\n    {\n        this.icon = icon;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MetaVo.setIcon"
+      ],
+      "used_fields": [
+        "icon"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getLink": {
+      "method_name": "getLink",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 97,
+      "line_end": 100,
+      "body": "    public String getLink()\n    {\n        return link;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MetaVo.getLink"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setLink": {
+      "method_name": "setLink",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "link",
+          "annotations": []
+        }
+      ],
+      "line_start": 102,
+      "line_end": 105,
+      "body": "    public void setLink(String link)\n    {\n        this.link = link;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MetaVo.setLink"
+      ],
+      "used_fields": [
+        "link"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 10,
+  "line_end": 107
+}

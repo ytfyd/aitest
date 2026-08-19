@@ -1,0 +1,46 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\config\\properties\\CampusConfig.java",
+  "package_name": "com.oddfar.campus.common.config.properties",
+  "class_name": "CampusConfig",
+  "imports": [
+    "lombok.Data",
+    "org.springframework.boot.context.properties.ConfigurationProperties",
+    "org.springframework.stereotype.Component"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "name": {
+      "field_name": "name",
+      "field_type": "String",
+      "line_number": [
+        21,
+        13
+      ],
+      "annotations": []
+    },
+    "version": {
+      "field_name": "version",
+      "field_type": "String",
+      "line_number": [
+        26,
+        13
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [
+    "Data",
+    "Component",
+    "ConfigurationProperties"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    16,
+    8
+  ],
+  "line_end": 0
+}

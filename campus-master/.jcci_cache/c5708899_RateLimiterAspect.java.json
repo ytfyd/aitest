@@ -1,0 +1,249 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\aspectj\\RateLimiterAspect.java",
+  "package_name": "com.oddfar.campus.framework.aspectj",
+  "class_name": "RateLimiterAspect",
+  "imports": [
+    "cn.hutool.core.util.ArrayUtil",
+    "com.oddfar.campus.common.annotation.RateLimiter",
+    "com.oddfar.campus.common.constant.CacheConstants",
+    "com.oddfar.campus.common.enums.LimitType",
+    "com.oddfar.campus.common.exception.ServiceException",
+    "com.oddfar.campus.common.utils.MessageUtils",
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.common.utils.ip.IpUtils",
+    "org.aspectj.lang.JoinPoint",
+    "org.aspectj.lang.annotation.Aspect",
+    "org.aspectj.lang.annotation.Before",
+    "org.aspectj.lang.reflect.MethodSignature",
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.core.DefaultParameterNameDiscoverer",
+    "org.springframework.core.ParameterNameDiscoverer",
+    "org.springframework.data.redis.core.RedisTemplate",
+    "org.springframework.data.redis.core.script.RedisScript",
+    "org.springframework.expression.EvaluationContext",
+    "org.springframework.expression.Expression",
+    "org.springframework.expression.ExpressionParser",
+    "org.springframework.expression.ParserContext",
+    "org.springframework.expression.common.TemplateParserContext",
+    "org.springframework.expression.spel.standard.SpelExpressionParser",
+    "org.springframework.expression.spel.support.StandardEvaluationContext",
+    "org.springframework.stereotype.Component",
+    "java.lang.reflect.Method",
+    "java.util.Collections",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "redisTemplate": {
+      "field_name": "redisTemplate",
+      "field_type": "RedisTemplate<Object, Object>",
+      "line_number": 46,
+      "annotations": [
+        "author",
+        "Aspect",
+        "Component"
+      ]
+    },
+    "limitScript": {
+      "field_name": "limitScript",
+      "field_type": "RedisScript<Long>",
+      "line_number": 48,
+      "annotations": [
+        "Component"
+      ]
+    }
+  },
+  "methods": {
+    "setRedisTemplate1": {
+      "method_name": "setRedisTemplate1",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Object>",
+          "name": "redisTemplate",
+          "annotations": []
+        }
+      ],
+      "line_start": 68,
+      "line_end": 70,
+      "body": "    public void setRedisTemplate1(RedisTemplate<Object, Object> redisTemplate) {\n        this.redisTemplate = redisTemplate;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RateLimiterAspect.setRedisTemplate1"
+      ],
+      "used_fields": [
+        "redisTemplate"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setLimitScript": {
+      "method_name": "setLimitScript",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "RedisScript<Long>",
+          "name": "limitScript",
+          "annotations": []
+        }
+      ],
+      "line_start": 73,
+      "line_end": 75,
+      "body": "    public void setLimitScript(RedisScript<Long> limitScript) {\n        this.limitScript = limitScript;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RateLimiterAspect.setLimitScript"
+      ],
+      "used_fields": [
+        "limitScript"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "doBefore": {
+      "method_name": "doBefore",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "JoinPoint",
+          "name": "point",
+          "annotations": []
+        },
+        {
+          "type": "RateLimiter",
+          "name": "rateLimiter",
+          "annotations": []
+        }
+      ],
+      "line_start": 77,
+      "line_end": 99,
+      "body": "    @Before(\"@annotation(rateLimiter)\")\n    public void doBefore(JoinPoint point, RateLimiter rateLimiter) throws Throwable {\n        int time = rateLimiter.time();\n        int count = rateLimiter.count();\n\n        String combineKey = getCombineKey(rateLimiter, point);\n        List<Object> keys = Collections.singletonList(combineKey);\n        try {\n            Long number = redisTemplate.execute(limitScript, keys, count, time);\n            if (StringUtils.isNull(number) || number.intValue() > count) {\n                String message = rateLimiter.message();\n                if (StringUtils.startsWith(message, \"{\") && StringUtils.endsWith(message, \"}\")) {\n                    message = MessageUtils.message(StringUtils.substring(message, 1, message.length() - 1));\n                }\n                throw new ServiceException(message);\n            }\n            log.info(\"限制请求'{}',当前请求'{}',缓存key'{}'\", count, number.intValue(), combineKey);\n        } catch (ServiceException e) {\n            throw e;\n        } catch (Exception e) {\n            throw new RuntimeException(\"服务器限流异常，请稍候再试\");\n        }\n    }",
+      "annotations": [
+        "Before",
+        "annotation"
+      ],
+      "called_methods": [
+        "rateLimiter.time",
+        "RateLimiterAspect.info",
+        "RateLimiterAspect.isNull",
+        "message.length",
+        "StringUtils.startsWith",
+        "RateLimiterAspect.doBefore",
+        "rateLimiter.count",
+        "RateLimiterAspect.count",
+        "StringUtils.endsWith",
+        "RateLimiterAspect.intValue",
+        "RateLimiterAspect.RuntimeException",
+        "RateLimiterAspect.ServiceException",
+        "RateLimiterAspect.startsWith",
+        "RedisTemplate.execute",
+        "number.intValue",
+        "RateLimiterAspect.getCombineKey",
+        "StringUtils.isNull",
+        "RateLimiterAspect.annotation",
+        "RateLimiterAspect.endsWith",
+        "MessageUtils.message",
+        "RateLimiterAspect.execute",
+        "Collections.singletonList",
+        "RateLimiterAspect.substring",
+        "RateLimiterAspect.time",
+        "StringUtils.substring",
+        "RateLimiterAspect.length",
+        "RateLimiterAspect.Before",
+        "RateLimiterAspect.singletonList",
+        "log.info",
+        "rateLimiter.message",
+        "RateLimiterAspect.message"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getCombineKey": {
+      "method_name": "getCombineKey",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "RateLimiter",
+          "name": "rateLimiter",
+          "annotations": []
+        },
+        {
+          "type": "JoinPoint",
+          "name": "point",
+          "annotations": []
+        }
+      ],
+      "line_start": 101,
+      "line_end": 141,
+      "body": "    public String getCombineKey(RateLimiter rateLimiter, JoinPoint point) {\n        String key = rateLimiter.key();\n\n        MethodSignature signature = (MethodSignature) point.getSignature();\n        Method method = signature.getMethod();\n//        Class<?> targetClass = method.getDeclaringClass();\n\n        // 判断是否是spel格式\n        if (StringUtils.containsAny(key, \"#\")) {\n            // 获取参数值\n            Object[] args = point.getArgs();\n            // 获取方法上参数的名称\n            String[] parameterNames = pnd.getParameterNames(method);\n            if (ArrayUtil.isEmpty(parameterNames)) {\n                throw new ServiceException(\"限流key解析异常!请联系管理员!\");\n            }\n            for (int i = 0; i < parameterNames.length; i++) {\n                context.setVariable(parameterNames[i], args[i]);\n            }\n            // 解析返回给key\n            try {\n                Expression expression;\n                if (StringUtils.startsWith(key, parserContext.getExpressionPrefix())\n                        && StringUtils.endsWith(key, parserContext.getExpressionSuffix())) {\n                    expression = parser.parseExpression(key, parserContext);\n                } else {\n                    expression = parser.parseExpression(key);\n                }\n                key = expression.getValue(context, String.class) + \":\";\n            } catch (Exception e) {\n                throw new ServiceException(\"限流key解析异常!请联系管理员!\");\n            }\n        }\n\n        StringBuffer stringBuffer = new StringBuffer(CacheConstants.RATE_LIMIT_KEY);\n        stringBuffer.append(ServletUtils.getRequest().getRequestURI()).append(\":\");\n        if (rateLimiter.limitType() == LimitType.IP) {\n            stringBuffer.append(IpUtils.getIpAddr()).append(\":\");\n        }\n        return stringBuffer.append(key).toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RateLimiterAspect.StringBuffer",
+        "RateLimiterAspect.getRequestURI",
+        "RateLimiterAspect.getParameterNames",
+        "RateLimiterAspect.toString",
+        "signature.getMethod",
+        "rateLimiter.limitType",
+        "context.setVariable",
+        "RateLimiterAspect.parseExpression",
+        "StringUtils.startsWith",
+        "RateLimiterAspect.isEmpty",
+        "rateLimiter.key",
+        "RateLimiterAspect.key",
+        "ArrayUtil.isEmpty",
+        "parserContext.getExpressionPrefix",
+        "parser.parseExpression",
+        "RateLimiterAspect.append",
+        "RateLimiterAspect.getDeclaringClass",
+        "point.getArgs",
+        "StringUtils.endsWith",
+        "RateLimiterAspect.getExpressionPrefix",
+        "expression.getValue",
+        "RateLimiterAspect.getMethod",
+        "RateLimiterAspect.containsAny",
+        "RateLimiterAspect.getExpressionSuffix",
+        "RateLimiterAspect.getArgs",
+        "point.getSignature",
+        "RateLimiterAspect.ServiceException",
+        "RateLimiterAspect.startsWith",
+        "RateLimiterAspect.getRequest",
+        "RateLimiterAspect.getCombineKey",
+        "StringUtils.containsAny",
+        "parserContext.getExpressionSuffix",
+        "RateLimiterAspect.getValue",
+        "pnd.getParameterNames",
+        "RateLimiterAspect.getIpAddr",
+        "ServletUtils.getRequest",
+        "stringBuffer.append",
+        "RateLimiterAspect.limitType",
+        "IpUtils.getIpAddr",
+        "method.getDeclaringClass",
+        "RateLimiterAspect.getSignature",
+        "RateLimiterAspect.endsWith",
+        "RateLimiterAspect.setVariable"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Aspect",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 43,
+  "line_end": 143
+}

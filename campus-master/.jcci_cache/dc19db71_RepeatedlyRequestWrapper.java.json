@@ -1,0 +1,161 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\filter\\RepeatedlyRequestWrapper.java",
+  "package_name": "com.oddfar.campus.common.filter",
+  "class_name": "RepeatedlyRequestWrapper",
+  "imports": [
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.utils.http.HttpHelper",
+    "javax.servlet.ReadListener",
+    "javax.servlet.ServletInputStream",
+    "javax.servlet.ServletResponse",
+    "javax.servlet.http.HttpServletRequest",
+    "javax.servlet.http.HttpServletRequestWrapper",
+    "java.io.BufferedReader",
+    "java.io.ByteArrayInputStream",
+    "java.io.IOException",
+    "java.io.InputStreamReader"
+  ],
+  "extends": "HttpServletRequestWrapper",
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getReader": {
+      "method_name": "getReader",
+      "return_type": "BufferedReader",
+      "parameters": [],
+      "line_start": 35,
+      "line_end": 38,
+      "body": "    public BufferedReader getReader() throws IOException\n    {\n        return new BufferedReader(new InputStreamReader(getInputStream()));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RepeatedlyRequestWrapper.getInputStream",
+        "RepeatedlyRequestWrapper.InputStreamReader",
+        "RepeatedlyRequestWrapper.getReader",
+        "RepeatedlyRequestWrapper.BufferedReader"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getInputStream": {
+      "method_name": "getInputStream",
+      "return_type": "ServletInputStream",
+      "parameters": [],
+      "line_start": 41,
+      "line_end": 76,
+      "body": "    public ServletInputStream getInputStream() throws IOException\n    {\n        final ByteArrayInputStream bais = new ByteArrayInputStream(body);\n        return new ServletInputStream()\n        {\n            @Override\n            public int read() throws IOException\n            {\n                return bais.read();\n            }\n\n            @Override\n            public int available() throws IOException\n            {\n                return body.length;\n            }\n\n            @Override\n            public boolean isFinished()\n            {\n                return false;\n            }\n\n            @Override\n            public boolean isReady()\n            {\n                return false;\n            }\n\n            @Override\n            public void setReadListener(ReadListener readListener)\n            {\n\n            }\n        };\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RepeatedlyRequestWrapper.ByteArrayInputStream",
+        "RepeatedlyRequestWrapper.read",
+        "RepeatedlyRequestWrapper.getInputStream",
+        "RepeatedlyRequestWrapper.ServletInputStream",
+        "RepeatedlyRequestWrapper.isFinished",
+        "RepeatedlyRequestWrapper.available",
+        "RepeatedlyRequestWrapper.setReadListener",
+        "bais.read",
+        "RepeatedlyRequestWrapper.isReady"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "read": {
+      "method_name": "read",
+      "return_type": "int",
+      "parameters": [],
+      "line_start": 47,
+      "line_end": 50,
+      "body": "            public int read() throws IOException\n            {\n                return bais.read();\n            }",
+      "annotations": [],
+      "called_methods": [
+        "bais.read",
+        "RepeatedlyRequestWrapper.read"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "available": {
+      "method_name": "available",
+      "return_type": "int",
+      "parameters": [],
+      "line_start": 53,
+      "line_end": 56,
+      "body": "            public int available() throws IOException\n            {\n                return body.length;\n            }",
+      "annotations": [],
+      "called_methods": [
+        "RepeatedlyRequestWrapper.available"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isFinished": {
+      "method_name": "isFinished",
+      "return_type": "boolean",
+      "parameters": [],
+      "line_start": 59,
+      "line_end": 62,
+      "body": "            public boolean isFinished()\n            {\n                return false;\n            }",
+      "annotations": [],
+      "called_methods": [
+        "RepeatedlyRequestWrapper.isFinished"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isReady": {
+      "method_name": "isReady",
+      "return_type": "boolean",
+      "parameters": [],
+      "line_start": 65,
+      "line_end": 68,
+      "body": "            public boolean isReady()\n            {\n                return false;\n            }",
+      "annotations": [],
+      "called_methods": [
+        "RepeatedlyRequestWrapper.isReady"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setReadListener": {
+      "method_name": "setReadListener",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "ReadListener",
+          "name": "readListener",
+          "annotations": []
+        }
+      ],
+      "line_start": 71,
+      "line_end": 74,
+      "body": "            public void setReadListener(ReadListener readListener)\n            {\n\n            }",
+      "annotations": [],
+      "called_methods": [
+        "RepeatedlyRequestWrapper.setReadListener"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 21,
+  "line_end": 78
+}

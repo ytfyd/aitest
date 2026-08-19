@@ -1,0 +1,117 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\BaseEntity.java",
+  "package_name": "com.oddfar.campus.common.domain",
+  "class_name": "BaseEntity",
+  "imports": [
+    "com.baomidou.mybatisplus.annotation.FieldFill",
+    "com.baomidou.mybatisplus.annotation.TableField",
+    "com.baomidou.mybatisplus.annotation.TableLogic",
+    "com.fasterxml.jackson.annotation.JsonIgnore",
+    "com.fasterxml.jackson.annotation.JsonInclude",
+    "lombok.AllArgsConstructor",
+    "lombok.Data",
+    "lombok.NoArgsConstructor",
+    "java.io.Serializable",
+    "java.util.Date",
+    "java.util.HashMap",
+    "java.util.Map"
+  ],
+  "extends": null,
+  "implements": [
+    "Serializable"
+  ],
+  "fields": {
+    "serialVersionUID": {
+      "field_name": "serialVersionUID",
+      "field_type": "long",
+      "line_number": [
+        26,
+        26
+      ],
+      "annotations": []
+    },
+    "createTime": {
+      "field_name": "createTime",
+      "field_type": "Date",
+      "line_number": [
+        30,
+        13
+      ],
+      "annotations": [
+        "TableField"
+      ]
+    },
+    "createUser": {
+      "field_name": "createUser",
+      "field_type": "Long",
+      "line_number": [
+        33,
+        13
+      ],
+      "annotations": [
+        "TableField"
+      ]
+    },
+    "updateTime": {
+      "field_name": "updateTime",
+      "field_type": "Date",
+      "line_number": [
+        36,
+        13
+      ],
+      "annotations": [
+        "TableField"
+      ]
+    },
+    "updateUser": {
+      "field_name": "updateUser",
+      "field_type": "Long",
+      "line_number": [
+        39,
+        13
+      ],
+      "annotations": [
+        "TableField"
+      ]
+    },
+    "delFlag": {
+      "field_name": "delFlag",
+      "field_type": "Integer",
+      "line_number": [
+        44,
+        13
+      ],
+      "annotations": [
+        "TableLogic",
+        "TableField",
+        "JsonIgnore"
+      ]
+    },
+    "params": {
+      "field_name": "params",
+      "field_type": "Map",
+      "line_number": [
+        48,
+        13
+      ],
+      "annotations": [
+        "TableField",
+        "JsonInclude"
+      ]
+    }
+  },
+  "methods": {},
+  "annotations": [
+    "Data",
+    "AllArgsConstructor",
+    "NoArgsConstructor"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    25,
+    8
+  ],
+  "line_end": 0
+}

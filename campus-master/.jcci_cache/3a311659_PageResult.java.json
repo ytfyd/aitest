@@ -1,0 +1,40 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\PageResult.java",
+  "package_name": "com.oddfar.campus.common.domain",
+  "class_name": "PageResult",
+  "imports": [
+    "lombok.Data",
+    "java.io.Serializable",
+    "java.util.ArrayList",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "rows": {
+      "field_name": "rows",
+      "field_type": "List<T>",
+      "line_number": 12,
+      "annotations": [
+        "Data"
+      ]
+    },
+    "total": {
+      "field_name": "total",
+      "field_type": "long",
+      "line_number": 14,
+      "annotations": [
+        "Data"
+      ]
+    }
+  },
+  "methods": {},
+  "annotations": [
+    "Data"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 10,
+  "line_end": 39
+}

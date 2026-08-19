@@ -1,0 +1,83 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\constant\\CacheConstants.java",
+  "package_name": "com.oddfar.campus.common.constant",
+  "class_name": "CacheConstants",
+  "imports": [],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "LOGIN_TOKEN_KEY": {
+      "field_name": "LOGIN_TOKEN_KEY",
+      "field_type": "String",
+      "line_number": [
+        10,
+        25
+      ],
+      "annotations": []
+    },
+    "LOGIN_USER_KEY": {
+      "field_name": "LOGIN_USER_KEY",
+      "field_type": "String",
+      "line_number": [
+        15,
+        25
+      ],
+      "annotations": []
+    },
+    "SYS_CONFIG_KEY": {
+      "field_name": "SYS_CONFIG_KEY",
+      "field_type": "String",
+      "line_number": [
+        20,
+        25
+      ],
+      "annotations": []
+    },
+    "SYS_DICT_KEY": {
+      "field_name": "SYS_DICT_KEY",
+      "field_type": "String",
+      "line_number": [
+        25,
+        25
+      ],
+      "annotations": []
+    },
+    "REPEAT_SUBMIT_KEY": {
+      "field_name": "REPEAT_SUBMIT_KEY",
+      "field_type": "String",
+      "line_number": [
+        30,
+        25
+      ],
+      "annotations": []
+    },
+    "RATE_LIMIT_KEY": {
+      "field_name": "RATE_LIMIT_KEY",
+      "field_type": "String",
+      "line_number": [
+        35,
+        25
+      ],
+      "annotations": []
+    },
+    "PWD_ERR_CNT_KEY": {
+      "field_name": "PWD_ERR_CNT_KEY",
+      "field_type": "String",
+      "line_number": [
+        40,
+        25
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    6,
+    8
+  ],
+  "line_end": 0
+}

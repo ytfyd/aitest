@@ -1,0 +1,17 @@
+secrets.ini
+.env.*
+.env
+.env.local
+.env.*.local
+*.log
+__pycache__/
+*.pyc
+.pytest_cache/
+html-report/
+test-reports/*.html
+!test-reports/.gitkeep
+allure-results/
+allure-report/
+*.egg-info/
+dist/
+build/

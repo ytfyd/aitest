@@ -1,0 +1,928 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\service\\impl\\SysMenuServiceImpl.java",
+  "package_name": "com.oddfar.campus.framework.service.impl",
+  "class_name": "SysMenuServiceImpl",
+  "imports": [
+    "com.baomidou.mybatisplus.core.conditions.query.QueryWrapper",
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.constant.UserConstants",
+    "com.oddfar.campus.common.core.LambdaQueryWrapperX",
+    "com.oddfar.campus.common.domain.TreeSelect",
+    "com.oddfar.campus.common.domain.entity.SysMenuEntity",
+    "com.oddfar.campus.common.domain.entity.SysRoleEntity",
+    "com.oddfar.campus.common.domain.entity.SysRoleMenuEntity",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.domain.model.SysRoleAuth",
+    "com.oddfar.campus.common.domain.vo.RouterVo",
+    "com.oddfar.campus.common.utils.MetaVo",
+    "com.oddfar.campus.common.utils.SecurityUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.mapper.SysMenuMapper",
+    "com.oddfar.campus.framework.mapper.SysRoleMapper",
+    "com.oddfar.campus.framework.mapper.SysRoleMenuMapper",
+    "com.oddfar.campus.framework.service.SysMenuService",
+    "org.springframework.stereotype.Service",
+    "javax.annotation.Resource",
+    "java.util.stream.Collectors"
+  ],
+  "extends": null,
+  "implements": [
+    "SysMenuService"
+  ],
+  "fields": {
+    "menuMapper": {
+      "field_name": "menuMapper",
+      "field_type": "SysMenuMapper",
+      "line_number": 33,
+      "annotations": [
+        "Service"
+      ]
+    },
+    "roleMapper": {
+      "field_name": "roleMapper",
+      "field_type": "SysRoleMapper",
+      "line_number": 35,
+      "annotations": [
+        "Service",
+        "Resource"
+      ]
+    },
+    "roleMenuMapper": {
+      "field_name": "roleMenuMapper",
+      "field_type": "SysRoleMenuMapper",
+      "line_number": 37,
+      "annotations": [
+        "Service",
+        "Resource",
+        "Resource"
+      ]
+    }
+  },
+  "methods": {
+    "selectMenuList": {
+      "method_name": "selectMenuList",
+      "return_type": "List<SysMenuEntity>",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        },
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 58,
+      "line_end": 68,
+      "body": "    public List<SysMenuEntity> selectMenuList(SysMenuEntity menu, Long userId) {\n        List<SysMenuEntity> menuList = null;\n        // 管理员显示所有菜单信息\n        if (SysUserEntity.isAdmin(userId)) {\n            menuList = menuMapper.selectMenuList(menu);\n        } else {\n            menu.getParams().put(\"userId\", userId);\n            menuList = menuMapper.selectMenuListByUserId(menu);\n        }\n        return menuList;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.selectMenuList",
+        "SysMenuServiceImpl.selectMenuListByUserId",
+        "SysMenuMapper.selectMenuList",
+        "menu.getParams",
+        "SysMenuServiceImpl.getParams",
+        "SysMenuServiceImpl.isAdmin",
+        "SysUserEntity.isAdmin",
+        "SysMenuMapper.selectMenuListByUserId",
+        "SysMenuServiceImpl.put"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectMenuTreeByUserId": {
+      "method_name": "selectMenuTreeByUserId",
+      "return_type": "List<SysMenuEntity>",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 77,
+      "line_end": 85,
+      "body": "    public List<SysMenuEntity> selectMenuTreeByUserId(Long userId) {\n        List<SysMenuEntity> menus = null;\n        if (SecurityUtils.isAdmin(userId)) {\n            menus = menuMapper.selectMenuTreeAll();\n        } else {\n            menus = menuMapper.selectMenuTreeByUserId(userId);\n        }\n        return getChildPerms(menus, 0);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SecurityUtils.isAdmin",
+        "SysMenuServiceImpl.selectMenuTreeAll",
+        "SysMenuServiceImpl.getChildPerms",
+        "SysMenuServiceImpl.isAdmin",
+        "SysMenuMapper.selectMenuTreeAll",
+        "SysMenuServiceImpl.selectMenuTreeByUserId",
+        "SysMenuMapper.selectMenuTreeByUserId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectMenuListByRoleId": {
+      "method_name": "selectMenuListByRoleId",
+      "return_type": "List<Long>",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        }
+      ],
+      "line_start": 94,
+      "line_end": 97,
+      "body": "    public List<Long> selectMenuListByRoleId(Long roleId) {\n        SysRoleEntity role = roleMapper.selectRoleById(roleId);\n        return menuMapper.selectMenuListByRoleId(roleId, role.isMenuCheckStrictly());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.selectRoleById",
+        "SysMenuServiceImpl.isMenuCheckStrictly",
+        "role.isMenuCheckStrictly",
+        "SysRoleMapper.selectRoleById",
+        "SysMenuMapper.selectMenuListByRoleId",
+        "SysMenuServiceImpl.selectMenuListByRoleId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectMenuById": {
+      "method_name": "selectMenuById",
+      "return_type": "SysMenuEntity",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "menuId",
+          "annotations": []
+        }
+      ],
+      "line_start": 100,
+      "line_end": 102,
+      "body": "    public SysMenuEntity selectMenuById(Long menuId) {\n        return menuMapper.selectById(menuId);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuMapper.selectById",
+        "SysMenuServiceImpl.selectMenuById",
+        "SysMenuServiceImpl.selectById"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "buildMenus": {
+      "method_name": "buildMenus",
+      "return_type": "List<RouterVo>",
+      "parameters": [
+        {
+          "type": "List<SysMenuEntity>",
+          "name": "menus",
+          "annotations": []
+        }
+      ],
+      "line_start": 111,
+      "line_end": 153,
+      "body": "    public List<RouterVo> buildMenus(List<SysMenuEntity> menus) {\n        List<RouterVo> routers = new LinkedList<RouterVo>();\n        for (SysMenuEntity menu : menus) {\n            RouterVo router = new RouterVo();\n            router.setHidden(\"1\".equals(menu.getVisible()));\n            router.setName(getRouteName(menu));\n            router.setPath(getRouterPath(menu));\n            router.setComponent(getComponent(menu));\n            router.setQuery(menu.getQuery());\n            router.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon(), StringUtils.equals(\"1\", menu.getIsCache()), menu.getPath()));\n            List<SysMenuEntity> cMenus = menu.getChildren();\n            if (!cMenus.isEmpty() && cMenus.size() > 0 && UserConstants.TYPE_DIR.equals(menu.getMenuType())) {\n                router.setAlwaysShow(true);\n                router.setRedirect(\"noRedirect\");\n                router.setChildren(buildMenus(cMenus));\n            } else if (isMenuFrame(menu)) {\n                router.setMeta(null);\n                List<RouterVo> childrenList = new ArrayList<RouterVo>();\n                RouterVo children = new RouterVo();\n                children.setPath(menu.getPath());\n                children.setComponent(menu.getComponent());\n                children.setName(StringUtils.capitalize(menu.getPath()));\n                children.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon(), StringUtils.equals(\"1\", menu.getIsCache()), menu.getPath()));\n                children.setQuery(menu.getQuery());\n                childrenList.add(children);\n                router.setChildren(childrenList);\n            } else if (menu.getParentId().intValue() == 0 && isInnerLink(menu)) {\n                router.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon()));\n                router.setPath(\"/\");\n                List<RouterVo> childrenList = new ArrayList<RouterVo>();\n                RouterVo children = new RouterVo();\n                String routerPath = innerLinkReplaceEach(menu.getPath());\n                children.setPath(routerPath);\n                children.setComponent(UserConstants.INNER_LINK);\n                children.setName(StringUtils.capitalize(routerPath));\n                children.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon(), menu.getPath()));\n                childrenList.add(children);\n                router.setChildren(childrenList);\n            }\n            routers.add(router);\n        }\n        return routers;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.add",
+        "children.setQuery",
+        "SysMenuServiceImpl.RouterVo",
+        "SysMenuServiceImpl.getRouteName",
+        "SysMenuServiceImpl.setMeta",
+        "SysMenuServiceImpl.setRedirect",
+        "router.setChildren",
+        "SysMenuServiceImpl.innerLinkReplaceEach",
+        "SysMenuServiceImpl.setName",
+        "SysMenuServiceImpl.setHidden",
+        "SysMenuServiceImpl.getMenuName",
+        "router.setMeta",
+        "children.setPath",
+        "SysMenuServiceImpl.getChildren",
+        "menu.getParentId",
+        "children.setMeta",
+        "SysMenuServiceImpl.size",
+        "SysMenuServiceImpl.buildMenus",
+        "SysMenuServiceImpl.getQuery",
+        "SysMenuServiceImpl.setQuery",
+        "SysMenuServiceImpl.isEmpty",
+        "router.setName",
+        "SysMenuServiceImpl.getMenuType",
+        "SysMenuServiceImpl.getParentId",
+        "SysMenuServiceImpl.isInnerLink",
+        "router.setComponent",
+        "cMenus.isEmpty",
+        "menu.getChildren",
+        "SysMenuServiceImpl.getComponent",
+        "SysMenuServiceImpl.MetaVo",
+        "routers.add",
+        "SysMenuServiceImpl.setPath",
+        "SysMenuServiceImpl.getIcon",
+        "menu.getQuery",
+        "SysMenuServiceImpl.getIsCache",
+        "menu.getMenuName",
+        "StringUtils.equals",
+        "SysMenuServiceImpl.setAlwaysShow",
+        "SysMenuServiceImpl.getRouterPath",
+        "childrenList.add",
+        "router.setPath",
+        "router.setQuery",
+        "SysMenuServiceImpl.setChildren",
+        "router.setHidden",
+        "menu.getIcon",
+        "TYPE_DIR.equals",
+        "SysMenuServiceImpl.getVisible",
+        "SysMenuServiceImpl.intValue",
+        "menu.getComponent",
+        "menu.getIsCache",
+        "SysMenuServiceImpl.getPath",
+        "SysMenuServiceImpl.isMenuFrame",
+        "SysMenuServiceImpl.capitalize",
+        "SysMenuServiceImpl.equals",
+        "StringUtils.capitalize",
+        "menu.getVisible",
+        "router.setRedirect",
+        "SysMenuServiceImpl.setComponent",
+        "cMenus.size",
+        "menu.getPath",
+        "children.setName",
+        "children.setComponent",
+        "router.setAlwaysShow",
+        "menu.getMenuType"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "buildMenuTreeSelect": {
+      "method_name": "buildMenuTreeSelect",
+      "return_type": "List<TreeSelect>",
+      "parameters": [
+        {
+          "type": "List<SysMenuEntity>",
+          "name": "menus",
+          "annotations": []
+        }
+      ],
+      "line_start": 162,
+      "line_end": 165,
+      "body": "    public List<TreeSelect> buildMenuTreeSelect(List<SysMenuEntity> menus) {\n        List<SysMenuEntity> menuTrees = buildMenuTree(menus);\n        return menuTrees.stream().map(TreeSelect::new).collect(Collectors.toList());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Collectors.toList",
+        "SysMenuServiceImpl.map",
+        "menuTrees.stream",
+        "SysMenuServiceImpl.buildMenuTreeSelect",
+        "SysMenuServiceImpl.collect",
+        "SysMenuServiceImpl.buildMenuTree",
+        "SysMenuServiceImpl.toList",
+        "SysMenuServiceImpl.stream"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "buildMenuTree": {
+      "method_name": "buildMenuTree",
+      "return_type": "List<SysMenuEntity>",
+      "parameters": [
+        {
+          "type": "List<SysMenuEntity>",
+          "name": "menus",
+          "annotations": []
+        }
+      ],
+      "line_start": 174,
+      "line_end": 192,
+      "body": "    public List<SysMenuEntity> buildMenuTree(List<SysMenuEntity> menus) {\n        List<SysMenuEntity> returnList = new ArrayList<SysMenuEntity>();\n        List<Long> tempList = new ArrayList<Long>();\n        for (SysMenuEntity dept : menus) {\n            tempList.add(dept.getMenuId());\n        }\n        for (Iterator<SysMenuEntity> iterator = menus.iterator(); iterator.hasNext(); ) {\n            SysMenuEntity menu = (SysMenuEntity) iterator.next();\n            // 如果是顶级节点, 遍历该父节点的所有子节点\n            if (!tempList.contains(menu.getParentId())) {\n                recursionFn(menus, menu);\n                returnList.add(menu);\n            }\n        }\n        if (returnList.isEmpty()) {\n            returnList = menus;\n        }\n        return returnList;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.add",
+        "iterator.hasNext",
+        "SysMenuServiceImpl.recursionFn",
+        "SysMenuServiceImpl.getMenuId",
+        "menu.getParentId",
+        "returnList.isEmpty",
+        "SysMenuServiceImpl.iterator",
+        "SysMenuServiceImpl.isEmpty",
+        "SysMenuServiceImpl.getParentId",
+        "iterator.next",
+        "SysMenuServiceImpl.buildMenuTree",
+        "dept.getMenuId",
+        "SysMenuServiceImpl.hasNext",
+        "menus.iterator",
+        "tempList.contains",
+        "returnList.add",
+        "tempList.add",
+        "SysMenuServiceImpl.next",
+        "SysMenuServiceImpl.contains"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectMenuPermsByRoleId": {
+      "method_name": "selectMenuPermsByRoleId",
+      "return_type": "Set<String>",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        }
+      ],
+      "line_start": 201,
+      "line_end": 210,
+      "body": "    public Set<String> selectMenuPermsByRoleId(Long roleId) {\n        List<String> perms = menuMapper.selectMenuPermsByRoleId(roleId);\n        Set<String> permsSet = new HashSet<>();\n        for (String perm : perms) {\n            if (StringUtils.isNotEmpty(perm)) {\n                permsSet.addAll(Arrays.asList(perm.trim().split(\",\")));\n            }\n        }\n        return permsSet;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "permsSet.addAll",
+        "perm.trim",
+        "SysMenuMapper.selectMenuPermsByRoleId",
+        "SysMenuServiceImpl.trim",
+        "SysMenuServiceImpl.selectMenuPermsByRoleId",
+        "SysMenuServiceImpl.isNotEmpty",
+        "Arrays.asList",
+        "StringUtils.isNotEmpty",
+        "SysMenuServiceImpl.addAll",
+        "SysMenuServiceImpl.split",
+        "SysMenuServiceImpl.asList"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectMenuPermsAll": {
+      "method_name": "selectMenuPermsAll",
+      "return_type": "Map<Long, List<SysRoleAuth>>",
+      "parameters": [],
+      "line_start": 213,
+      "line_end": 217,
+      "body": "    public Map<Long, List<SysRoleAuth>> selectMenuPermsAll() {\n        List<SysRoleAuth> sysRolePerms = menuMapper.getMenuPermsAll();\n        //根据roleId分组\n        return sysRolePerms.stream().collect(Collectors.groupingBy(SysRoleAuth::getRoleID));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.selectMenuPermsAll",
+        "SysMenuMapper.getMenuPermsAll",
+        "SysMenuServiceImpl.getMenuPermsAll",
+        "SysMenuServiceImpl.groupingBy",
+        "SysMenuServiceImpl.collect",
+        "sysRolePerms.stream",
+        "Collectors.groupingBy",
+        "SysMenuServiceImpl.stream"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectMenuPermsByUserId": {
+      "method_name": "selectMenuPermsByUserId",
+      "return_type": "Set<String>",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 226,
+      "line_end": 235,
+      "body": "    public Set<String> selectMenuPermsByUserId(Long userId) {\n        List<String> perms = menuMapper.selectMenuPermsByUserId(userId);\n        Set<String> permsSet = new HashSet<>();\n        for (String perm : perms) {\n            if (StringUtils.isNotEmpty(perm)) {\n                permsSet.addAll(Arrays.asList(perm.trim().split(\",\")));\n            }\n        }\n        return permsSet;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "permsSet.addAll",
+        "SysMenuServiceImpl.selectMenuPermsByUserId",
+        "perm.trim",
+        "SysMenuServiceImpl.trim",
+        "SysMenuMapper.selectMenuPermsByUserId",
+        "SysMenuServiceImpl.isNotEmpty",
+        "Arrays.asList",
+        "StringUtils.isNotEmpty",
+        "SysMenuServiceImpl.addAll",
+        "SysMenuServiceImpl.split",
+        "SysMenuServiceImpl.asList"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertMenu": {
+      "method_name": "insertMenu",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        }
+      ],
+      "line_start": 238,
+      "line_end": 240,
+      "body": "    public int insertMenu(SysMenuEntity menu) {\n        return menuMapper.insert(menu);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.insert",
+        "SysMenuMapper.insert",
+        "SysMenuServiceImpl.insertMenu"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "updateMenu": {
+      "method_name": "updateMenu",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        }
+      ],
+      "line_start": 243,
+      "line_end": 245,
+      "body": "    public int updateMenu(SysMenuEntity menu) {\n        return menuMapper.updateById(menu);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.updateMenu",
+        "SysMenuServiceImpl.updateById",
+        "SysMenuMapper.updateById"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteMenuById": {
+      "method_name": "deleteMenuById",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "menuId",
+          "annotations": []
+        }
+      ],
+      "line_start": 248,
+      "line_end": 250,
+      "body": "    public int deleteMenuById(Long menuId) {\n        return menuMapper.deleteById(menuId);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.deleteMenuById",
+        "SysMenuServiceImpl.deleteById",
+        "SysMenuMapper.deleteById"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkMenuExistRole": {
+      "method_name": "checkMenuExistRole",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "menuId",
+          "annotations": []
+        }
+      ],
+      "line_start": 253,
+      "line_end": 256,
+      "body": "    public boolean checkMenuExistRole(Long menuId) {\n        Long result = roleMenuMapper.selectCount(new QueryWrapper<SysRoleMenuEntity>().eq(\"menu_id\", menuId)   );\n        return result > 0;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.selectCount",
+        "SysMenuServiceImpl.eq",
+        "SysMenuServiceImpl.checkMenuExistRole",
+        "SysRoleMenuMapper.selectCount"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "hasChildByMenuId": {
+      "method_name": "hasChildByMenuId",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "menuId",
+          "annotations": []
+        }
+      ],
+      "line_start": 259,
+      "line_end": 264,
+      "body": "    public boolean hasChildByMenuId(Long menuId) {\n        Long result = menuMapper.selectCount(\n                new LambdaQueryWrapperX<SysMenuEntity>().eq(SysMenuEntity::getParentId, menuId));\n\n        return result > 0;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.eq",
+        "SysMenuMapper.selectCount",
+        "SysMenuServiceImpl.hasChildByMenuId",
+        "SysMenuServiceImpl.selectCount"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkMenuNameUnique": {
+      "method_name": "checkMenuNameUnique",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        }
+      ],
+      "line_start": 267,
+      "line_end": 274,
+      "body": "    public boolean checkMenuNameUnique(SysMenuEntity menu) {\n        Long menuId = StringUtils.isNull(menu.getMenuId()) ? -1L : menu.getMenuId();\n        SysMenuEntity info = menuMapper.checkMenuNameUnique(menu);\n        if (StringUtils.isNotNull(info) && info.getMenuId().longValue() != menuId.longValue()) {\n            return false;\n        }\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isNull",
+        "SysMenuMapper.checkMenuNameUnique",
+        "menu.getMenuId",
+        "SysMenuServiceImpl.isNull",
+        "SysMenuServiceImpl.longValue",
+        "info.getMenuId",
+        "menuId.longValue",
+        "StringUtils.isNotNull",
+        "SysMenuServiceImpl.checkMenuNameUnique",
+        "SysMenuServiceImpl.isNotNull",
+        "SysMenuServiceImpl.getMenuId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getRouterPath": {
+      "method_name": "getRouterPath",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        }
+      ],
+      "line_start": 282,
+      "line_end": 298,
+      "body": "    public String getRouterPath(SysMenuEntity menu) {\n        String routerPath = menu.getPath();\n        // 内链打开外网方式\n        if (menu.getParentId().intValue() != 0 && isInnerLink(menu)) {\n            routerPath = innerLinkReplaceEach(routerPath);\n        }\n        // 非外链并且是一级目录（类型为目录）\n        if (0 == menu.getParentId().intValue() && UserConstants.TYPE_DIR.equals(menu.getMenuType())\n                && UserConstants.NO_FRAME.equals(menu.getIsFrame())) {\n            routerPath = \"/\" + menu.getPath();\n        }\n        // 非外链并且是一级目录（类型为菜单）\n        else if (isMenuFrame(menu)) {\n            routerPath = \"/\";\n        }\n        return routerPath;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.getIsFrame",
+        "SysMenuServiceImpl.isMenuFrame",
+        "SysMenuServiceImpl.equals",
+        "SysMenuServiceImpl.getPath",
+        "SysMenuServiceImpl.getRouterPath",
+        "SysMenuServiceImpl.isInnerLink",
+        "TYPE_DIR.equals",
+        "menu.getIsFrame",
+        "SysMenuServiceImpl.getParentId",
+        "SysMenuServiceImpl.intValue",
+        "SysMenuServiceImpl.innerLinkReplaceEach",
+        "SysMenuServiceImpl.getMenuType",
+        "NO_FRAME.equals",
+        "menu.getPath",
+        "menu.getMenuType",
+        "menu.getParentId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isInnerLink": {
+      "method_name": "isInnerLink",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        }
+      ],
+      "line_start": 306,
+      "line_end": 308,
+      "body": "    public boolean isInnerLink(SysMenuEntity menu) {\n        return menu.getIsFrame().equals(UserConstants.NO_FRAME) && StringUtils.ishttp(menu.getPath());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.getIsFrame",
+        "SysMenuServiceImpl.ishttp",
+        "SysMenuServiceImpl.getPath",
+        "SysMenuServiceImpl.isInnerLink",
+        "menu.getIsFrame",
+        "StringUtils.ishttp",
+        "menu.getPath",
+        "SysMenuServiceImpl.equals"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getComponent": {
+      "method_name": "getComponent",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        }
+      ],
+      "line_start": 316,
+      "line_end": 326,
+      "body": "    public String getComponent(SysMenuEntity menu) {\n        String component = UserConstants.LAYOUT;\n        if (StringUtils.isNotEmpty(menu.getComponent()) && !isMenuFrame(menu)) {\n            component = menu.getComponent();\n        } else if (StringUtils.isEmpty(menu.getComponent()) && menu.getParentId().intValue() != 0 && isInnerLink(menu)) {\n            component = UserConstants.INNER_LINK;\n        } else if (StringUtils.isEmpty(menu.getComponent()) && isParentView(menu)) {\n            component = UserConstants.PARENT_VIEW;\n        }\n        return component;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.isMenuFrame",
+        "StringUtils.isNotEmpty",
+        "SysMenuServiceImpl.isParentView",
+        "SysMenuServiceImpl.isEmpty",
+        "SysMenuServiceImpl.isInnerLink",
+        "SysMenuServiceImpl.isNotEmpty",
+        "SysMenuServiceImpl.getParentId",
+        "SysMenuServiceImpl.intValue",
+        "menu.getComponent",
+        "StringUtils.isEmpty",
+        "SysMenuServiceImpl.getComponent",
+        "menu.getParentId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isParentView": {
+      "method_name": "isParentView",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        }
+      ],
+      "line_start": 334,
+      "line_end": 336,
+      "body": "    public boolean isParentView(SysMenuEntity menu) {\n        return menu.getParentId().intValue() != 0 && UserConstants.TYPE_DIR.equals(menu.getMenuType());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.isParentView",
+        "SysMenuServiceImpl.equals",
+        "TYPE_DIR.equals",
+        "SysMenuServiceImpl.getParentId",
+        "SysMenuServiceImpl.getMenuType",
+        "SysMenuServiceImpl.intValue",
+        "menu.getMenuType",
+        "menu.getParentId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getRouteName": {
+      "method_name": "getRouteName",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        }
+      ],
+      "line_start": 344,
+      "line_end": 351,
+      "body": "    public String getRouteName(SysMenuEntity menu) {\n        String routerName = StringUtils.capitalize(menu.getPath());\n        // 非外链并且是一级目录（类型为目录）\n        if (isMenuFrame(menu)) {\n            routerName = StringUtils.EMPTY;\n        }\n        return routerName;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.isMenuFrame",
+        "SysMenuServiceImpl.capitalize",
+        "StringUtils.capitalize",
+        "SysMenuServiceImpl.getRouteName",
+        "menu.getPath",
+        "SysMenuServiceImpl.getPath"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isMenuFrame": {
+      "method_name": "isMenuFrame",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        }
+      ],
+      "line_start": 359,
+      "line_end": 362,
+      "body": "    public boolean isMenuFrame(SysMenuEntity menu) {\n        return menu.getParentId().intValue() == 0 && UserConstants.TYPE_MENU.equals(menu.getMenuType())\n                && menu.getIsFrame().equals(UserConstants.NO_FRAME);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TYPE_MENU.equals",
+        "SysMenuServiceImpl.isMenuFrame",
+        "SysMenuServiceImpl.getIsFrame",
+        "SysMenuServiceImpl.equals",
+        "menu.getIsFrame",
+        "SysMenuServiceImpl.getParentId",
+        "SysMenuServiceImpl.getMenuType",
+        "SysMenuServiceImpl.intValue",
+        "menu.getMenuType",
+        "menu.getParentId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getChildPerms": {
+      "method_name": "getChildPerms",
+      "return_type": "List<SysMenuEntity>",
+      "parameters": [
+        {
+          "type": "List<SysMenuEntity>",
+          "name": "list",
+          "annotations": []
+        },
+        {
+          "type": "int",
+          "name": "parentId",
+          "annotations": []
+        }
+      ],
+      "line_start": 371,
+      "line_end": 382,
+      "body": "    public List<SysMenuEntity> getChildPerms(List<SysMenuEntity> list, int parentId) {\n        List<SysMenuEntity> returnList = new ArrayList<SysMenuEntity>();\n        for (Iterator<SysMenuEntity> iterator = list.iterator(); iterator.hasNext(); ) {\n            SysMenuEntity t = (SysMenuEntity) iterator.next();\n            // 一、根据传入的某个父节点ID,遍历该父节点的所有子节点\n            if (t.getParentId() == parentId) {\n                recursionFn(list, t);\n                returnList.add(t);\n            }\n        }\n        return returnList;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.add",
+        "SysMenuServiceImpl.iterator",
+        "iterator.hasNext",
+        "t.getParentId",
+        "SysMenuServiceImpl.hasNext",
+        "SysMenuServiceImpl.next",
+        "SysMenuServiceImpl.recursionFn",
+        "SysMenuServiceImpl.getParentId",
+        "iterator.next",
+        "returnList.add",
+        "SysMenuServiceImpl.getChildPerms",
+        "list.iterator"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "recursionFn": {
+      "method_name": "recursionFn",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "List<SysMenuEntity>",
+          "name": "list",
+          "annotations": []
+        },
+        {
+          "type": "SysMenuEntity",
+          "name": "t",
+          "annotations": []
+        }
+      ],
+      "line_start": 390,
+      "line_end": 399,
+      "body": "    private void recursionFn(List<SysMenuEntity> list, SysMenuEntity t) {\n        // 得到子节点列表\n        List<SysMenuEntity> childList = getChildList(list, t);\n        t.setChildren(childList);\n        for (SysMenuEntity tChild : childList) {\n            if (hasChild(list, tChild)) {\n                recursionFn(list, tChild);\n            }\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.setChildren",
+        "SysMenuServiceImpl.recursionFn",
+        "t.setChildren",
+        "SysMenuServiceImpl.hasChild",
+        "SysMenuServiceImpl.getChildList"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "hasChild": {
+      "method_name": "hasChild",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "List<SysMenuEntity>",
+          "name": "list",
+          "annotations": []
+        },
+        {
+          "type": "SysMenuEntity",
+          "name": "t",
+          "annotations": []
+        }
+      ],
+      "line_start": 404,
+      "line_end": 406,
+      "body": "    private boolean hasChild(List<SysMenuEntity> list, SysMenuEntity t) {\n        return getChildList(list, t).size() > 0;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.hasChild",
+        "SysMenuServiceImpl.size",
+        "SysMenuServiceImpl.getChildList"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getChildList": {
+      "method_name": "getChildList",
+      "return_type": "List<SysMenuEntity>",
+      "parameters": [
+        {
+          "type": "List<SysMenuEntity>",
+          "name": "list",
+          "annotations": []
+        },
+        {
+          "type": "SysMenuEntity",
+          "name": "t",
+          "annotations": []
+        }
+      ],
+      "line_start": 411,
+      "line_end": 421,
+      "body": "    private List<SysMenuEntity> getChildList(List<SysMenuEntity> list, SysMenuEntity t) {\n        List<SysMenuEntity> tlist = new ArrayList<SysMenuEntity>();\n        Iterator<SysMenuEntity> it = list.iterator();\n        while (it.hasNext()) {\n            SysMenuEntity n = (SysMenuEntity) it.next();\n            if (n.getParentId().longValue() == t.getMenuId().longValue()) {\n                tlist.add(n);\n            }\n        }\n        return tlist;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "it.hasNext",
+        "SysMenuServiceImpl.add",
+        "t.getMenuId",
+        "SysMenuServiceImpl.iterator",
+        "n.getParentId",
+        "SysMenuServiceImpl.hasNext",
+        "SysMenuServiceImpl.next",
+        "SysMenuServiceImpl.getParentId",
+        "SysMenuServiceImpl.longValue",
+        "tlist.add",
+        "it.next",
+        "SysMenuServiceImpl.getChildList",
+        "list.iterator",
+        "SysMenuServiceImpl.getMenuId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "innerLinkReplaceEach": {
+      "method_name": "innerLinkReplaceEach",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "path",
+          "annotations": []
+        }
+      ],
+      "line_start": 428,
+      "line_end": 431,
+      "body": "    public String innerLinkReplaceEach(String path) {\n        return StringUtils.replaceEach(path, new String[]{Constants.HTTP, Constants.HTTPS, Constants.WWW, \".\"},\n                new String[]{\"\", \"\", \"\", \"/\"});\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuServiceImpl.innerLinkReplaceEach",
+        "SysMenuServiceImpl.replaceEach",
+        "StringUtils.replaceEach"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Service"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 31,
+  "line_end": 434
+}

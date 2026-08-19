@@ -1,0 +1,85 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\validator\\XssValidator.java",
+  "package_name": "com.oddfar.campus.common.validator",
+  "class_name": "XssValidator",
+  "imports": [
+    "com.oddfar.campus.common.utils.StringUtils",
+    "javax.validation.ConstraintValidator",
+    "javax.validation.ConstraintValidatorContext",
+    "java.util.regex.Matcher",
+    "java.util.regex.Pattern"
+  ],
+  "extends": null,
+  "implements": [
+    "ConstraintValidator"
+  ],
+  "fields": {},
+  "methods": {
+    "isValid": {
+      "method_name": "isValid",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "value",
+          "annotations": []
+        },
+        {
+          "type": "ConstraintValidatorContext",
+          "name": "constraintValidatorContext",
+          "annotations": []
+        }
+      ],
+      "line_start": 20,
+      "line_end": 27,
+      "body": "    public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext)\n    {\n        if (StringUtils.isBlank(value))\n        {\n            return true;\n        }\n        return !containsHtml(value);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "XssValidator.isValid",
+        "XssValidator.containsHtml",
+        "XssValidator.isBlank",
+        "StringUtils.isBlank"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "containsHtml": {
+      "method_name": "containsHtml",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "value",
+          "annotations": []
+        }
+      ],
+      "line_start": 29,
+      "line_end": 34,
+      "body": "    public static boolean containsHtml(String value)\n    {\n        Pattern pattern = Pattern.compile(HTML_PATTERN);\n        Matcher matcher = pattern.matcher(value);\n        return matcher.matches();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "XssValidator.compile",
+        "Pattern.compile",
+        "XssValidator.matcher",
+        "XssValidator.matches",
+        "pattern.matcher",
+        "matcher.matches",
+        "XssValidator.containsHtml"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 15,
+  "line_end": 35
+}

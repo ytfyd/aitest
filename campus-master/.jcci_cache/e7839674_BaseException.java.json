@@ -1,0 +1,71 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\exception\\base\\BaseException.java",
+  "package_name": "com.oddfar.campus.common.exception.base",
+  "class_name": "BaseException",
+  "imports": [
+    "com.oddfar.campus.common.utils.MessageUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "lombok.AllArgsConstructor",
+    "lombok.Data",
+    "lombok.NoArgsConstructor"
+  ],
+  "extends": "RuntimeException",
+  "implements": [],
+  "fields": {
+    "module": {
+      "field_name": "module",
+      "field_type": "String",
+      "line_number": 24,
+      "annotations": [
+        "Data",
+        "AllArgsConstructor",
+        "NoArgsConstructor"
+      ]
+    },
+    "code": {
+      "field_name": "code",
+      "field_type": "String",
+      "line_number": 29,
+      "annotations": []
+    },
+    "defaultMessage": {
+      "field_name": "defaultMessage",
+      "field_type": "String",
+      "line_number": 39,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "getMessage": {
+      "method_name": "getMessage",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 43,
+      "line_end": 52,
+      "body": "    public String getMessage() {\n        String message = null;\n        if (!StringUtils.isEmpty(code)) {\n            message = MessageUtils.message(code, args);\n        }\n        if (message == null) {\n            message = defaultMessage;\n        }\n        return message;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "BaseException.getMessage",
+        "MessageUtils.message",
+        "StringUtils.isEmpty",
+        "BaseException.isEmpty",
+        "BaseException.message"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Data",
+    "AllArgsConstructor",
+    "NoArgsConstructor"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 18,
+  "line_end": 55
+}

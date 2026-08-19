@@ -1,0 +1,143 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysApiResourceController.java",
+  "package_name": "com.oddfar.campus.admin.controller.system",
+  "class_name": "SysApiResourceController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.entity.SysResourceEntity",
+    "com.oddfar.campus.common.enums.ResBizTypeEnum",
+    "com.oddfar.campus.framework.service.SysResourceService",
+    "com.oddfar.campus.framework.web.service.SysPermissionService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "resourceService": {
+      "field_name": "resourceService",
+      "field_type": "SysResourceService",
+      "line_number": 20,
+      "annotations": [
+        "RestController",
+        "RequestMapping",
+        "ApiResource"
+      ]
+    },
+    "permissionService": {
+      "field_name": "permissionService",
+      "field_type": "SysPermissionService",
+      "line_number": 22,
+      "annotations": [
+        "ApiResource",
+        "Autowired"
+      ]
+    }
+  },
+  "methods": {
+    "editRoleResource": {
+      "method_name": "editRoleResource",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        },
+        {
+          "type": "Long[]",
+          "name": "resourceIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 17,
+      "line_end": 49,
+      "body": "@RequestMapping(\"/system/resource\")\n@ApiResource(name = \"资源管理\", resBizType = ResBizTypeEnum.SYSTEM)\npublic class SysApiResourceController {\n    @Autowired\n    private SysResourceService resourceService;\n    @Autowired\n    private SysPermissionService permissionService;\n\n    /**\n     * 加载对应角色资源列表树\n     */\n    @GetMapping(value = \"/roleApiTreeselect/{roleId}\", name = \"资源管理-加载对应角色资源列表树\")\n    public R roleMenuTreeSelect(@PathVariable(\"roleId\") Long roleId) {\n        List<SysResourceEntity> resources = resourceService.selectApiResourceList(getUserId());\n        R ajax = R.ok();\n        ajax.put(\"checkedKeys\", resourceService.selectResourceListByRoleId(roleId));\n        ajax.put(\"resources\", resourceService.buildResourceTreeSelect(resources));\n        return ajax;\n    }\n\n    /**\n     * 修改对应角色api资源\n     */\n    @PutMapping(value = \"/roleApi\", name = \"修改对应角色api资源\")\n    public R editRoleResource(Long roleId, Long[] resourceIds) {\n        resourceService.editRoleResource(roleId, resourceIds);\n        //更新redis缓存权限数据\n        permissionService.resetLoginUserRoleCache(roleId);\n        return R.ok();\n    }\n\n\n}",
+      "annotations": [
+        "RequestMapping",
+        "ApiResource",
+        "Autowired",
+        "Autowired",
+        "GetMapping",
+        "PathVariable",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "SysResourceService.buildResourceTreeSelect",
+        "SysApiResourceController.RequestMapping",
+        "SysResourceService.selectResourceListByRoleId",
+        "SysApiResourceController.ApiResource",
+        "SysResourceService.editRoleResource",
+        "SysApiResourceController.roleMenuTreeSelect",
+        "ajax.put",
+        "SysPermissionService.resetLoginUserRoleCache",
+        "SysApiResourceController.getUserId",
+        "SysApiResourceController.resetLoginUserRoleCache",
+        "SysApiResourceController.selectApiResourceList",
+        "R.ok",
+        "SysApiResourceController.editRoleResource",
+        "SysApiResourceController.PathVariable",
+        "SysApiResourceController.GetMapping",
+        "SysApiResourceController.ok",
+        "SysApiResourceController.put",
+        "SysApiResourceController.buildResourceTreeSelect",
+        "SysApiResourceController.selectResourceListByRoleId",
+        "SysApiResourceController.PutMapping",
+        "SysResourceService.selectApiResourceList"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/roleApiTreeselect/{roleId}",
+      "http_method": "GET"
+    },
+    "roleMenuTreeSelect": {
+      "method_name": "roleMenuTreeSelect",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": [
+            "@PathVariable(\")"
+          ]
+        }
+      ],
+      "line_start": 29,
+      "line_end": 35,
+      "body": "    public R roleMenuTreeSelect(@PathVariable(\"roleId\") Long roleId) {\n        List<SysResourceEntity> resources = resourceService.selectApiResourceList(getUserId());\n        R ajax = R.ok();\n        ajax.put(\"checkedKeys\", resourceService.selectResourceListByRoleId(roleId));\n        ajax.put(\"resources\", resourceService.buildResourceTreeSelect(resources));\n        return ajax;\n    }",
+      "annotations": [
+        "@GetMapping(value = \"/roleApiTreeselect/{roleId}\", name = \"资源管理-加载对应角色资源列表树\")"
+      ],
+      "called_methods": [
+        "SysApiResourceController.selectApiResourceList",
+        "SysApiResourceController.ok",
+        "SysApiResourceController.roleMenuTreeSelect",
+        "R.ok",
+        "SysResourceService.buildResourceTreeSelect",
+        "SysApiResourceController.put",
+        "SysApiResourceController.PathVariable",
+        "ajax.put",
+        "SysApiResourceController.buildResourceTreeSelect",
+        "SysResourceService.selectResourceListByRoleId",
+        "SysApiResourceController.getUserId",
+        "SysApiResourceController.selectResourceListByRoleId",
+        "SysResourceService.selectApiResourceList"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/roleApiTreeselect/{roleId}",
+      "http_method": "GET"
+    }
+  },
+  "annotations": [
+    "RestController",
+    "RequestMapping",
+    "ApiResource"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 19,
+  "line_end": 50
+}

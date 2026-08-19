@@ -1,0 +1,133 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\entity\\SysDictDataEntity.java",
+  "package_name": "com.oddfar.campus.common.domain.entity",
+  "class_name": "SysDictDataEntity",
+  "imports": [
+    "com.baomidou.mybatisplus.annotation.TableId",
+    "com.baomidou.mybatisplus.annotation.TableName",
+    "com.oddfar.campus.common.constant.UserConstants",
+    "com.oddfar.campus.common.domain.BaseEntity",
+    "lombok.Data",
+    "lombok.EqualsAndHashCode",
+    "javax.validation.constraints.NotBlank",
+    "javax.validation.constraints.Size"
+  ],
+  "extends": "BaseEntity",
+  "implements": [],
+  "fields": {
+    "dictCode": {
+      "field_name": "dictCode",
+      "field_type": "Long",
+      "line_number": 29,
+      "annotations": [
+        "TableName",
+        "TableId"
+      ]
+    },
+    "dictSort": {
+      "field_name": "dictSort",
+      "field_type": "Long",
+      "line_number": 34,
+      "annotations": [
+        "TableId"
+      ]
+    },
+    "dictLabel": {
+      "field_name": "dictLabel",
+      "field_type": "String",
+      "line_number": 41,
+      "annotations": [
+        "NotBlank",
+        "Size"
+      ]
+    },
+    "dictValue": {
+      "field_name": "dictValue",
+      "field_type": "String",
+      "line_number": 48,
+      "annotations": [
+        "NotBlank",
+        "Size"
+      ]
+    },
+    "dictType": {
+      "field_name": "dictType",
+      "field_type": "String",
+      "line_number": 55,
+      "annotations": [
+        "NotBlank",
+        "Size"
+      ]
+    },
+    "cssClass": {
+      "field_name": "cssClass",
+      "field_type": "String",
+      "line_number": 61,
+      "annotations": [
+        "Size",
+        "Size"
+      ]
+    },
+    "listClass": {
+      "field_name": "listClass",
+      "field_type": "String",
+      "line_number": 66,
+      "annotations": [
+        "Size"
+      ]
+    },
+    "isDefault": {
+      "field_name": "isDefault",
+      "field_type": "String",
+      "line_number": 71,
+      "annotations": [
+        "Size"
+      ]
+    },
+    "status": {
+      "field_name": "status",
+      "field_type": "String",
+      "line_number": 76,
+      "annotations": []
+    },
+    "remark": {
+      "field_name": "remark",
+      "field_type": "String",
+      "line_number": 81,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "getDefault": {
+      "method_name": "getDefault",
+      "return_type": "boolean",
+      "parameters": [],
+      "line_start": 83,
+      "line_end": 85,
+      "body": "    public boolean getDefault() {\n        return UserConstants.YES.equals(this.isDefault);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "YES.equals",
+        "SysDictDataEntity.equals",
+        "SysDictDataEntity.getDefault"
+      ],
+      "used_fields": [
+        "isDefault"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Data",
+    "EqualsAndHashCode",
+    "TableName"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 21,
+  "line_end": 89
+}

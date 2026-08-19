@@ -1,0 +1,313 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\http\\HttpUtils.java",
+  "package_name": "com.oddfar.campus.common.utils.http",
+  "class_name": "HttpUtils",
+  "imports": [
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory",
+    "java.net.ConnectException",
+    "java.net.SocketTimeoutException",
+    "java.net.URL",
+    "java.net.URLConnection",
+    "java.nio.charset.StandardCharsets",
+    "java.security.cert.X509Certificate"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "sendGet": {
+      "method_name": "sendGet",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "url",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "param",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "contentType",
+          "annotations": []
+        }
+      ],
+      "line_start": 57,
+      "line_end": 110,
+      "body": "    public static String sendGet(String url, String param, String contentType)\n    {\n        StringBuilder result = new StringBuilder();\n        BufferedReader in = null;\n        try\n        {\n            String urlNameString = StringUtils.isNotBlank(param) ? url + \"?\" + param : url;\n            log.info(\"sendGet - {}\", urlNameString);\n            URL realUrl = new URL(urlNameString);\n            URLConnection connection = realUrl.openConnection();\n            connection.setRequestProperty(\"accept\", \"*/*\");\n            connection.setRequestProperty(\"connection\", \"Keep-Alive\");\n            connection.setRequestProperty(\"user-agent\", \"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)\");\n            connection.connect();\n            in = new BufferedReader(new InputStreamReader(connection.getInputStream(), contentType));\n            String line;\n            while ((line = in.readLine()) != null)\n            {\n                result.append(line);\n            }\n            log.info(\"recv - {}\", result);\n        }\n        catch (ConnectException e)\n        {\n            log.error(\"调用HttpUtils.sendGet ConnectException, url=\" + url + \",param=\" + param, e);\n        }\n        catch (SocketTimeoutException e)\n        {\n            log.error(\"调用HttpUtils.sendGet SocketTimeoutException, url=\" + url + \",param=\" + param, e);\n        }\n        catch (IOException e)\n        {\n            log.error(\"调用HttpUtils.sendGet IOException, url=\" + url + \",param=\" + param, e);\n        }\n        catch (Exception e)\n        {\n            log.error(\"调用HttpsUtil.sendGet Exception, url=\" + url + \",param=\" + param, e);\n        }\n        finally\n        {\n            try\n            {\n                if (in != null)\n                {\n                    in.close();\n                }\n            }\n            catch (Exception ex)\n            {\n                log.error(\"调用in.close Exception, url=\" + url + \",param=\" + param, ex);\n            }\n        }\n        return result.toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "HttpUtils.URL",
+        "log.error",
+        "HttpUtils.sendGet",
+        "realUrl.openConnection",
+        "HttpUtils.error",
+        "HttpUtils.readLine",
+        "in.close",
+        "HttpUtils.close",
+        "connection.connect",
+        "HttpUtils.append",
+        "HttpUtils.openConnection",
+        "result.append",
+        "HttpUtils.InputStreamReader",
+        "connection.getInputStream",
+        "connection.setRequestProperty",
+        "HttpUtils.toString",
+        "HttpUtils.0",
+        "4.0",
+        "in.readLine",
+        "StringUtils.isNotBlank",
+        "HttpUtils.setRequestProperty",
+        "HttpUtils.StringBuilder",
+        "HttpUtils.connect",
+        "HttpUtils.info",
+        "result.toString",
+        "HttpUtils.BufferedReader",
+        "HttpUtils.getInputStream",
+        "log.info",
+        "HttpUtils.isNotBlank"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "sendPost": {
+      "method_name": "sendPost",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "url",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "param",
+          "annotations": []
+        }
+      ],
+      "line_start": 119,
+      "line_end": 182,
+      "body": "    public static String sendPost(String url, String param)\n    {\n        PrintWriter out = null;\n        BufferedReader in = null;\n        StringBuilder result = new StringBuilder();\n        try\n        {\n            log.info(\"sendPost - {}\", url);\n            URL realUrl = new URL(url);\n            URLConnection conn = realUrl.openConnection();\n            conn.setRequestProperty(\"accept\", \"*/*\");\n            conn.setRequestProperty(\"connection\", \"Keep-Alive\");\n            conn.setRequestProperty(\"user-agent\", \"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)\");\n            conn.setRequestProperty(\"Accept-Charset\", \"utf-8\");\n            conn.setRequestProperty(\"contentType\", \"utf-8\");\n            conn.setDoOutput(true);\n            conn.setDoInput(true);\n            out = new PrintWriter(conn.getOutputStream());\n            out.print(param);\n            out.flush();\n            in = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));\n            String line;\n            while ((line = in.readLine()) != null)\n            {\n                result.append(line);\n            }\n            log.info(\"recv - {}\", result);\n        }\n        catch (ConnectException e)\n        {\n            log.error(\"调用HttpUtils.sendPost ConnectException, url=\" + url + \",param=\" + param, e);\n        }\n        catch (SocketTimeoutException e)\n        {\n            log.error(\"调用HttpUtils.sendPost SocketTimeoutException, url=\" + url + \",param=\" + param, e);\n        }\n        catch (IOException e)\n        {\n            log.error(\"调用HttpUtils.sendPost IOException, url=\" + url + \",param=\" + param, e);\n        }\n        catch (Exception e)\n        {\n            log.error(\"调用HttpsUtil.sendPost Exception, url=\" + url + \",param=\" + param, e);\n        }\n        finally\n        {\n            try\n            {\n                if (out != null)\n                {\n                    out.close();\n                }\n                if (in != null)\n                {\n                    in.close();\n                }\n            }\n            catch (IOException ex)\n            {\n                log.error(\"调用in.close Exception, url=\" + url + \",param=\" + param, ex);\n            }\n        }\n        return result.toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "out.print",
+        "out.close",
+        "HttpUtils.URL",
+        "log.error",
+        "realUrl.openConnection",
+        "HttpUtils.error",
+        "HttpUtils.readLine",
+        "conn.setDoInput",
+        "in.close",
+        "HttpUtils.close",
+        "conn.getOutputStream",
+        "HttpUtils.append",
+        "HttpUtils.openConnection",
+        "HttpUtils.print",
+        "result.append",
+        "HttpUtils.InputStreamReader",
+        "out.flush",
+        "HttpUtils.flush",
+        "conn.setDoOutput",
+        "HttpUtils.sendPost",
+        "HttpUtils.toString",
+        "conn.setRequestProperty",
+        "HttpUtils.0",
+        "4.0",
+        "in.readLine",
+        "HttpUtils.setRequestProperty",
+        "HttpUtils.setDoOutput",
+        "conn.getInputStream",
+        "HttpUtils.StringBuilder",
+        "HttpUtils.info",
+        "result.toString",
+        "HttpUtils.PrintWriter",
+        "HttpUtils.BufferedReader",
+        "HttpUtils.getOutputStream",
+        "HttpUtils.getInputStream",
+        "HttpUtils.setDoInput",
+        "log.info"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "sendSSLPost": {
+      "method_name": "sendSSLPost",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "url",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "param",
+          "annotations": []
+        }
+      ],
+      "line_start": 184,
+      "line_end": 237,
+      "body": "    public static String sendSSLPost(String url, String param)\n    {\n        StringBuilder result = new StringBuilder();\n        String urlNameString = url + \"?\" + param;\n        try\n        {\n            log.info(\"sendSSLPost - {}\", urlNameString);\n            SSLContext sc = SSLContext.getInstance(\"SSL\");\n            sc.init(null, new TrustManager[] { new TrustAnyTrustManager() }, new java.security.SecureRandom());\n            URL console = new URL(urlNameString);\n            HttpsURLConnection conn = (HttpsURLConnection) console.openConnection();\n            conn.setRequestProperty(\"accept\", \"*/*\");\n            conn.setRequestProperty(\"connection\", \"Keep-Alive\");\n            conn.setRequestProperty(\"user-agent\", \"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)\");\n            conn.setRequestProperty(\"Accept-Charset\", \"utf-8\");\n            conn.setRequestProperty(\"contentType\", \"utf-8\");\n            conn.setDoOutput(true);\n            conn.setDoInput(true);\n\n            conn.setSSLSocketFactory(sc.getSocketFactory());\n            conn.setHostnameVerifier(new TrustAnyHostnameVerifier());\n            conn.connect();\n            InputStream is = conn.getInputStream();\n            BufferedReader br = new BufferedReader(new InputStreamReader(is));\n            String ret = \"\";\n            while ((ret = br.readLine()) != null)\n            {\n                if (ret != null && !\"\".equals(ret.trim()))\n                {\n                    result.append(new String(ret.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));\n                }\n            }\n            log.info(\"recv - {}\", result);\n            conn.disconnect();\n            br.close();\n        }\n        catch (ConnectException e)\n        {\n            log.error(\"调用HttpUtils.sendSSLPost ConnectException, url=\" + url + \",param=\" + param, e);\n        }\n        catch (SocketTimeoutException e)\n        {\n            log.error(\"调用HttpUtils.sendSSLPost SocketTimeoutException, url=\" + url + \",param=\" + param, e);\n        }\n        catch (IOException e)\n        {\n            log.error(\"调用HttpUtils.sendSSLPost IOException, url=\" + url + \",param=\" + param, e);\n        }\n        catch (Exception e)\n        {\n            log.error(\"调用HttpsUtil.sendSSLPost Exception, url=\" + url + \",param=\" + param, e);\n        }\n        return result.toString();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "HttpUtils.equals",
+        "HttpUtils.URL",
+        "log.error",
+        "HttpUtils.error",
+        "HttpUtils.readLine",
+        "conn.setDoInput",
+        "HttpUtils.close",
+        "HttpUtils.disconnect",
+        "HttpUtils.String",
+        "br.close",
+        "conn.setHostnameVerifier",
+        "HttpUtils.getInstance",
+        "HttpUtils.append",
+        "console.openConnection",
+        "HttpUtils.openConnection",
+        "HttpUtils.trim",
+        "result.append",
+        "HttpUtils.InputStreamReader",
+        "conn.setSSLSocketFactory",
+        "HttpUtils.TrustAnyHostnameVerifier",
+        "security.SecureRandom",
+        "HttpUtils.getSocketFactory",
+        "conn.setDoOutput",
+        "br.readLine",
+        "HttpUtils.toString",
+        "sc.init",
+        "conn.setRequestProperty",
+        "HttpUtils.setHostnameVerifier",
+        "HttpUtils.0",
+        "conn.connect",
+        "SSLContext.getInstance",
+        "4.0",
+        "HttpUtils.setRequestProperty",
+        "ret.trim",
+        "conn.getInputStream",
+        "HttpUtils.StringBuilder",
+        "HttpUtils.setDoOutput",
+        "HttpUtils.connect",
+        "HttpUtils.info",
+        "result.toString",
+        "HttpUtils.setSSLSocketFactory",
+        "HttpUtils.BufferedReader",
+        "sc.getSocketFactory",
+        "HttpUtils.getInputStream",
+        "HttpUtils.setDoInput",
+        "HttpUtils.getBytes",
+        "HttpUtils.sendSSLPost",
+        "log.info",
+        "ret.getBytes",
+        "HttpUtils.init",
+        "HttpUtils.SecureRandom",
+        "conn.disconnect",
+        "HttpUtils.TrustAnyTrustManager"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkClientTrusted": {
+      "method_name": "checkClientTrusted",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "X509Certificate[]",
+          "name": "chain",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "authType",
+          "annotations": []
+        }
+      ],
+      "line_start": 242,
+      "line_end": 244,
+      "body": "        public void checkClientTrusted(X509Certificate[] chain, String authType)\n        {\n        }",
+      "annotations": [],
+      "called_methods": [
+        "HttpUtils.checkClientTrusted"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkServerTrusted": {
+      "method_name": "checkServerTrusted",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "X509Certificate[]",
+          "name": "chain",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "authType",
+          "annotations": []
+        }
+      ],
+      "line_start": 247,
+      "line_end": 249,
+      "body": "        public void checkServerTrusted(X509Certificate[] chain, String authType)\n        {\n        }",
+      "annotations": [],
+      "called_methods": [
+        "HttpUtils.checkServerTrusted"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "verify": {
+      "method_name": "verify",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "hostname",
+          "annotations": []
+        },
+        {
+          "type": "SSLSession",
+          "name": "session",
+          "annotations": []
+        }
+      ],
+      "line_start": 261,
+      "line_end": 264,
+      "body": "        public boolean verify(String hostname, SSLSession session)\n        {\n            return true;\n        }",
+      "annotations": [],
+      "called_methods": [
+        "HttpUtils.verify"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 22,
+  "line_end": 266
+}

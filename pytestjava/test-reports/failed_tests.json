@@ -1,0 +1,134 @@
+[
+  {
+    "method": "get",
+    "path": "/system/menu/list",
+    "full_endpoint": "get /system/menu/list",
+    "test_name": "test_system_menu_list_positive"
+  },
+  {
+    "method": "get",
+    "path": "/system/menu/treeselect",
+    "full_endpoint": "get /system/menu/treeselect",
+    "test_name": "test_system_menu_treeselect_positive"
+  },
+  {
+    "method": "post",
+    "path": "/system/menu",
+    "full_endpoint": "post /system/menu",
+    "test_name": "test_system_menu_positive"
+  },
+  {
+    "method": "GET",
+    "path": "/",
+    "full_endpoint": "GET /",
+    "test_name": "test_system_user_list_positive"
+  },
+  {
+    "method": "post",
+    "path": "/system/user",
+    "full_endpoint": "post /system/user",
+    "test_name": "test_system_user_positive"
+  },
+  {
+    "method": "put",
+    "path": "/system/user/authRole",
+    "full_endpoint": "put /system/user/authRole",
+    "test_name": "test_system_user_authrole_positive"
+  },
+  {
+    "method": "put",
+    "path": "/system/user/resetPwd",
+    "full_endpoint": "put /system/user/resetPwd",
+    "test_name": "test_system_user_resetpwd_positive"
+  },
+  {
+    "method": "put",
+    "path": "/system/user/changeStatus",
+    "full_endpoint": "put /system/user/changeStatus",
+    "test_name": "test_system_user_changestatus_positive"
+  },
+  {
+    "method": "post",
+    "path": "/register",
+    "full_endpoint": "post /register",
+    "test_name": "test_register_positive"
+  },
+  {
+    "method": "put",
+    "path": "/system/role",
+    "full_endpoint": "put /system/role",
+    "test_name": "test_system_role_positive"
+  },
+  {
+    "method": "put",
+    "path": "/system/role/changeStatus",
+    "full_endpoint": "put /system/role/changeStatus",
+    "test_name": "test_system_role_changestatus_positive"
+  },
+  {
+    "method": "put",
+    "path": "/system/role/authUser/cancel",
+    "full_endpoint": "put /system/role/authUser/cancel",
+    "test_name": "test_system_role_authuser_cancel_positive"
+  },
+  {
+    "method": "get",
+    "path": "/system/config/page",
+    "full_endpoint": "get /system/config/page",
+    "test_name": "test_system_config_page_positive"
+  },
+  {
+    "method": "post",
+    "path": "/system/config",
+    "full_endpoint": "post /system/config",
+    "test_name": "test_system_config_positive"
+  },
+  {
+    "method": "post",
+    "path": "/system/dict/type",
+    "full_endpoint": "post /system/dict/type",
+    "test_name": "test_system_dict_type_positive"
+  },
+  {
+    "method": "post",
+    "path": "/system/user/profile/avatar",
+    "full_endpoint": "post /system/user/profile/avatar",
+    "test_name": "test_system_user_profile_avatar_positive"
+  },
+  {
+    "method": "get",
+    "path": "/monitor/logininfor/list",
+    "full_endpoint": "get /monitor/logininfor/list",
+    "test_name": "test_monitor_logininfor_list_positive"
+  },
+  {
+    "method": "get",
+    "path": "/monitor/operlog/list",
+    "full_endpoint": "get /monitor/operlog/list",
+    "test_name": "test_monitor_operlog_list_positive"
+  },
+  {
+    "method": "delete",
+    "path": "/system/dict/data/test_code",
+    "full_endpoint": "delete /system/dict/data/test_code",
+    "test_name": "test_system_dict_data_test_code_positive"
+  },
+  {
+    "method": "get",
+    "path": "/system/dict/type/list",
+    "full_endpoint": "get /system/dict/type/list",
+    "test_name": "test_system_dict_type_list_positive"
+  },
+  {
+    "method": "delete",
+    "path": "/system/role/1",
+    "full_endpoint": "delete /system/role/1",
+    "test_name": "test_system_role_1_positive"
+  },
+  {
+    "method": "get",
+    "path": "/",
+    "full_endpoint": "get /",
+    "test_name": "test__positive"
+  }
+]

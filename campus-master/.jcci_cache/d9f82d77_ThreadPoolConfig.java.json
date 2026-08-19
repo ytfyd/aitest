@@ -1,0 +1,172 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\config\\ThreadPoolConfig.java",
+  "package_name": "com.oddfar.campus.common.config",
+  "class_name": "ThreadPoolConfig",
+  "imports": [
+    "com.oddfar.campus.common.config.properties.ThreadPoolProperties",
+    "com.oddfar.campus.common.utils.Threads",
+    "lombok.extern.slf4j.Slf4j",
+    "org.apache.commons.lang3.concurrent.BasicThreadFactory",
+    "org.springframework.boot.autoconfigure.AutoConfiguration",
+    "org.springframework.boot.autoconfigure.condition.ConditionalOnProperty",
+    "org.springframework.boot.context.properties.EnableConfigurationProperties",
+    "org.springframework.context.annotation.Bean",
+    "org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor",
+    "javax.annotation.PreDestroy",
+    "java.util.concurrent.ScheduledExecutorService",
+    "java.util.concurrent.ScheduledThreadPoolExecutor",
+    "java.util.concurrent.ThreadPoolExecutor"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "scheduledExecutorService": {
+      "field_name": "scheduledExecutorService",
+      "field_type": "ScheduledExecutorService",
+      "line_number": 33,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "threadPoolTaskExecutor": {
+      "method_name": "threadPoolTaskExecutor",
+      "return_type": "ThreadPoolTaskExecutor",
+      "parameters": [
+        {
+          "type": "ThreadPoolProperties",
+          "name": "threadPoolProperties",
+          "annotations": []
+        }
+      ],
+      "line_start": 35,
+      "line_end": 45,
+      "body": "    @Bean(name = \"threadPoolTaskExecutor\")\n    @ConditionalOnProperty(prefix = \"thread-pool\", name = \"enabled\", havingValue = \"true\")\n    public ThreadPoolTaskExecutor threadPoolTaskExecutor(ThreadPoolProperties threadPoolProperties) {\n        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();\n        executor.setCorePoolSize(core);\n        executor.setMaxPoolSize(core * 2);\n        executor.setQueueCapacity(threadPoolProperties.getQueueCapacity());\n        executor.setKeepAliveSeconds(threadPoolProperties.getKeepAliveSeconds());\n        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());\n        return executor;\n    }",
+      "annotations": [
+        "Bean",
+        "ConditionalOnProperty"
+      ],
+      "called_methods": [
+        "ThreadPoolConfig.setCorePoolSize",
+        "executor.setRejectedExecutionHandler",
+        "executor.setCorePoolSize",
+        "executor.setMaxPoolSize",
+        "ThreadPoolConfig.setMaxPoolSize",
+        "ThreadPoolConfig.setRejectedExecutionHandler",
+        "ThreadPoolExecutor.CallerRunsPolicy",
+        "ThreadPoolConfig.getQueueCapacity",
+        "ThreadPoolConfig.CallerRunsPolicy",
+        "ThreadPoolConfig.setKeepAliveSeconds",
+        "executor.setQueueCapacity",
+        "threadPoolProperties.getKeepAliveSeconds",
+        "ThreadPoolConfig.threadPoolTaskExecutor",
+        "ThreadPoolConfig.ConditionalOnProperty",
+        "ThreadPoolConfig.Bean",
+        "threadPoolProperties.getQueueCapacity",
+        "ThreadPoolConfig.setQueueCapacity",
+        "ThreadPoolConfig.ThreadPoolTaskExecutor",
+        "executor.setKeepAliveSeconds",
+        "ThreadPoolConfig.getKeepAliveSeconds"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "scheduledExecutorService": {
+      "method_name": "scheduledExecutorService",
+      "return_type": "ScheduledExecutorService",
+      "parameters": [],
+      "line_start": 50,
+      "line_end": 63,
+      "body": "    @Bean(name = \"scheduledExecutorService\")\n    protected ScheduledExecutorService scheduledExecutorService() {\n        ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(core,\n                new BasicThreadFactory.Builder().namingPattern(\"schedule-pool-%d\").daemon(true).build(),\n                new ThreadPoolExecutor.CallerRunsPolicy()) {\n            @Override\n            protected void afterExecute(Runnable r, Throwable t) {\n                super.afterExecute(r, t);\n                Threads.printException(r, t);\n            }\n        };\n        this.scheduledExecutorService = scheduledThreadPoolExecutor;\n        return scheduledThreadPoolExecutor;\n    }",
+      "annotations": [
+        "Bean"
+      ],
+      "called_methods": [
+        "ThreadPoolConfig.CallerRunsPolicy",
+        "ThreadPoolConfig.Bean",
+        "ThreadPoolConfig.printException",
+        "ThreadPoolConfig.afterExecute",
+        "ThreadPoolConfig.daemon",
+        "ThreadPoolConfig.build",
+        "ThreadPoolConfig.Builder",
+        "ThreadPoolConfig.namingPattern",
+        "ThreadPoolConfig.scheduledExecutorService",
+        "Threads.printException",
+        "ThreadPoolConfig.ScheduledThreadPoolExecutor",
+        "BasicThreadFactory.Builder",
+        "ThreadPoolExecutor.CallerRunsPolicy"
+      ],
+      "used_fields": [
+        "scheduledExecutorService"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "afterExecute": {
+      "method_name": "afterExecute",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Runnable",
+          "name": "r",
+          "annotations": []
+        },
+        {
+          "type": "Throwable",
+          "name": "t",
+          "annotations": []
+        }
+      ],
+      "line_start": 56,
+      "line_end": 59,
+      "body": "            protected void afterExecute(Runnable r, Throwable t) {\n                super.afterExecute(r, t);\n                Threads.printException(r, t);\n            }",
+      "annotations": [],
+      "called_methods": [
+        "Threads.printException",
+        "ThreadPoolConfig.printException",
+        "ThreadPoolConfig.afterExecute"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "destroy": {
+      "method_name": "destroy",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 69,
+      "line_end": 76,
+      "body": "    public void destroy() {\n        try {\n            log.info(\"====关闭后台任务任务线程池====\");\n            Threads.shutdownAndAwaitTermination(scheduledExecutorService);\n        } catch (Exception e) {\n            log.error(e.getMessage(), e);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "e.getMessage",
+        "ThreadPoolConfig.destroy",
+        "ThreadPoolConfig.info",
+        "ThreadPoolConfig.getMessage",
+        "log.error",
+        "ThreadPoolConfig.shutdownAndAwaitTermination",
+        "Threads.shutdownAndAwaitTermination",
+        "log.info",
+        "ThreadPoolConfig.error"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Slf4j",
+    "AutoConfiguration",
+    "EnableConfigurationProperties"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 26,
+  "line_end": 78
+}

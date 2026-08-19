@@ -1,0 +1,189 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\core\\page\\TableDataInfo.java",
+  "package_name": "com.oddfar.campus.common.core.page",
+  "class_name": "TableDataInfo",
+  "imports": [
+    "java.io.Serializable",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [
+    "Serializable"
+  ],
+  "fields": {
+    "total": {
+      "field_name": "total",
+      "field_type": "long",
+      "line_number": 17,
+      "annotations": [
+        "author"
+      ]
+    },
+    "code": {
+      "field_name": "code",
+      "field_type": "int",
+      "line_number": 27,
+      "annotations": []
+    },
+    "msg": {
+      "field_name": "msg",
+      "field_type": "String",
+      "line_number": 32,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "getTotal": {
+      "method_name": "getTotal",
+      "return_type": "long",
+      "parameters": [],
+      "line_start": 51,
+      "line_end": 53,
+      "body": "    public long getTotal() {\n        return total;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TableDataInfo.getTotal"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setTotal": {
+      "method_name": "setTotal",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "long",
+          "name": "total",
+          "annotations": []
+        }
+      ],
+      "line_start": 55,
+      "line_end": 57,
+      "body": "    public void setTotal(long total) {\n        this.total = total;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TableDataInfo.setTotal"
+      ],
+      "used_fields": [
+        "total"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setRows": {
+      "method_name": "setRows",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "List<?>",
+          "name": "rows",
+          "annotations": []
+        }
+      ],
+      "line_start": 63,
+      "line_end": 65,
+      "body": "    public void setRows(List<?> rows) {\n        this.rows = rows;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TableDataInfo.setRows"
+      ],
+      "used_fields": [
+        "rows"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getCode": {
+      "method_name": "getCode",
+      "return_type": "int",
+      "parameters": [],
+      "line_start": 67,
+      "line_end": 69,
+      "body": "    public int getCode() {\n        return code;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TableDataInfo.getCode"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setCode": {
+      "method_name": "setCode",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "int",
+          "name": "code",
+          "annotations": []
+        }
+      ],
+      "line_start": 71,
+      "line_end": 73,
+      "body": "    public void setCode(int code) {\n        this.code = code;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TableDataInfo.setCode"
+      ],
+      "used_fields": [
+        "code"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getMsg": {
+      "method_name": "getMsg",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 75,
+      "line_end": 77,
+      "body": "    public String getMsg() {\n        return msg;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TableDataInfo.getMsg"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setMsg": {
+      "method_name": "setMsg",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "msg",
+          "annotations": []
+        }
+      ],
+      "line_start": 79,
+      "line_end": 81,
+      "body": "    public void setMsg(String msg) {\n        this.msg = msg;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "TableDataInfo.setMsg"
+      ],
+      "used_fields": [
+        "msg"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 11,
+  "line_end": 83
+}

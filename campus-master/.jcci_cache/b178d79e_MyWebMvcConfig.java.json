@@ -1,0 +1,144 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\config\\MyWebMvcConfig.java",
+  "package_name": "com.oddfar.campus.framework.config",
+  "class_name": "MyWebMvcConfig",
+  "imports": [
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.framework.api.sysconfig.ConfigExpander",
+    "com.oddfar.campus.framework.interceptor.RepeatSubmitInterceptor",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.context.annotation.Bean",
+    "org.springframework.context.annotation.Configuration",
+    "org.springframework.web.context.request.RequestContextListener",
+    "org.springframework.web.cors.CorsConfiguration",
+    "org.springframework.web.cors.UrlBasedCorsConfigurationSource",
+    "org.springframework.web.filter.CorsFilter",
+    "org.springframework.web.servlet.config.annotation.InterceptorRegistry",
+    "org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry",
+    "org.springframework.web.servlet.config.annotation.WebMvcConfigurer"
+  ],
+  "extends": null,
+  "implements": [
+    "WebMvcConfigurer"
+  ],
+  "fields": {
+    "repeatSubmitInterceptor": {
+      "field_name": "repeatSubmitInterceptor",
+      "field_type": "RepeatSubmitInterceptor",
+      "line_number": 23,
+      "annotations": [
+        "Configuration"
+      ]
+    }
+  },
+  "methods": {
+    "addResourceHandlers": {
+      "method_name": "addResourceHandlers",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "ResourceHandlerRegistry",
+          "name": "registry",
+          "annotations": []
+        }
+      ],
+      "line_start": 33,
+      "line_end": 42,
+      "body": "    public void addResourceHandlers(ResourceHandlerRegistry registry) {\n\n        /** 本地文件上传路径 */\n        registry.addResourceHandler(Constants.RESOURCE_PREFIX + \"/**\")\n                .addResourceLocations(\"file:\" + ConfigExpander.getFileProfile() + \"/\");\n\n        /** swagger配置 */\n        registry.addResourceHandler(\"/swagger-ui/**\")\n                .addResourceLocations(\"classpath:/META-INF/resources/webjars/springfox-swagger-ui/\");\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MyWebMvcConfig.addResourceHandler",
+        "ConfigExpander.getFileProfile",
+        "registry.addResourceHandler",
+        "MyWebMvcConfig.addResourceHandlers",
+        "MyWebMvcConfig.addResourceLocations",
+        "MyWebMvcConfig.getFileProfile"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "addInterceptors": {
+      "method_name": "addInterceptors",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "InterceptorRegistry",
+          "name": "registry",
+          "annotations": []
+        }
+      ],
+      "line_start": 49,
+      "line_end": 51,
+      "body": "    public void addInterceptors(InterceptorRegistry registry) {\n        registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns(\"/**\");\n    }",
+      "annotations": [],
+      "called_methods": [
+        "registry.addInterceptor",
+        "MyWebMvcConfig.addPathPatterns",
+        "MyWebMvcConfig.addInterceptor",
+        "MyWebMvcConfig.addInterceptors"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "corsFilter": {
+      "method_name": "corsFilter",
+      "return_type": "CorsFilter",
+      "parameters": [],
+      "line_start": 57,
+      "line_end": 73,
+      "body": "    public CorsFilter corsFilter() {\n        CorsConfiguration config = new CorsConfiguration();\n        config.setAllowCredentials(true);\n        // 设置访问源地址\n        config.addAllowedOriginPattern(\"*\");\n        // 设置访问源请求头\n        config.addAllowedHeader(\"*\");\n        // 设置访问源请求方法\n        config.addAllowedMethod(\"*\");\n        // 有效期 1800秒\n        config.setMaxAge(1800L);\n        // 添加映射路径，拦截一切请求\n        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();\n        source.registerCorsConfiguration(\"/**\", config);\n        // 返回新的CorsFilter\n        return new CorsFilter(source);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MyWebMvcConfig.setMaxAge",
+        "MyWebMvcConfig.setAllowCredentials",
+        "MyWebMvcConfig.registerCorsConfiguration",
+        "MyWebMvcConfig.CorsFilter",
+        "MyWebMvcConfig.corsFilter",
+        "config.setMaxAge",
+        "MyWebMvcConfig.addAllowedOriginPattern",
+        "config.addAllowedMethod",
+        "MyWebMvcConfig.UrlBasedCorsConfigurationSource",
+        "source.registerCorsConfiguration",
+        "MyWebMvcConfig.addAllowedMethod",
+        "MyWebMvcConfig.CorsConfiguration",
+        "config.setAllowCredentials",
+        "config.addAllowedOriginPattern",
+        "config.addAllowedHeader",
+        "MyWebMvcConfig.addAllowedHeader"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "requestContextListenerBean": {
+      "method_name": "requestContextListenerBean",
+      "return_type": "RequestContextListener",
+      "parameters": [],
+      "line_start": 82,
+      "line_end": 84,
+      "body": "    public RequestContextListener requestContextListenerBean() {\n        return new RequestContextListener();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MyWebMvcConfig.RequestContextListener",
+        "MyWebMvcConfig.requestContextListenerBean"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Configuration"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 22,
+  "line_end": 85
+}

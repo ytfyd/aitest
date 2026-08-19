@@ -1,0 +1,291 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\web\\exception\\GlobalExceptionHandler.java",
+  "package_name": "com.oddfar.campus.framework.web.exception",
+  "class_name": "GlobalExceptionHandler",
+  "imports": [
+    "com.oddfar.campus.common.constant.HttpStatus",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.exception.ServiceException",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory",
+    "org.springframework.security.access.AccessDeniedException",
+    "org.springframework.validation.BindException",
+    "org.springframework.web.HttpRequestMethodNotSupportedException",
+    "org.springframework.web.bind.MethodArgumentNotValidException",
+    "org.springframework.web.bind.annotation.ExceptionHandler",
+    "org.springframework.web.bind.annotation.RestControllerAdvice",
+    "javax.servlet.http.HttpServletRequest"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "handleAccessDeniedException": {
+      "method_name": "handleAccessDeniedException",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "AccessDeniedException",
+          "name": "e",
+          "annotations": []
+        },
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 30,
+      "line_end": 35,
+      "body": "    @ExceptionHandler(AccessDeniedException.class)\n    public R handleAccessDeniedException(AccessDeniedException e, HttpServletRequest request) {\n        String requestURI = request.getRequestURI();\n        log.error(\"请求地址'{}',权限校验失败'{}'\", requestURI, e.getMessage());\n        return R.error(HttpStatus.FORBIDDEN, \"没有权限，请联系管理员授权\");\n    }",
+      "annotations": [
+        "ExceptionHandler"
+      ],
+      "called_methods": [
+        "e.getMessage",
+        "R.error",
+        "request.getRequestURI",
+        "GlobalExceptionHandler.getMessage",
+        "log.error",
+        "GlobalExceptionHandler.handleAccessDeniedException",
+        "GlobalExceptionHandler.ExceptionHandler",
+        "GlobalExceptionHandler.getRequestURI",
+        "GlobalExceptionHandler.error"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "handleHttpRequestMethodNotSupported": {
+      "method_name": "handleHttpRequestMethodNotSupported",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "HttpRequestMethodNotSupportedException",
+          "name": "e",
+          "annotations": []
+        },
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 40,
+      "line_end": 46,
+      "body": "    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)\n    public R handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException e,\n                                                          HttpServletRequest request) {\n        String requestURI = request.getRequestURI();\n        log.error(\"请求地址'{}',不支持'{}'请求\", requestURI, e.getMethod());\n        return R.error(e.getMessage());\n    }",
+      "annotations": [
+        "ExceptionHandler"
+      ],
+      "called_methods": [
+        "R.error",
+        "e.getMessage",
+        "GlobalExceptionHandler.handleHttpRequestMethodNotSupported",
+        "request.getRequestURI",
+        "GlobalExceptionHandler.getMessage",
+        "log.error",
+        "GlobalExceptionHandler.getMethod",
+        "GlobalExceptionHandler.ExceptionHandler",
+        "e.getMethod",
+        "GlobalExceptionHandler.getRequestURI",
+        "GlobalExceptionHandler.error"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "handleServiceException": {
+      "method_name": "handleServiceException",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "ServiceException",
+          "name": "e",
+          "annotations": []
+        },
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 51,
+      "line_end": 56,
+      "body": "    @ExceptionHandler(ServiceException.class)\n    public R handleServiceException(ServiceException e, HttpServletRequest request) {\n        log.error(e.getMessage(), e);\n        Integer code = e.getCode();\n        return StringUtils.isNotNull(code) ? R.error(code, e.getMessage()) : R.error(e.getMessage());\n    }",
+      "annotations": [
+        "ExceptionHandler"
+      ],
+      "called_methods": [
+        "e.getCode",
+        "e.getMessage",
+        "R.error",
+        "GlobalExceptionHandler.getMessage",
+        "log.error",
+        "GlobalExceptionHandler.getCode",
+        "StringUtils.isNotNull",
+        "GlobalExceptionHandler.ExceptionHandler",
+        "GlobalExceptionHandler.handleServiceException",
+        "GlobalExceptionHandler.isNotNull",
+        "GlobalExceptionHandler.error"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "handleRuntimeException": {
+      "method_name": "handleRuntimeException",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "RuntimeException",
+          "name": "e",
+          "annotations": []
+        },
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 61,
+      "line_end": 66,
+      "body": "    @ExceptionHandler(RuntimeException.class)\n    public R handleRuntimeException(RuntimeException e, HttpServletRequest request) {\n        String requestURI = request.getRequestURI();\n        log.error(\"请求地址'{}',发生未知异常.\", requestURI, e);\n        return R.error(e.getMessage());\n    }",
+      "annotations": [
+        "ExceptionHandler"
+      ],
+      "called_methods": [
+        "R.error",
+        "e.getMessage",
+        "request.getRequestURI",
+        "GlobalExceptionHandler.getMessage",
+        "log.error",
+        "GlobalExceptionHandler.handleRuntimeException",
+        "GlobalExceptionHandler.ExceptionHandler",
+        "GlobalExceptionHandler.getRequestURI",
+        "GlobalExceptionHandler.error"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "handleException": {
+      "method_name": "handleException",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Exception",
+          "name": "e",
+          "annotations": []
+        },
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 71,
+      "line_end": 76,
+      "body": "    @ExceptionHandler(Exception.class)\n    public R handleException(Exception e, HttpServletRequest request) {\n        String requestURI = request.getRequestURI();\n        log.error(\"请求地址'{}',发生系统异常.\", requestURI, e);\n        return R.error(e.getMessage());\n    }",
+      "annotations": [
+        "ExceptionHandler"
+      ],
+      "called_methods": [
+        "R.error",
+        "e.getMessage",
+        "request.getRequestURI",
+        "GlobalExceptionHandler.getMessage",
+        "log.error",
+        "GlobalExceptionHandler.handleException",
+        "GlobalExceptionHandler.ExceptionHandler",
+        "GlobalExceptionHandler.getRequestURI",
+        "GlobalExceptionHandler.error"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "handleBindException": {
+      "method_name": "handleBindException",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "BindException",
+          "name": "e",
+          "annotations": []
+        }
+      ],
+      "line_start": 81,
+      "line_end": 86,
+      "body": "    @ExceptionHandler(BindException.class)\n    public R handleBindException(BindException e) {\n        log.error(e.getMessage(), e);\n        String message = e.getAllErrors().get(0).getDefaultMessage();\n        return R.error(message);\n    }",
+      "annotations": [
+        "ExceptionHandler"
+      ],
+      "called_methods": [
+        "e.getMessage",
+        "R.error",
+        "GlobalExceptionHandler.getAllErrors",
+        "e.getAllErrors",
+        "GlobalExceptionHandler.getMessage",
+        "log.error",
+        "GlobalExceptionHandler.getDefaultMessage",
+        "GlobalExceptionHandler.get",
+        "GlobalExceptionHandler.ExceptionHandler",
+        "GlobalExceptionHandler.handleBindException",
+        "GlobalExceptionHandler.error"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "handleMethodArgumentNotValidException": {
+      "method_name": "handleMethodArgumentNotValidException",
+      "return_type": "Object",
+      "parameters": [
+        {
+          "type": "MethodArgumentNotValidException",
+          "name": "e",
+          "annotations": []
+        }
+      ],
+      "line_start": 91,
+      "line_end": 96,
+      "body": "    @ExceptionHandler(MethodArgumentNotValidException.class)\n    public Object handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {\n        log.error(e.getMessage(), e);\n        String message = e.getBindingResult().getFieldError().getDefaultMessage();\n        return R.error(message);\n    }",
+      "annotations": [
+        "ExceptionHandler"
+      ],
+      "called_methods": [
+        "e.getMessage",
+        "R.error",
+        "e.getBindingResult",
+        "GlobalExceptionHandler.getMessage",
+        "GlobalExceptionHandler.getBindingResult",
+        "log.error",
+        "GlobalExceptionHandler.handleMethodArgumentNotValidException",
+        "GlobalExceptionHandler.getDefaultMessage",
+        "GlobalExceptionHandler.getFieldError",
+        "GlobalExceptionHandler.ExceptionHandler",
+        "GlobalExceptionHandler.error"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "RestControllerAdvice"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 24,
+  "line_end": 100
+}

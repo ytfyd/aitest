@@ -1,0 +1,382 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\core\\LambdaQueryWrapperX.java",
+  "package_name": "com.oddfar.campus.common.core",
+  "class_name": "LambdaQueryWrapperX",
+  "imports": [
+    "cn.hutool.core.util.ArrayUtil",
+    "com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper",
+    "com.baomidou.mybatisplus.core.toolkit.CollectionUtils",
+    "com.baomidou.mybatisplus.core.toolkit.support.SFunction",
+    "org.springframework.util.StringUtils",
+    "java.util.Collection",
+    "java.util.Map"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "likeIfPresent": {
+      "method_name": "likeIfPresent",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "val",
+          "annotations": []
+        }
+      ],
+      "line_start": 21,
+      "line_end": 26,
+      "body": "    public LambdaQueryWrapperX<T> likeIfPresent(SFunction<T, ?> column, String val) {\n        if (StringUtils.hasText(val)) {\n            return (LambdaQueryWrapperX<T>) super.like(column, val);\n        }\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.hasText",
+        "LambdaQueryWrapperX.hasText",
+        "LambdaQueryWrapperX.like",
+        "LambdaQueryWrapperX.likeIfPresent"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "inIfPresent": {
+      "method_name": "inIfPresent",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        },
+        {
+          "type": "Object...",
+          "name": "values",
+          "annotations": []
+        }
+      ],
+      "line_start": 35,
+      "line_end": 40,
+      "body": "    public LambdaQueryWrapperX<T> inIfPresent(SFunction<T, ?> column, Object... values) {\n        if (!ArrayUtil.isEmpty(values)) {\n            return (LambdaQueryWrapperX<T>) super.in(column, values);\n        }\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.inIfPresent",
+        "LambdaQueryWrapperX.in",
+        "LambdaQueryWrapperX.isEmpty",
+        "ArrayUtil.isEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "eqIfPresent": {
+      "method_name": "eqIfPresent",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        },
+        {
+          "type": "Object",
+          "name": "val",
+          "annotations": []
+        }
+      ],
+      "line_start": 42,
+      "line_end": 47,
+      "body": "    public LambdaQueryWrapperX<T> eqIfPresent(SFunction<T, ?> column, Object val) {\n        if (val != null) {\n            return (LambdaQueryWrapperX<T>) super.eq(column, val);\n        }\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.eq",
+        "LambdaQueryWrapperX.eqIfPresent"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "neIfPresent": {
+      "method_name": "neIfPresent",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        },
+        {
+          "type": "Object",
+          "name": "val",
+          "annotations": []
+        }
+      ],
+      "line_start": 49,
+      "line_end": 54,
+      "body": "    public LambdaQueryWrapperX<T> neIfPresent(SFunction<T, ?> column, Object val) {\n        if (val != null) {\n            return (LambdaQueryWrapperX<T>) super.ne(column, val);\n        }\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.ne",
+        "LambdaQueryWrapperX.neIfPresent"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "gtIfPresent": {
+      "method_name": "gtIfPresent",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        },
+        {
+          "type": "Object",
+          "name": "val",
+          "annotations": []
+        }
+      ],
+      "line_start": 56,
+      "line_end": 61,
+      "body": "    public LambdaQueryWrapperX<T> gtIfPresent(SFunction<T, ?> column, Object val) {\n        if (val != null) {\n            return (LambdaQueryWrapperX<T>) super.gt(column, val);\n        }\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.gtIfPresent",
+        "LambdaQueryWrapperX.gt"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "geIfPresent": {
+      "method_name": "geIfPresent",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        },
+        {
+          "type": "Object",
+          "name": "val",
+          "annotations": []
+        }
+      ],
+      "line_start": 63,
+      "line_end": 68,
+      "body": "    public LambdaQueryWrapperX<T> geIfPresent(SFunction<T, ?> column, Object val) {\n        if (val != null) {\n            return (LambdaQueryWrapperX<T>) super.ge(column, val);\n        }\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.ge",
+        "LambdaQueryWrapperX.geIfPresent"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "ltIfPresent": {
+      "method_name": "ltIfPresent",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        },
+        {
+          "type": "Object",
+          "name": "val",
+          "annotations": []
+        }
+      ],
+      "line_start": 70,
+      "line_end": 75,
+      "body": "    public LambdaQueryWrapperX<T> ltIfPresent(SFunction<T, ?> column, Object val) {\n        if (val != null) {\n            return (LambdaQueryWrapperX<T>) super.lt(column, val);\n        }\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.ltIfPresent",
+        "LambdaQueryWrapperX.lt"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "leIfPresent": {
+      "method_name": "leIfPresent",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        },
+        {
+          "type": "Object",
+          "name": "val",
+          "annotations": []
+        }
+      ],
+      "line_start": 77,
+      "line_end": 82,
+      "body": "    public LambdaQueryWrapperX<T> leIfPresent(SFunction<T, ?> column, Object val) {\n        if (val != null) {\n            return (LambdaQueryWrapperX<T>) super.le(column, val);\n        }\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.le",
+        "LambdaQueryWrapperX.leIfPresent"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "betweenIfPresent": {
+      "method_name": "betweenIfPresent",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        },
+        {
+          "type": "Object>",
+          "name": "values",
+          "annotations": []
+        }
+      ],
+      "line_start": 104,
+      "line_end": 109,
+      "body": "    public LambdaQueryWrapperX<T> betweenIfPresent(SFunction<T, ?> column, Map<String, Object> values) {\n\n        String val1 = (String) values.get(\"beginTime\");\n        String val2 = (String) values.get(\"endTime\");\n        return betweenIfPresent(column, val1, val2);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.get",
+        "values.get",
+        "LambdaQueryWrapperX.betweenIfPresent"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "eq": {
+      "method_name": "eq",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        },
+        {
+          "type": "Object",
+          "name": "val",
+          "annotations": []
+        }
+      ],
+      "line_start": 120,
+      "line_end": 123,
+      "body": "    public LambdaQueryWrapperX<T> eq(SFunction<T, ?> column, Object val) {\n        super.eq(column, val);\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.eq"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "orderByDesc": {
+      "method_name": "orderByDesc",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        }
+      ],
+      "line_start": 126,
+      "line_end": 129,
+      "body": "    public LambdaQueryWrapperX<T> orderByDesc(SFunction<T, ?> column) {\n        super.orderByDesc(true, column);\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.orderByDesc"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "last": {
+      "method_name": "last",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "lastSql",
+          "annotations": []
+        }
+      ],
+      "line_start": 132,
+      "line_end": 135,
+      "body": "    public LambdaQueryWrapperX<T> last(String lastSql) {\n        super.last(lastSql);\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.last"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "in": {
+      "method_name": "in",
+      "return_type": "LambdaQueryWrapperX<T>",
+      "parameters": [
+        {
+          "type": "?>",
+          "name": "column",
+          "annotations": []
+        },
+        {
+          "type": "Collection<?>",
+          "name": "coll",
+          "annotations": []
+        }
+      ],
+      "line_start": 138,
+      "line_end": 141,
+      "body": "    public LambdaQueryWrapperX<T> in(SFunction<T, ?> column, Collection<?> coll) {\n        super.in(column, coll);\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LambdaQueryWrapperX.in"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "param"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 19,
+  "line_end": 144
+}

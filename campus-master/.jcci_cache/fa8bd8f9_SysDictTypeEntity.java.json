@@ -1,0 +1,96 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\entity\\SysDictTypeEntity.java",
+  "package_name": "com.oddfar.campus.common.domain.entity",
+  "class_name": "SysDictTypeEntity",
+  "imports": [
+    "com.baomidou.mybatisplus.annotation.TableId",
+    "com.baomidou.mybatisplus.annotation.TableName",
+    "com.oddfar.campus.common.domain.BaseEntity",
+    "lombok.Data",
+    "lombok.EqualsAndHashCode",
+    "javax.validation.constraints.NotBlank",
+    "javax.validation.constraints.Pattern",
+    "javax.validation.constraints.Size"
+  ],
+  "extends": "BaseEntity",
+  "implements": [],
+  "fields": {
+    "serialVersionUID": {
+      "field_name": "serialVersionUID",
+      "field_type": "long",
+      "line_number": [
+        21,
+        26
+      ],
+      "annotations": []
+    },
+    "dictId": {
+      "field_name": "dictId",
+      "field_type": "Long",
+      "line_number": [
+        27,
+        13
+      ],
+      "annotations": [
+        "TableId"
+      ]
+    },
+    "dictName": {
+      "field_name": "dictName",
+      "field_type": "String",
+      "line_number": [
+        34,
+        13
+      ],
+      "annotations": [
+        "NotBlank",
+        "Size"
+      ]
+    },
+    "dictType": {
+      "field_name": "dictType",
+      "field_type": "String",
+      "line_number": [
+        42,
+        13
+      ],
+      "annotations": [
+        "NotBlank",
+        "Size",
+        "Pattern"
+      ]
+    },
+    "status": {
+      "field_name": "status",
+      "field_type": "String",
+      "line_number": [
+        48,
+        13
+      ],
+      "annotations": []
+    },
+    "remark": {
+      "field_name": "remark",
+      "field_type": "String",
+      "line_number": [
+        54,
+        13
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [
+    "Data",
+    "EqualsAndHashCode",
+    "TableName"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    19,
+    8
+  ],
+  "line_end": 0
+}

@@ -1,0 +1,39 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\mail\\MailSendContext.java",
+  "package_name": "com.oddfar.campus.framework.api.mail",
+  "class_name": "MailSendContext",
+  "imports": [
+    "cn.hutool.extra.spring.SpringUtil"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "me": {
+      "method_name": "me",
+      "return_type": "MailSendApi",
+      "parameters": [],
+      "line_start": 15,
+      "line_end": 17,
+      "body": "    public static MailSendApi me() {\n        return SpringUtil.getBean(MailSendApi.class);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MailSendContext.getBean",
+        "SpringUtil.getBean",
+        "MailSendContext.me"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 10,
+  "line_end": 21
+}

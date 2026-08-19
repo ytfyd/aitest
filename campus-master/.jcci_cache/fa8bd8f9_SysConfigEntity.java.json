@@ -1,0 +1,119 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\entity\\SysConfigEntity.java",
+  "package_name": "com.oddfar.campus.common.domain.entity",
+  "class_name": "SysConfigEntity",
+  "imports": [
+    "com.baomidou.mybatisplus.annotation.TableId",
+    "com.baomidou.mybatisplus.annotation.TableName",
+    "com.oddfar.campus.common.domain.BaseEntity",
+    "lombok.Data",
+    "lombok.EqualsAndHashCode",
+    "javax.validation.constraints.NotBlank",
+    "javax.validation.constraints.Size"
+  ],
+  "extends": "BaseEntity",
+  "implements": [],
+  "fields": {
+    "serialVersionUID": {
+      "field_name": "serialVersionUID",
+      "field_type": "long",
+      "line_number": [
+        21,
+        26
+      ],
+      "annotations": []
+    },
+    "configId": {
+      "field_name": "configId",
+      "field_type": "Long",
+      "line_number": [
+        25,
+        13
+      ],
+      "annotations": [
+        "TableId"
+      ]
+    },
+    "configName": {
+      "field_name": "configName",
+      "field_type": "String",
+      "line_number": [
+        32,
+        13
+      ],
+      "annotations": [
+        "NotBlank",
+        "Size"
+      ]
+    },
+    "configKey": {
+      "field_name": "configKey",
+      "field_type": "String",
+      "line_number": [
+        39,
+        13
+      ],
+      "annotations": [
+        "NotBlank",
+        "Size"
+      ]
+    },
+    "configValue": {
+      "field_name": "configValue",
+      "field_type": "String",
+      "line_number": [
+        46,
+        13
+      ],
+      "annotations": [
+        "NotBlank",
+        "Size"
+      ]
+    },
+    "configType": {
+      "field_name": "configType",
+      "field_type": "String",
+      "line_number": [
+        52,
+        13
+      ],
+      "annotations": [
+        "NotBlank"
+      ]
+    },
+    "groupCode": {
+      "field_name": "groupCode",
+      "field_type": "String",
+      "line_number": [
+        58,
+        13
+      ],
+      "annotations": [
+        "NotBlank"
+      ]
+    },
+    "remark": {
+      "field_name": "remark",
+      "field_type": "String",
+      "line_number": [
+        63,
+        13
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [
+    "Data",
+    "EqualsAndHashCode",
+    "TableName"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    20,
+    8
+  ],
+  "line_end": 0
+}

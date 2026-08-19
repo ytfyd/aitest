@@ -1,0 +1,347 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\service\\impl\\SysDictTypeServiceImpl.java",
+  "package_name": "com.oddfar.campus.framework.service.impl",
+  "class_name": "SysDictTypeServiceImpl",
+  "imports": [
+    "com.oddfar.campus.common.core.LambdaQueryWrapperX",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.entity.SysDictDataEntity",
+    "com.oddfar.campus.common.domain.entity.SysDictTypeEntity",
+    "com.oddfar.campus.common.exception.ServiceException",
+    "com.oddfar.campus.common.utils.DictUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.mapper.SysDictDataMapper",
+    "com.oddfar.campus.framework.mapper.SysDictTypeMapper",
+    "com.oddfar.campus.framework.service.SysDictTypeService",
+    "org.springframework.stereotype.Service",
+    "org.springframework.transaction.annotation.Transactional",
+    "javax.annotation.Resource",
+    "java.util.Comparator",
+    "java.util.List",
+    "java.util.Map",
+    "java.util.stream.Collectors"
+  ],
+  "extends": null,
+  "implements": [
+    "SysDictTypeService"
+  ],
+  "fields": {
+    "dictTypeMapper": {
+      "field_name": "dictTypeMapper",
+      "field_type": "SysDictTypeMapper",
+      "line_number": 26,
+      "annotations": [
+        "Service"
+      ]
+    },
+    "dictDataMapper": {
+      "field_name": "dictDataMapper",
+      "field_type": "SysDictDataMapper",
+      "line_number": 28,
+      "annotations": [
+        "Service",
+        "Resource"
+      ]
+    }
+  },
+  "methods": {
+    "page": {
+      "method_name": "page",
+      "return_type": "PageResult<SysDictTypeEntity>",
+      "parameters": [
+        {
+          "type": "SysDictTypeEntity",
+          "name": "sysDictTypeEntity",
+          "annotations": []
+        }
+      ],
+      "line_start": 32,
+      "line_end": 34,
+      "body": "    public PageResult<SysDictTypeEntity> page(SysDictTypeEntity sysDictTypeEntity) {\n        return dictTypeMapper.selectPage(sysDictTypeEntity);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysDictTypeServiceImpl.selectPage",
+        "SysDictTypeServiceImpl.page",
+        "SysDictTypeMapper.selectPage"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectDictDataByType": {
+      "method_name": "selectDictDataByType",
+      "return_type": "List<SysDictDataEntity>",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "dictType",
+          "annotations": []
+        }
+      ],
+      "line_start": 43,
+      "line_end": 58,
+      "body": "    public List<SysDictDataEntity> selectDictDataByType(String dictType) {\n        List<SysDictDataEntity> dictDatas = DictUtils.getDictCache(dictType);\n        if (StringUtils.isNotEmpty(dictDatas)) {\n            return dictDatas;\n        }\n\n        dictDatas = dictDataMapper.selectDictDataByType(dictType);\n\n        if (StringUtils.isNotEmpty(dictDatas)) {\n            DictUtils.setDictCache(dictType, dictDatas);\n            return dictDatas;\n        }\n        return null;\n\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DictUtils.setDictCache",
+        "SysDictTypeServiceImpl.selectDictDataByType",
+        "SysDictTypeServiceImpl.setDictCache",
+        "DictUtils.getDictCache",
+        "SysDictTypeServiceImpl.isNotEmpty",
+        "SysDictDataMapper.selectDictDataByType",
+        "SysDictTypeServiceImpl.getDictCache",
+        "StringUtils.isNotEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectDictTypeById": {
+      "method_name": "selectDictTypeById",
+      "return_type": "SysDictTypeEntity",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "dictId",
+          "annotations": []
+        }
+      ],
+      "line_start": 61,
+      "line_end": 63,
+      "body": "    public SysDictTypeEntity selectDictTypeById(Long dictId) {\n        return dictTypeMapper.selectById(dictId);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysDictTypeMapper.selectById",
+        "SysDictTypeServiceImpl.selectDictTypeById",
+        "SysDictTypeServiceImpl.selectById"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectDictTypeAll": {
+      "method_name": "selectDictTypeAll",
+      "return_type": "List<SysDictTypeEntity>",
+      "parameters": [],
+      "line_start": 66,
+      "line_end": 68,
+      "body": "    public List<SysDictTypeEntity> selectDictTypeAll() {\n        return dictTypeMapper.selectList();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysDictTypeServiceImpl.selectDictTypeAll",
+        "SysDictTypeMapper.selectList",
+        "SysDictTypeServiceImpl.selectList"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "updateDictType": {
+      "method_name": "updateDictType",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysDictTypeEntity",
+          "name": "dictType",
+          "annotations": []
+        }
+      ],
+      "line_start": 72,
+      "line_end": 84,
+      "body": "    public int updateDictType(SysDictTypeEntity dictType) {\n        SysDictTypeEntity oldDict = dictTypeMapper.selectById(dictType.getDictId());\n        dictDataMapper.updateDictDataType(oldDict.getDictType(), dictType.getDictType());\n        //把要更新的dictType的内容赋值到oldDict\n//        BeanUtil.copyProperties(dictType, oldDict);\n        int row = dictTypeMapper.updateById(dictType);\n\n        if (row > 0) {\n            List<SysDictDataEntity> dictDatas = dictDataMapper.selectDictDataByType(dictType.getDictType());\n            DictUtils.setDictCache(dictType.getDictType(), dictDatas);\n        }\n        return row;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DictUtils.setDictCache",
+        "SysDictTypeServiceImpl.updateDictType",
+        "SysDictTypeServiceImpl.copyProperties",
+        "SysDictTypeServiceImpl.selectDictDataByType",
+        "SysDictTypeServiceImpl.setDictCache",
+        "dictType.getDictType",
+        "SysDictDataMapper.selectDictDataByType",
+        "SysDictTypeServiceImpl.updateById",
+        "SysDictTypeServiceImpl.getDictId",
+        "SysDictTypeServiceImpl.getDictType",
+        "oldDict.getDictType",
+        "SysDictTypeServiceImpl.updateDictDataType",
+        "SysDictTypeServiceImpl.selectById",
+        "dictType.getDictId",
+        "SysDictTypeMapper.updateById",
+        "SysDictDataMapper.updateDictDataType",
+        "SysDictTypeMapper.selectById",
+        "BeanUtil.copyProperties"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertDictType": {
+      "method_name": "insertDictType",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysDictTypeEntity",
+          "name": "dictType",
+          "annotations": []
+        }
+      ],
+      "line_start": 87,
+      "line_end": 93,
+      "body": "    public int insertDictType(SysDictTypeEntity dictType) {\n        int row = dictTypeMapper.insert(dictType);\n        if (row > 0) {\n            DictUtils.setDictCache(dictType.getDictType(), null);\n        }\n        return row;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DictUtils.setDictCache",
+        "SysDictTypeServiceImpl.setDictCache",
+        "dictType.getDictType",
+        "SysDictTypeMapper.insert",
+        "SysDictTypeServiceImpl.insertDictType",
+        "SysDictTypeServiceImpl.getDictType",
+        "SysDictTypeServiceImpl.insert"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteDictTypeByIds": {
+      "method_name": "deleteDictTypeByIds",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "dictIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 96,
+      "line_end": 106,
+      "body": "    public void deleteDictTypeByIds(Long[] dictIds) {\n        for (Long dictId : dictIds) {\n            SysDictTypeEntity dictType = selectDictTypeById(dictId);\n            if (dictDataMapper.countDictDataByType(dictType.getDictType()) > 0) {\n                throw new ServiceException(String.format(\"%1$s已分配,不能删除\", dictType.getDictName()));\n            }\n//            this.removeById(dictId);\n            dictTypeMapper.deleteById(dictId);\n            DictUtils.removeDictCache(dictType.getDictType());\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysDictTypeServiceImpl.countDictDataByType",
+        "SysDictTypeServiceImpl.ServiceException",
+        "dictType.getDictName",
+        "SysDictTypeServiceImpl.getDictName",
+        "dictType.getDictType",
+        "SysDictTypeServiceImpl.removeDictCache",
+        "SysDictTypeMapper.deleteById",
+        "SysDictTypeServiceImpl.deleteById",
+        "DictUtils.removeDictCache",
+        "SysDictTypeServiceImpl.getDictType",
+        "SysDictTypeServiceImpl.format",
+        "SysDictTypeServiceImpl.selectDictTypeById",
+        "SysDictDataMapper.countDictDataByType",
+        "String.format",
+        "SysDictTypeServiceImpl.removeById",
+        "SysDictTypeServiceImpl.deleteDictTypeByIds"
+      ],
+      "used_fields": [
+        "removeById"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "resetDictCache": {
+      "method_name": "resetDictCache",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 109,
+      "line_end": 112,
+      "body": "    public void resetDictCache() {\n        clearDictCache();\n        loadingDictCache();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysDictTypeServiceImpl.clearDictCache",
+        "SysDictTypeServiceImpl.resetDictCache",
+        "SysDictTypeServiceImpl.loadingDictCache"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "loadingDictCache": {
+      "method_name": "loadingDictCache",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 118,
+      "line_end": 123,
+      "body": "    public void loadingDictCache() {\n        Map<String, List<SysDictDataEntity>> dictDataMap = dictDataMapper.selectList(\"status\", \"0\").stream().collect(Collectors.groupingBy(SysDictDataEntity::getDictType));\n        for (Map.Entry<String, List<SysDictDataEntity>> entry : dictDataMap.entrySet()) {\n            DictUtils.setDictCache(entry.getKey(), entry.getValue().stream().sorted(Comparator.comparing(SysDictDataEntity::getDictSort)).collect(Collectors.toList()));\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysDictTypeServiceImpl.groupingBy",
+        "SysDictTypeServiceImpl.selectList",
+        "SysDictTypeServiceImpl.collect",
+        "SysDictTypeServiceImpl.comparing",
+        "SysDictTypeServiceImpl.getValue",
+        "Collectors.groupingBy",
+        "SysDictTypeServiceImpl.entrySet",
+        "entry.getKey",
+        "SysDictTypeServiceImpl.toList",
+        "dictDataMap.entrySet",
+        "SysDictTypeServiceImpl.loadingDictCache",
+        "SysDictTypeServiceImpl.setDictCache",
+        "SysDictTypeServiceImpl.stream",
+        "entry.getValue",
+        "SysDictTypeServiceImpl.sorted",
+        "DictUtils.setDictCache",
+        "Collectors.toList",
+        "SysDictTypeServiceImpl.getKey",
+        "Comparator.comparing",
+        "SysDictDataMapper.selectList"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkDictTypeUnique": {
+      "method_name": "checkDictTypeUnique",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysDictTypeEntity",
+          "name": "dictType",
+          "annotations": []
+        }
+      ],
+      "line_start": 126,
+      "line_end": 134,
+      "body": "    public boolean checkDictTypeUnique(SysDictTypeEntity dictType) {\n        Long dictId = StringUtils.isNull(dictType.getDictId()) ? -1L : dictType.getDictId();\n        SysDictTypeEntity info = dictTypeMapper.selectOne(new LambdaQueryWrapperX<SysDictTypeEntity>()\n                .eq(SysDictTypeEntity::getDictType, dictType.getDictType()));\n        if (StringUtils.isNotNull(info) && info.getDictId().longValue() != dictId.longValue()) {\n            return false;\n        }\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "dictId.longValue",
+        "SysDictTypeServiceImpl.isNotNull",
+        "dictType.getDictType",
+        "SysDictTypeServiceImpl.getDictId",
+        "StringUtils.isNull",
+        "SysDictTypeServiceImpl.getDictType",
+        "SysDictTypeServiceImpl.longValue",
+        "SysDictTypeMapper.selectOne",
+        "dictType.getDictId",
+        "info.getDictId",
+        "StringUtils.isNotNull",
+        "SysDictTypeServiceImpl.checkDictTypeUnique",
+        "SysDictTypeServiceImpl.eq",
+        "SysDictTypeServiceImpl.isNull",
+        "SysDictTypeServiceImpl.selectOne"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Service"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 25,
+  "line_end": 137
+}

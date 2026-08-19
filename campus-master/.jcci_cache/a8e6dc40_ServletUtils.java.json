@@ -1,0 +1,331 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\ServletUtils.java",
+  "package_name": "com.oddfar.campus.common.utils",
+  "class_name": "ServletUtils",
+  "imports": [
+    "cn.hutool.core.convert.Convert",
+    "com.oddfar.campus.common.constant.Constants",
+    "org.springframework.web.context.request.RequestAttributes",
+    "org.springframework.web.context.request.RequestContextHolder",
+    "org.springframework.web.context.request.ServletRequestAttributes",
+    "javax.servlet.http.HttpServletRequest",
+    "javax.servlet.http.HttpServletResponse",
+    "javax.servlet.http.HttpSession",
+    "java.io.IOException",
+    "java.io.UnsupportedEncodingException",
+    "java.net.URLDecoder",
+    "java.net.URLEncoder"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getParameter": {
+      "method_name": "getParameter",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "name",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "defaultValue",
+          "annotations": []
+        }
+      ],
+      "line_start": 33,
+      "line_end": 35,
+      "body": "    public static String getParameter(String name, String defaultValue) {\n        return Convert.toStr(getRequest().getParameter(name), defaultValue);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toStr",
+        "ServletUtils.toStr",
+        "ServletUtils.getRequest",
+        "ServletUtils.getParameter"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getParameterToInt": {
+      "method_name": "getParameterToInt",
+      "return_type": "Integer",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "name",
+          "annotations": []
+        },
+        {
+          "type": "Integer",
+          "name": "defaultValue",
+          "annotations": []
+        }
+      ],
+      "line_start": 47,
+      "line_end": 49,
+      "body": "    public static Integer getParameterToInt(String name, Integer defaultValue) {\n        return Convert.toInt(getRequest().getParameter(name), defaultValue);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServletUtils.getParameter",
+        "Convert.toInt",
+        "ServletUtils.getParameterToInt",
+        "ServletUtils.toInt",
+        "ServletUtils.getRequest"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getParameterToBool": {
+      "method_name": "getParameterToBool",
+      "return_type": "Boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "name",
+          "annotations": []
+        },
+        {
+          "type": "Boolean",
+          "name": "defaultValue",
+          "annotations": []
+        }
+      ],
+      "line_start": 61,
+      "line_end": 63,
+      "body": "    public static Boolean getParameterToBool(String name, Boolean defaultValue) {\n        return Convert.toBool(getRequest().getParameter(name), defaultValue);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toBool",
+        "ServletUtils.getParameter",
+        "ServletUtils.getParameterToBool",
+        "ServletUtils.toBool",
+        "ServletUtils.getRequest"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getRequest": {
+      "method_name": "getRequest",
+      "return_type": "HttpServletRequest",
+      "parameters": [],
+      "line_start": 68,
+      "line_end": 75,
+      "body": "    public static HttpServletRequest getRequest() {\n        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();\n        if (!(requestAttributes instanceof ServletRequestAttributes)) {\n            return null;\n        }\n        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) requestAttributes;\n        return servletRequestAttributes.getRequest();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServletUtils.getRequest",
+        "servletRequestAttributes.getRequest",
+        "ServletUtils.getRequestAttributes",
+        "RequestContextHolder.getRequestAttributes"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getRequest2": {
+      "method_name": "getRequest2",
+      "return_type": "HttpServletRequest",
+      "parameters": [],
+      "line_start": 80,
+      "line_end": 86,
+      "body": "    public static HttpServletRequest getRequest2() {\n        try {\n            return getRequestAttributes().getRequest();\n        } catch (Exception e) {\n            return null;\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServletUtils.getRequest",
+        "ServletUtils.getRequestAttributes",
+        "ServletUtils.getRequest2"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getResponse": {
+      "method_name": "getResponse",
+      "return_type": "HttpServletResponse",
+      "parameters": [],
+      "line_start": 91,
+      "line_end": 93,
+      "body": "    public static HttpServletResponse getResponse() {\n        return getRequestAttributes().getResponse();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServletUtils.getRequestAttributes",
+        "ServletUtils.getResponse"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getSession": {
+      "method_name": "getSession",
+      "return_type": "HttpSession",
+      "parameters": [],
+      "line_start": 98,
+      "line_end": 100,
+      "body": "    public static HttpSession getSession() {\n        return getRequest().getSession();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServletUtils.getSession",
+        "ServletUtils.getRequest"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getRequestAttributes": {
+      "method_name": "getRequestAttributes",
+      "return_type": "ServletRequestAttributes",
+      "parameters": [],
+      "line_start": 102,
+      "line_end": 105,
+      "body": "    public static ServletRequestAttributes getRequestAttributes() {\n        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();\n        return (ServletRequestAttributes) attributes;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServletUtils.getRequestAttributes",
+        "RequestContextHolder.getRequestAttributes"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "renderString": {
+      "method_name": "renderString",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "HttpServletResponse",
+          "name": "response",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "string",
+          "annotations": []
+        }
+      ],
+      "line_start": 113,
+      "line_end": 122,
+      "body": "    public static void renderString(HttpServletResponse response, String string) {\n        try {\n            response.setStatus(200);\n            response.setContentType(\"application/json\");\n            response.setCharacterEncoding(\"utf-8\");\n            response.getWriter().print(string);\n        } catch (IOException e) {\n            e.printStackTrace();\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "response.setContentType",
+        "response.setStatus",
+        "ServletUtils.getWriter",
+        "ServletUtils.print",
+        "ServletUtils.setCharacterEncoding",
+        "ServletUtils.printStackTrace",
+        "response.getWriter",
+        "ServletUtils.setStatus",
+        "ServletUtils.renderString",
+        "e.printStackTrace",
+        "ServletUtils.setContentType",
+        "response.setCharacterEncoding"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isAjaxRequest": {
+      "method_name": "isAjaxRequest",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 129,
+      "line_end": 147,
+      "body": "    public static boolean isAjaxRequest(HttpServletRequest request) {\n        String accept = request.getHeader(\"accept\");\n        if (accept != null && accept.contains(\"application/json\")) {\n            return true;\n        }\n\n        String xRequestedWith = request.getHeader(\"X-Requested-With\");\n        if (xRequestedWith != null && xRequestedWith.contains(\"XMLHttpRequest\")) {\n            return true;\n        }\n\n        String uri = request.getRequestURI();\n        if (StringUtils.inStringIgnoreCase(uri, \".json\", \".xml\")) {\n            return true;\n        }\n\n        String ajax = request.getParameter(\"__ajax\");\n        return StringUtils.inStringIgnoreCase(ajax, \"json\", \"xml\");\n    }",
+      "annotations": [],
+      "called_methods": [
+        "request.getHeader",
+        "ServletUtils.getRequestURI",
+        "ServletUtils.getParameter",
+        "request.getRequestURI",
+        "accept.contains",
+        "xRequestedWith.contains",
+        "ServletUtils.inStringIgnoreCase",
+        "StringUtils.inStringIgnoreCase",
+        "ServletUtils.contains",
+        "ServletUtils.isAjaxRequest",
+        "request.getParameter",
+        "ServletUtils.getHeader"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "urlEncode": {
+      "method_name": "urlEncode",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "str",
+          "annotations": []
+        }
+      ],
+      "line_start": 155,
+      "line_end": 161,
+      "body": "    public static String urlEncode(String str) {\n        try {\n            return URLEncoder.encode(str, Constants.UTF8);\n        } catch (UnsupportedEncodingException e) {\n            return StringUtils.EMPTY;\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServletUtils.encode",
+        "ServletUtils.urlEncode",
+        "URLEncoder.encode"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "urlDecode": {
+      "method_name": "urlDecode",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "str",
+          "annotations": []
+        }
+      ],
+      "line_start": 169,
+      "line_end": 175,
+      "body": "    public static String urlDecode(String str) {\n        try {\n            return URLDecoder.decode(str, Constants.UTF8);\n        } catch (UnsupportedEncodingException e) {\n            return StringUtils.EMPTY;\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServletUtils.urlDecode",
+        "URLDecoder.decode",
+        "ServletUtils.decode"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 22,
+  "line_end": 177
+}

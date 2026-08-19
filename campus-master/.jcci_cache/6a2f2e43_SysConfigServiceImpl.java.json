@@ -1,0 +1,381 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\service\\impl\\SysConfigServiceImpl.java",
+  "package_name": "com.oddfar.campus.framework.service.impl",
+  "class_name": "SysConfigServiceImpl",
+  "imports": [
+    "cn.hutool.core.convert.Convert",
+    "cn.hutool.core.util.ObjectUtil",
+    "com.oddfar.campus.common.constant.CacheConstants",
+    "com.oddfar.campus.common.constant.UserConstants",
+    "com.oddfar.campus.common.core.RedisCache",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.entity.SysConfigEntity",
+    "com.oddfar.campus.common.exception.ServiceException",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.mapper.SysConfigMapper",
+    "com.oddfar.campus.framework.service.SysConfigService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.stereotype.Service",
+    "javax.annotation.PostConstruct",
+    "javax.annotation.Resource",
+    "java.util.Collection",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [
+    "SysConfigService"
+  ],
+  "fields": {
+    "configMapper": {
+      "field_name": "configMapper",
+      "field_type": "SysConfigMapper",
+      "line_number": 25,
+      "annotations": [
+        "Service"
+      ]
+    },
+    "redisCache": {
+      "field_name": "redisCache",
+      "field_type": "RedisCache",
+      "line_number": 28,
+      "annotations": [
+        "Service",
+        "Resource"
+      ]
+    }
+  },
+  "methods": {
+    "init": {
+      "method_name": "init",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 35,
+      "line_end": 37,
+      "body": "    public void init() {\n        loadingConfigCache();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysConfigServiceImpl.init",
+        "SysConfigServiceImpl.loadingConfigCache"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "page": {
+      "method_name": "page",
+      "return_type": "PageResult<SysConfigEntity>",
+      "parameters": [
+        {
+          "type": "SysConfigEntity",
+          "name": "sysConfigEntity",
+          "annotations": []
+        }
+      ],
+      "line_start": 40,
+      "line_end": 42,
+      "body": "    public PageResult<SysConfigEntity> page(SysConfigEntity sysConfigEntity) {\n        return configMapper.selectPage(sysConfigEntity);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysConfigServiceImpl.selectPage",
+        "SysConfigServiceImpl.page",
+        "SysConfigMapper.selectPage"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectConfigById": {
+      "method_name": "selectConfigById",
+      "return_type": "SysConfigEntity",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "configId",
+          "annotations": []
+        }
+      ],
+      "line_start": 45,
+      "line_end": 49,
+      "body": "    public SysConfigEntity selectConfigById(Long configId) {\n        SysConfigEntity config = new SysConfigEntity();\n        config.setConfigId(configId);\n        return configMapper.selectById(config);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysConfigMapper.selectById",
+        "config.setConfigId",
+        "SysConfigServiceImpl.setConfigId",
+        "SysConfigServiceImpl.SysConfigEntity",
+        "SysConfigServiceImpl.selectById",
+        "SysConfigServiceImpl.selectConfigById"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectConfigByKey": {
+      "method_name": "selectConfigByKey",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "configKey",
+          "annotations": []
+        }
+      ],
+      "line_start": 58,
+      "line_end": 71,
+      "body": "    public String selectConfigByKey(String configKey) {\n        String configValue = Convert.toStr(redisCache.getCacheObject(getCacheKey(configKey)));\n        if (StringUtils.isNotEmpty(configValue)) {\n            return configValue;\n        }\n        SysConfigEntity config = new SysConfigEntity();\n        config.setConfigKey(configKey);\n        SysConfigEntity retConfig = configMapper.selectConfig(config);\n        if (StringUtils.isNotNull(retConfig)) {\n            redisCache.setCacheObject(getCacheKey(configKey), retConfig.getConfigValue());\n            return retConfig.getConfigValue();\n        }\n        return StringUtils.EMPTY;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysConfigServiceImpl.isNotNull",
+        "SysConfigMapper.selectConfig",
+        "SysConfigServiceImpl.selectConfig",
+        "SysConfigServiceImpl.getCacheKey",
+        "retConfig.getConfigValue",
+        "SysConfigServiceImpl.getConfigValue",
+        "SysConfigServiceImpl.SysConfigEntity",
+        "SysConfigServiceImpl.setCacheObject",
+        "config.setConfigKey",
+        "SysConfigServiceImpl.selectConfigByKey",
+        "RedisCache.getCacheObject",
+        "Convert.toStr",
+        "SysConfigServiceImpl.setConfigKey",
+        "SysConfigServiceImpl.isNotEmpty",
+        "SysConfigServiceImpl.toStr",
+        "RedisCache.setCacheObject",
+        "StringUtils.isNotNull",
+        "StringUtils.isNotEmpty",
+        "SysConfigServiceImpl.getCacheObject"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertConfig": {
+      "method_name": "insertConfig",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysConfigEntity",
+          "name": "config",
+          "annotations": []
+        }
+      ],
+      "line_start": 96,
+      "line_end": 102,
+      "body": "    public int insertConfig(SysConfigEntity config) {\n        int row = configMapper.insert(config);\n        if (row > 0) {\n            redisCache.setCacheObject(getCacheKey(config.getConfigKey()), config.getConfigValue());\n        }\n        return row;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "config.getConfigValue",
+        "SysConfigServiceImpl.getCacheKey",
+        "SysConfigServiceImpl.insert",
+        "config.getConfigKey",
+        "RedisCache.setCacheObject",
+        "SysConfigServiceImpl.getConfigValue",
+        "SysConfigServiceImpl.setCacheObject",
+        "SysConfigServiceImpl.getConfigKey",
+        "SysConfigServiceImpl.insertConfig",
+        "SysConfigMapper.insert"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "updateConfig": {
+      "method_name": "updateConfig",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysConfigEntity",
+          "name": "config",
+          "annotations": []
+        }
+      ],
+      "line_start": 105,
+      "line_end": 111,
+      "body": "    public int updateConfig(SysConfigEntity config) {\n        int row = configMapper.updateById(config);\n        if (row > 0) {\n            redisCache.setCacheObject(getCacheKey(config.getConfigKey()), config.getConfigValue());\n        }\n        return row;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "config.getConfigValue",
+        "SysConfigMapper.updateById",
+        "SysConfigServiceImpl.getCacheKey",
+        "SysConfigServiceImpl.updateById",
+        "config.getConfigKey",
+        "RedisCache.setCacheObject",
+        "SysConfigServiceImpl.getConfigValue",
+        "SysConfigServiceImpl.setCacheObject",
+        "SysConfigServiceImpl.getConfigKey",
+        "SysConfigServiceImpl.updateConfig"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteConfigByIds": {
+      "method_name": "deleteConfigByIds",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "configIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 114,
+      "line_end": 123,
+      "body": "    public void deleteConfigByIds(Long[] configIds) {\n        for (Long configId : configIds) {\n            SysConfigEntity config = selectConfigById(configId);\n            if (StringUtils.equals(UserConstants.YES, config.getConfigType())) {\n                throw new ServiceException(String.format(\"内置参数【%1$s】不能删除 \", config.getConfigKey()));\n            }\n            configMapper.deleteById(configId);\n            redisCache.deleteObject(getCacheKey(config.getConfigKey()));\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysConfigMapper.deleteById",
+        "SysConfigServiceImpl.format",
+        "StringUtils.equals",
+        "RedisCache.deleteObject",
+        "SysConfigServiceImpl.ServiceException",
+        "SysConfigServiceImpl.deleteObject",
+        "config.getConfigKey",
+        "SysConfigServiceImpl.getCacheKey",
+        "SysConfigServiceImpl.deleteById",
+        "SysConfigServiceImpl.equals",
+        "SysConfigServiceImpl.getConfigType",
+        "SysConfigServiceImpl.getConfigKey",
+        "String.format",
+        "config.getConfigType",
+        "SysConfigServiceImpl.deleteConfigByIds",
+        "SysConfigServiceImpl.selectConfigById"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "loadingConfigCache": {
+      "method_name": "loadingConfigCache",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 129,
+      "line_end": 134,
+      "body": "    public void loadingConfigCache() {\n        List<SysConfigEntity> configsList = configMapper.selectList();\n        for (SysConfigEntity config : configsList) {\n            redisCache.setCacheObject(getCacheKey(config.getConfigKey()), config.getConfigValue());\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "config.getConfigValue",
+        "SysConfigServiceImpl.getCacheKey",
+        "config.getConfigKey",
+        "RedisCache.setCacheObject",
+        "SysConfigServiceImpl.getConfigValue",
+        "SysConfigServiceImpl.setCacheObject",
+        "SysConfigServiceImpl.selectList",
+        "SysConfigServiceImpl.getConfigKey",
+        "SysConfigMapper.selectList",
+        "SysConfigServiceImpl.loadingConfigCache"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkConfigKeyUnique": {
+      "method_name": "checkConfigKeyUnique",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysConfigEntity",
+          "name": "config",
+          "annotations": []
+        }
+      ],
+      "line_start": 138,
+      "line_end": 145,
+      "body": "    public boolean checkConfigKeyUnique(SysConfigEntity config) {\n        Long configId = StringUtils.isNull(config.getConfigId()) ? -1L : config.getConfigId();\n        SysConfigEntity info = configMapper.checkConfigKeyUnique(config);\n        if (StringUtils.isNotNull(info) && info.getConfigId().longValue() != configId.longValue()) {\n            return false;\n        }\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "configId.longValue",
+        "SysConfigServiceImpl.checkConfigKeyUnique",
+        "SysConfigServiceImpl.isNotNull",
+        "SysConfigServiceImpl.longValue",
+        "StringUtils.isNull",
+        "config.getConfigId",
+        "SysConfigServiceImpl.getConfigId",
+        "SysConfigServiceImpl.isNull",
+        "StringUtils.isNotNull",
+        "SysConfigMapper.checkConfigKeyUnique",
+        "info.getConfigId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "clearConfigCache": {
+      "method_name": "clearConfigCache",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 148,
+      "line_end": 151,
+      "body": "    public void clearConfigCache() {\n        Collection<String> keys = redisCache.keys(CacheConstants.SYS_CONFIG_KEY + \"*\");\n        redisCache.deleteObject(keys);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RedisCache.deleteObject",
+        "RedisCache.keys",
+        "SysConfigServiceImpl.deleteObject",
+        "SysConfigServiceImpl.clearConfigCache",
+        "SysConfigServiceImpl.keys"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "resetConfigCache": {
+      "method_name": "resetConfigCache",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 154,
+      "line_end": 157,
+      "body": "    public void resetConfigCache() {\n        clearConfigCache();\n        loadingConfigCache();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysConfigServiceImpl.loadingConfigCache",
+        "SysConfigServiceImpl.resetConfigCache",
+        "SysConfigServiceImpl.clearConfigCache"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getCacheKey": {
+      "method_name": "getCacheKey",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "configKey",
+          "annotations": []
+        }
+      ],
+      "line_start": 165,
+      "line_end": 167,
+      "body": "    private String getCacheKey(String configKey) {\n        return CacheConstants.SYS_CONFIG_KEY + configKey;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysConfigServiceImpl.getCacheKey"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Service"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 23,
+  "line_end": 169
+}

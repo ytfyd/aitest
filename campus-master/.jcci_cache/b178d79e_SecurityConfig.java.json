@@ -1,0 +1,142 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\config\\SecurityConfig.java",
+  "package_name": "com.oddfar.campus.framework.config",
+  "class_name": "SecurityConfig",
+  "imports": [
+    "com.oddfar.campus.common.utils.SpringUtils",
+    "com.oddfar.campus.framework.security.filter.JwtAuthenticationTokenFilter",
+    "com.oddfar.campus.framework.security.handle.AuthenticationEntryPointImpl",
+    "com.oddfar.campus.framework.security.handle.LogoutSuccessHandlerImpl",
+    "com.oddfar.campus.framework.security.properties.PermitAllUrlProperties",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.context.annotation.Bean",
+    "org.springframework.http.HttpMethod",
+    "org.springframework.security.authentication.AuthenticationManager",
+    "org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder",
+    "org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity",
+    "org.springframework.security.config.annotation.web.builders.HttpSecurity",
+    "org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter",
+    "org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer",
+    "org.springframework.security.config.http.SessionCreationPolicy",
+    "org.springframework.security.core.userdetails.UserDetailsService",
+    "org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder",
+    "org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter",
+    "org.springframework.security.web.authentication.logout.LogoutFilter",
+    "org.springframework.web.filter.CorsFilter"
+  ],
+  "extends": "WebSecurityConfigurerAdapter",
+  "implements": [],
+  "fields": {
+    "userDetailsService": {
+      "field_name": "userDetailsService",
+      "field_type": "UserDetailsService",
+      "line_number": 34,
+      "annotations": [
+        "author",
+        "EnableGlobalMethodSecurity"
+      ]
+    },
+    "unauthorizedHandler": {
+      "field_name": "unauthorizedHandler",
+      "field_type": "AuthenticationEntryPointImpl",
+      "line_number": 40,
+      "annotations": [
+        "Autowired"
+      ]
+    },
+    "logoutSuccessHandler": {
+      "field_name": "logoutSuccessHandler",
+      "field_type": "LogoutSuccessHandlerImpl",
+      "line_number": 47,
+      "annotations": [
+        "Autowired"
+      ]
+    },
+    "authenticationTokenFilter": {
+      "field_name": "authenticationTokenFilter",
+      "field_type": "JwtAuthenticationTokenFilter",
+      "line_number": 53,
+      "annotations": [
+        "Autowired"
+      ]
+    },
+    "corsFilter": {
+      "field_name": "corsFilter",
+      "field_type": "CorsFilter",
+      "line_number": 60,
+      "annotations": [
+        "Autowired"
+      ]
+    }
+  },
+  "methods": {
+    "authenticationManagerBean": {
+      "method_name": "authenticationManagerBean",
+      "return_type": "AuthenticationManager",
+      "parameters": [],
+      "line_start": 72,
+      "line_end": 74,
+      "body": "    public AuthenticationManager authenticationManagerBean() throws Exception {\n        return super.authenticationManagerBean();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SecurityConfig.authenticationManagerBean"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "configure": {
+      "method_name": "configure",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "AuthenticationManagerBuilder",
+          "name": "auth",
+          "annotations": []
+        }
+      ],
+      "line_start": 137,
+      "line_end": 139,
+      "body": "    protected void configure(AuthenticationManagerBuilder auth) throws Exception {\n        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SecurityConfig.passwordEncoder",
+        "auth.userDetailsService",
+        "SecurityConfig.bCryptPasswordEncoder",
+        "SecurityConfig.userDetailsService",
+        "SecurityConfig.configure"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "bCryptPasswordEncoder": {
+      "method_name": "bCryptPasswordEncoder",
+      "return_type": "BCryptPasswordEncoder",
+      "parameters": [],
+      "line_start": 129,
+      "line_end": 131,
+      "body": "    public BCryptPasswordEncoder bCryptPasswordEncoder() {\n        return new BCryptPasswordEncoder();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SecurityConfig.BCryptPasswordEncoder",
+        "SecurityConfig.bCryptPasswordEncoder"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "EnableGlobalMethodSecurity"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 30,
+  "line_end": 141
+}

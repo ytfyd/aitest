@@ -1,0 +1,61 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysIndexController.java",
+  "package_name": "com.oddfar.campus.admin.controller.system",
+  "class_name": "SysIndexController",
+  "imports": [
+    "com.oddfar.campus.common.config.properties.CampusConfig",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.web.bind.annotation.RequestMapping",
+    "org.springframework.web.bind.annotation.RestController"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "campusConfig": {
+      "field_name": "campusConfig",
+      "field_type": "CampusConfig",
+      "line_number": 19,
+      "annotations": [
+        "author",
+        "RestController"
+      ]
+    }
+  },
+  "methods": {
+    "index": {
+      "method_name": "index",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 25,
+      "line_end": 28,
+      "body": "    @RequestMapping(\"/\")\n    public String index() {\n        return StringUtils.format(\"欢迎使用{}后台管理框架，当前版本：v{}，请通过前端地址访问。\", campusConfig.getName(), campusConfig.getVersion());\n    }",
+      "annotations": [
+        "RequestMapping"
+      ],
+      "called_methods": [
+        "CampusConfig.getName",
+        "CampusConfig.getVersion",
+        "SysIndexController.RequestMapping",
+        "StringUtils.format",
+        "SysIndexController.format",
+        "SysIndexController.getName",
+        "SysIndexController.getVersion",
+        "SysIndexController.index"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": null,
+      "http_method": "GET"
+    }
+  },
+  "annotations": [
+    "author",
+    "RestController"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 15,
+  "line_end": 30
+}

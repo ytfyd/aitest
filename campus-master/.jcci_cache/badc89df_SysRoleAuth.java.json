@@ -1,0 +1,56 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\model\\SysRoleAuth.java",
+  "package_name": "com.oddfar.campus.common.domain.model",
+  "class_name": "SysRoleAuth",
+  "imports": [
+    "com.oddfar.campus.common.domain.entity.SysRoleResourceEntity",
+    "lombok.AllArgsConstructor",
+    "lombok.Data",
+    "lombok.NoArgsConstructor"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "roleID": {
+      "field_name": "roleID",
+      "field_type": "Long",
+      "line_number": [
+        16,
+        5
+      ],
+      "annotations": []
+    },
+    "perms": {
+      "field_name": "perms",
+      "field_type": "String",
+      "line_number": [
+        21,
+        5
+      ],
+      "annotations": []
+    },
+    "resourceCode": {
+      "field_name": "resourceCode",
+      "field_type": "String",
+      "line_number": [
+        26,
+        4
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [
+    "Data",
+    "AllArgsConstructor",
+    "NoArgsConstructor"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    11,
+    8
+  ],
+  "line_end": 0
+}

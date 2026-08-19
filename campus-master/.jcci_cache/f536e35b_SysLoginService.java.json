@@ -1,0 +1,207 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\web\\service\\SysLoginService.java",
+  "package_name": "com.oddfar.campus.framework.web.service",
+  "class_name": "SysLoginService",
+  "imports": [
+    "cn.hutool.core.date.DateUtil",
+    "cn.hutool.extra.spring.SpringUtil",
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.domain.event.LogininforEvent",
+    "com.oddfar.campus.common.domain.model.LoginUser",
+    "com.oddfar.campus.common.exception.ServiceException",
+    "com.oddfar.campus.common.exception.user.UserPasswordNotMatchException",
+    "com.oddfar.campus.common.utils.MessageUtils",
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "com.oddfar.campus.common.utils.ip.IpUtils",
+    "com.oddfar.campus.common.utils.web.WebFrameworkUtils",
+    "com.oddfar.campus.framework.security.context.AuthenticationContextHolder",
+    "com.oddfar.campus.framework.service.SysUserService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.security.authentication.AuthenticationManager",
+    "org.springframework.security.authentication.BadCredentialsException",
+    "org.springframework.security.authentication.UsernamePasswordAuthenticationToken",
+    "org.springframework.security.core.Authentication",
+    "org.springframework.stereotype.Component",
+    "javax.annotation.Resource"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "tokenService": {
+      "field_name": "tokenService",
+      "field_type": "TokenService",
+      "line_number": 33,
+      "annotations": [
+        "author",
+        "Component"
+      ]
+    },
+    "authenticationManager": {
+      "field_name": "authenticationManager",
+      "field_type": "AuthenticationManager",
+      "line_number": 36,
+      "annotations": [
+        "author",
+        "Component",
+        "Autowired"
+      ]
+    },
+    "userService": {
+      "field_name": "userService",
+      "field_type": "SysUserService",
+      "line_number": 39,
+      "annotations": [
+        "author",
+        "Component",
+        "Autowired",
+        "Resource"
+      ]
+    }
+  },
+  "methods": {
+    "login": {
+      "method_name": "login",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "username",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "password",
+          "annotations": []
+        }
+      ],
+      "line_start": 49,
+      "line_end": 88,
+      "body": "    public String login(String username, String password) {\n        // 用户验证\n        Authentication authentication = null;\n        try {\n            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);\n            AuthenticationContextHolder.setContext(authenticationToken);\n            // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername\n            authentication = authenticationManager.authenticate(authenticationToken);\n        } catch (Exception e) {\n            if (e instanceof BadCredentialsException) {\n                //异步执行->保存登录信息\n                LogininforEvent logininforEvent = new LogininforEvent();\n                logininforEvent.setUsername(username);\n                logininforEvent.setStatus(Constants.LOGIN_FAIL);\n                logininforEvent.setMessage(MessageUtils.message(\"user.password.not.match\"));\n                logininforEvent.setRequest(ServletUtils.getRequest2());\n                SpringUtil.getApplicationContext().publishEvent(logininforEvent);\n                throw new UserPasswordNotMatchException();\n            } else {\n                //异步执行->登录信息\n                LogininforEvent logininforEvent = new LogininforEvent();\n                logininforEvent.setUsername(username);\n                logininforEvent.setStatus(Constants.LOGIN_FAIL);\n                logininforEvent.setMessage(e.getMessage());\n                logininforEvent.setRequest(ServletUtils.getRequest2());\n                SpringUtil.getApplicationContext().publishEvent(logininforEvent);\n                e.printStackTrace();\n                throw new ServiceException(e.getMessage());\n            }\n        } finally {\n            AuthenticationContextHolder.clearContext();\n        }\n        LoginUser loginUser = (LoginUser) authentication.getPrincipal();\n        // 额外设置到 request 中，有的过滤器在 Spring Security 之前\n        WebFrameworkUtils.setLoginUserId(ServletUtils.getRequest(), loginUser.getUserId());\n        //记录登录信息\n        recordLoginInfo(username, loginUser.getUserId(), Constants.LOGIN_SUCCESS, MessageUtils.message(\"user.login.success\"));\n        // 生成token\n        return tokenService.createToken(loginUser);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysLoginService.setRequest",
+        "e.getMessage",
+        "loginUser.getUserId",
+        "SysLoginService.authenticate",
+        "logininforEvent.setRequest",
+        "AuthenticationContextHolder.clearContext",
+        "SysLoginService.setMessage",
+        "SysLoginService.printStackTrace",
+        "SysLoginService.getPrincipal",
+        "SysLoginService.getApplicationContext",
+        "logininforEvent.setStatus",
+        "SysLoginService.ServiceException",
+        "e.printStackTrace",
+        "AuthenticationContextHolder.setContext",
+        "TokenService.createToken",
+        "SysLoginService.setContext",
+        "SysLoginService.UsernamePasswordAuthenticationToken",
+        "logininforEvent.setUsername",
+        "logininforEvent.setMessage",
+        "SysLoginService.publishEvent",
+        "SysLoginService.login",
+        "AuthenticationManager.authenticate",
+        "SysLoginService.clearContext",
+        "SysLoginService.setUsername",
+        "SysLoginService.getRequest",
+        "SysLoginService.message",
+        "ServletUtils.getRequest2",
+        "SysLoginService.createToken",
+        "WebFrameworkUtils.setLoginUserId",
+        "SpringUtil.getApplicationContext",
+        "MessageUtils.message",
+        "ServletUtils.getRequest",
+        "SysLoginService.LogininforEvent",
+        "SysLoginService.getMessage",
+        "SysLoginService.recordLoginInfo",
+        "SysLoginService.getUserId",
+        "SysLoginService.setLoginUserId",
+        "authentication.getPrincipal",
+        "SysLoginService.getRequest2",
+        "SysLoginService.UserPasswordNotMatchException",
+        "SysLoginService.setStatus"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "recordLoginInfo": {
+      "method_name": "recordLoginInfo",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "username",
+          "annotations": []
+        },
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "status",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "message",
+          "annotations": []
+        }
+      ],
+      "line_start": 95,
+      "line_end": 109,
+      "body": "    public void recordLoginInfo(String username, Long userId, String status, String message) {\n        SysUserEntity sysUser = new SysUserEntity();\n        sysUser.setUserId(userId);\n        sysUser.setLoginIp(IpUtils.getIpAddr(ServletUtils.getRequest()));\n        sysUser.setLoginDate(DateUtil.date());\n        userService.updateUserProfile(sysUser);\n        //异步记录登录成功日志\n        LogininforEvent logininforEvent = new LogininforEvent();\n        logininforEvent.setUsername(username);\n        logininforEvent.setUserId(userId);\n        logininforEvent.setStatus(status);\n        logininforEvent.setMessage(message);\n        logininforEvent.setRequest(ServletUtils.getRequest2());\n        SpringUtil.getApplicationContext().publishEvent(logininforEvent);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysLoginService.setRequest",
+        "logininforEvent.setRequest",
+        "SysLoginService.setMessage",
+        "SysLoginService.getApplicationContext",
+        "SysLoginService.getRequest2",
+        "sysUser.setUserId",
+        "logininforEvent.setStatus",
+        "SysUserService.updateUserProfile",
+        "sysUser.setLoginIp",
+        "SysLoginService.SysUserEntity",
+        "SysLoginService.setLoginIp",
+        "SysLoginService.setUserId",
+        "logininforEvent.setUsername",
+        "sysUser.setLoginDate",
+        "logininforEvent.setMessage",
+        "SysLoginService.publishEvent",
+        "SysLoginService.setUsername",
+        "SysLoginService.getRequest",
+        "SysLoginService.date",
+        "ServletUtils.getRequest2",
+        "SysLoginService.updateUserProfile",
+        "SpringUtil.getApplicationContext",
+        "ServletUtils.getRequest",
+        "SysLoginService.LogininforEvent",
+        "SysLoginService.getIpAddr",
+        "IpUtils.getIpAddr",
+        "SysLoginService.setLoginDate",
+        "DateUtil.date",
+        "logininforEvent.setUserId",
+        "SysLoginService.recordLoginInfo",
+        "SysLoginService.setStatus"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 32,
+  "line_end": 111
+}

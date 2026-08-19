@@ -1,0 +1,114 @@
+{
+  "file_path": "campus-modular\\src\\main\\java\\com\\oddfar\\campus\\business\\controller\\TestSensitiveController.java",
+  "package_name": "com.oddfar.campus.business.controller",
+  "class_name": "TestSensitiveController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.Anonymous",
+    "com.oddfar.campus.common.annotation.Sensitive",
+    "com.oddfar.campus.common.enums.SensitiveStrategy",
+    "com.oddfar.campus.common.domain.R",
+    "io.swagger.v3.oas.annotations.Operation",
+    "lombok.Data",
+    "org.springframework.web.bind.annotation.GetMapping",
+    "org.springframework.web.bind.annotation.RequestMapping",
+    "org.springframework.web.bind.annotation.RestController"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "idCard": {
+      "field_name": "idCard",
+      "field_type": "String",
+      "line_number": 45,
+      "annotations": [
+        "Data",
+        "Sensitive"
+      ]
+    },
+    "phone": {
+      "field_name": "phone",
+      "field_type": "String",
+      "line_number": 51,
+      "annotations": [
+        "Sensitive",
+        "Sensitive"
+      ]
+    },
+    "address": {
+      "field_name": "address",
+      "field_type": "String",
+      "line_number": 57,
+      "annotations": [
+        "Sensitive",
+        "Sensitive"
+      ]
+    },
+    "email": {
+      "field_name": "email",
+      "field_type": "String",
+      "line_number": 63,
+      "annotations": [
+        "Sensitive",
+        "Sensitive"
+      ]
+    },
+    "bankCard": {
+      "field_name": "bankCard",
+      "field_type": "String",
+      "line_number": 69,
+      "annotations": [
+        "Sensitive",
+        "Sensitive"
+      ]
+    }
+  },
+  "methods": {
+    "test": {
+      "method_name": "test",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 19,
+      "line_end": 73,
+      "body": "@RequestMapping(\"/sensitive\")\npublic class TestSensitiveController {\n\n    /**\n     * 测试数据脱敏\n     */\n    @GetMapping(\"/test\")\n    @Anonymous\n    @Operation(description = \"测试数据脱敏\")\n    public R test() {\n        TestSensitive testSensitive = new TestSensitive();\n        testSensitive.setIdCard(\"123456200001011234\");\n        testSensitive.setPhone(\"12344447777\");\n        testSensitive.setAddress(\"北京市朝阳区某某四合院1203室\");\n        testSensitive.setEmail(\"17640125371@163.com\");\n        testSensitive.setBankCard(\"6226456952351452853\");\n        return R.ok(testSensitive);\n    }\n\n    @Data\n    static class TestSensitive {\n\n        /**\n         * 身份证\n         */\n        @Sensitive(strategy = SensitiveStrategy.ID_CARD)\n        private String idCard;\n\n        /**\n         * 电话\n         */\n        @Sensitive(strategy = SensitiveStrategy.PHONE)\n        private String phone;\n\n        /**\n         * 地址\n         */\n        @Sensitive(strategy = SensitiveStrategy.ADDRESS)\n        private String address;\n\n        /**\n         * 邮箱\n         */\n        @Sensitive(strategy = SensitiveStrategy.EMAIL)\n        private String email;\n\n        /**\n         * 银行卡\n         */\n        @Sensitive(strategy = SensitiveStrategy.BANK_CARD)\n        private String bankCard;\n\n    }\n\n}",
+      "annotations": [
+        "RequestMapping",
+        "GetMapping",
+        "Anonymous",
+        "Operation"
+      ],
+      "called_methods": [
+        "testSensitive.setIdCard",
+        "TestSensitiveController.setPhone",
+        "testSensitive.setAddress",
+        "TestSensitiveController.setBankCard",
+        "TestSensitiveController.GetMapping",
+        "R.ok",
+        "TestSensitiveController.Sensitive",
+        "testSensitive.setBankCard",
+        "TestSensitiveController.TestSensitive",
+        "TestSensitiveController.setEmail",
+        "TestSensitiveController.Operation",
+        "TestSensitiveController.ok",
+        "TestSensitiveController.test",
+        "TestSensitiveController.setAddress",
+        "TestSensitiveController.RequestMapping",
+        "TestSensitiveController.setIdCard",
+        "testSensitive.setPhone",
+        "testSensitive.setEmail"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/test",
+      "http_method": "GET"
+    }
+  },
+  "annotations": [
+    "RestController",
+    "RequestMapping"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 20,
+  "line_end": 74
+}

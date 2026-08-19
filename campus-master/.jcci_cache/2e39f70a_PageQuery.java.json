@@ -1,0 +1,97 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\core\\page\\PageQuery.java",
+  "package_name": "com.oddfar.campus.common.core.page",
+  "class_name": "PageQuery",
+  "imports": [
+    "cn.hutool.core.collection.CollUtil",
+    "cn.hutool.core.util.ObjectUtil",
+    "com.baomidou.mybatisplus.core.metadata.OrderItem",
+    "com.baomidou.mybatisplus.extension.plugins.pagination.Page",
+    "com.oddfar.campus.common.core.text.Convert",
+    "com.oddfar.campus.common.exception.ServiceException",
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.common.utils.sql.SqlUtil",
+    "lombok.Data",
+    "java.io.Serializable",
+    "java.util.ArrayList",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [
+    "Serializable"
+  ],
+  "fields": {
+    "pageSize": {
+      "field_name": "pageSize",
+      "field_type": "Integer",
+      "line_number": 42,
+      "annotations": []
+    },
+    "pageNum": {
+      "field_name": "pageNum",
+      "field_type": "Integer",
+      "line_number": 47,
+      "annotations": []
+    },
+    "orderByColumn": {
+      "field_name": "orderByColumn",
+      "field_type": "String",
+      "line_number": 52,
+      "annotations": []
+    },
+    "isAsc": {
+      "field_name": "isAsc",
+      "field_type": "String",
+      "line_number": 57,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "buildOrderItem": {
+      "method_name": "buildOrderItem",
+      "return_type": "List<OrderItem>",
+      "parameters": [],
+      "line_start": 108,
+      "line_end": 138,
+      "body": "    private List<OrderItem> buildOrderItem() {\n        if (StringUtils.isBlank(orderByColumn) || StringUtils.isBlank(isAsc)) {\n            return null;\n        }\n        String orderBy = SqlUtil.escapeOrderBySql(orderByColumn);\n        orderBy = StringUtils.toUnderScoreCase(orderBy);\n\n        // 兼容前端排序类型\n        isAsc = StringUtils.replaceEach(isAsc, new String[]{\"ascending\", \"descending\"}, new String[]{\"asc\", \"desc\"});\n\n        String[] orderByArr = orderBy.split(COMMA);\n        String[] isAscArr = isAsc.split(COMMA);\n        if (isAscArr.length != 1 && isAscArr.length != orderByArr.length) {\n            throw new ServiceException(\"排序参数有误\");\n        }\n\n        List<OrderItem> list = new ArrayList<>();\n        // 每个字段各自排序\n        for (int i = 0; i < orderByArr.length; i++) {\n            String orderByStr = orderByArr[i];\n            String isAscStr = isAscArr.length == 1 ? isAscArr[0] : isAscArr[i];\n            if (\"asc\".equals(isAscStr)) {\n                list.add(OrderItem.asc(orderByStr));\n            } else if (\"desc\".equals(isAscStr)) {\n                list.add(OrderItem.desc(orderByStr));\n            } else {\n                throw new ServiceException(\"排序参数有误\");\n            }\n        }\n        return list;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "StringUtils.isBlank",
+        "PageQuery.desc",
+        "PageQuery.replaceEach",
+        "PageQuery.ServiceException",
+        "StringUtils.toUnderScoreCase",
+        "PageQuery.isBlank",
+        "PageQuery.escapeOrderBySql",
+        "PageQuery.equals",
+        "orderBy.split",
+        "OrderItem.asc",
+        "PageQuery.asc",
+        "PageQuery.add",
+        "OrderItem.desc",
+        "SqlUtil.escapeOrderBySql",
+        "list.add",
+        "PageQuery.buildOrderItem",
+        "StringUtils.replaceEach",
+        "PageQuery.split",
+        "String.split",
+        "PageQuery.toUnderScoreCase"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "since",
+    "Data"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 25,
+  "line_end": 141
+}

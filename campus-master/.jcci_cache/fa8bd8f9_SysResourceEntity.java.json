@@ -1,0 +1,152 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\entity\\SysResourceEntity.java",
+  "package_name": "com.oddfar.campus.common.domain.entity",
+  "class_name": "SysResourceEntity",
+  "imports": [
+    "com.baomidou.mybatisplus.annotation.TableField",
+    "com.baomidou.mybatisplus.annotation.TableId",
+    "com.baomidou.mybatisplus.annotation.TableName",
+    "com.oddfar.campus.common.domain.BaseEntity",
+    "lombok.Data",
+    "lombok.EqualsAndHashCode"
+  ],
+  "extends": "BaseEntity",
+  "implements": [],
+  "fields": {
+    "serialVersionUID": {
+      "field_name": "serialVersionUID",
+      "field_type": "long",
+      "line_number": [
+        15,
+        26
+      ],
+      "annotations": []
+    },
+    "resourceId": {
+      "field_name": "resourceId",
+      "field_type": "Long",
+      "line_number": [
+        18,
+        13
+      ],
+      "annotations": [
+        "TableId"
+      ]
+    },
+    "appCode": {
+      "field_name": "appCode",
+      "field_type": "String",
+      "line_number": [
+        23,
+        13
+      ],
+      "annotations": []
+    },
+    "resourceCode": {
+      "field_name": "resourceCode",
+      "field_type": "String",
+      "line_number": [
+        28,
+        13
+      ],
+      "annotations": []
+    },
+    "resourceName": {
+      "field_name": "resourceName",
+      "field_type": "String",
+      "line_number": [
+        33,
+        13
+      ],
+      "annotations": []
+    },
+    "className": {
+      "field_name": "className",
+      "field_type": "String",
+      "line_number": [
+        38,
+        13
+      ],
+      "annotations": []
+    },
+    "methodName": {
+      "field_name": "methodName",
+      "field_type": "String",
+      "line_number": [
+        43,
+        13
+      ],
+      "annotations": []
+    },
+    "modular_code": {
+      "field_name": "modular_code",
+      "field_type": "String",
+      "line_number": [
+        49,
+        13
+      ],
+      "annotations": [
+        "TableField"
+      ]
+    },
+    "modularName": {
+      "field_name": "modularName",
+      "field_type": "String",
+      "line_number": [
+        54,
+        13
+      ],
+      "annotations": []
+    },
+    "url": {
+      "field_name": "url",
+      "field_type": "String",
+      "line_number": [
+        59,
+        13
+      ],
+      "annotations": []
+    },
+    "httpMethod": {
+      "field_name": "httpMethod",
+      "field_type": "String",
+      "line_number": [
+        64,
+        13
+      ],
+      "annotations": []
+    },
+    "resourceBizType": {
+      "field_name": "resourceBizType",
+      "field_type": "Integer",
+      "line_number": [
+        69,
+        13
+      ],
+      "annotations": []
+    },
+    "requiredPermissionFlag": {
+      "field_name": "requiredPermissionFlag",
+      "field_type": "String",
+      "line_number": [
+        74,
+        13
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [
+    "Data",
+    "EqualsAndHashCode",
+    "TableName"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    14,
+    8
+  ],
+  "line_end": 0
+}

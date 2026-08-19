@@ -1,0 +1,71 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\resource\\ApiResourceAutoConfig.java",
+  "package_name": "com.oddfar.campus.framework.api.resource",
+  "class_name": "ApiResourceAutoConfig",
+  "imports": [
+    "com.oddfar.campus.framework.api.resource.impl.DefaultResourceCollector",
+    "com.oddfar.campus.framework.listener.ApiResourceScanner",
+    "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean",
+    "org.springframework.context.annotation.Bean",
+    "org.springframework.context.annotation.Configuration"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "apiResourceScanner": {
+      "method_name": "apiResourceScanner",
+      "return_type": "ApiResourceScanner",
+      "parameters": [
+        {
+          "type": "ResourceCollectorApi",
+          "name": "resourceCollectorApi",
+          "annotations": []
+        }
+      ],
+      "line_start": 20,
+      "line_end": 23,
+      "body": "    @ConditionalOnMissingBean(ApiResourceScanner.class)\n    public ApiResourceScanner apiResourceScanner(ResourceCollectorApi resourceCollectorApi) {\n        return new ApiResourceScanner(resourceCollectorApi);\n    }",
+      "annotations": [
+        "ConditionalOnMissingBean"
+      ],
+      "called_methods": [
+        "ApiResourceAutoConfig.apiResourceScanner",
+        "ApiResourceAutoConfig.ConditionalOnMissingBean",
+        "ApiResourceAutoConfig.ApiResourceScanner"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "resourceCollectorApi": {
+      "method_name": "resourceCollectorApi",
+      "return_type": "ResourceCollectorApi",
+      "parameters": [],
+      "line_start": 30,
+      "line_end": 33,
+      "body": "    @ConditionalOnMissingBean(ResourceCollectorApi.class)\n    public ResourceCollectorApi resourceCollectorApi() {\n        return new DefaultResourceCollector();\n    }",
+      "annotations": [
+        "ConditionalOnMissingBean"
+      ],
+      "called_methods": [
+        "ApiResourceAutoConfig.resourceCollectorApi",
+        "ApiResourceAutoConfig.ConditionalOnMissingBean",
+        "ApiResourceAutoConfig.DefaultResourceCollector"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Configuration"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 14,
+  "line_end": 36
+}

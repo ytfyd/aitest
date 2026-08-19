@@ -1,0 +1,327 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysConfigController.java",
+  "package_name": "com.oddfar.campus.admin.controller.system",
+  "class_name": "SysConfigController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.entity.SysConfigEntity",
+    "com.oddfar.campus.common.enums.ResBizTypeEnum",
+    "com.oddfar.campus.framework.service.SysConfigService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.security.access.prepost.PreAuthorize",
+    "org.springframework.validation.annotation.Validated"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "configService": {
+      "field_name": "configService",
+      "field_type": "SysConfigService",
+      "line_number": 21,
+      "annotations": [
+        "RestController",
+        "RequestMapping",
+        "ApiResource"
+      ]
+    }
+  },
+  "methods": {
+    "page": {
+      "method_name": "page",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysConfigEntity",
+          "name": "sysConfigEntity",
+          "annotations": []
+        }
+      ],
+      "line_start": 18,
+      "line_end": 85,
+      "body": "@RequestMapping(\"/system/config\")\n@ApiResource(name = \"参数配置管理\", resBizType = ResBizTypeEnum.SYSTEM)\npublic class SysConfigController {\n    @Autowired\n    private SysConfigService configService;\n\n    @GetMapping(value = \"page\", name = \"参数配置管理-分页\")\n    @PreAuthorize(\"@ss.hasPermi('system:config:list')\")\n    public R page(SysConfigEntity sysConfigEntity) {\n        PageResult<SysConfigEntity> page = configService.page(sysConfigEntity);\n\n        return R.ok().put(page);\n    }\n\n    @GetMapping(value = \"{id}\", name = \"参数配置管理-查询id信息\")\n    @PreAuthorize(\"@ss.hasPermi('system:config:query')\")\n    public R getInfo(@PathVariable(\"id\") Long id) {\n        SysConfigEntity entity = configService.selectConfigById(id);\n\n        return R.ok().put(entity);\n    }\n\n    /**\n     * 根据参数键名查询参数值\n     */\n    @GetMapping(value = \"/configKey/{configKey:.+}\")\n    public R getConfigKey(@PathVariable String configKey) {\n        return R.ok(configService.selectConfigByKey(configKey));\n    }\n\n    @PostMapping(name = \"参数配置管理-新增\")\n    @PreAuthorize(\"@ss.hasPermi('system:config:add')\")\n    public R add(@Validated @RequestBody SysConfigEntity config) {\n        if (!configService.checkConfigKeyUnique(config)) {\n            return R.error(\"新增参数'\" + config.getConfigName() + \"'失败，参数键名已存在\");\n        }\n        return R.ok(configService.insertConfig(config));\n\n    }\n\n    @PutMapping(name = \"参数配置管理-修改\")\n    @PreAuthorize(\"@ss.hasPermi('system:config:edit')\")\n    public R edit(@Validated @RequestBody SysConfigEntity config) {\n        if (!configService.checkConfigKeyUnique(config)) {\n            return R.error(\"修改参数'\" + config.getConfigName() + \"'失败，参数键名已存在\");\n        }\n        return R.ok(configService.updateConfig(config));\n\n    }\n\n    @DeleteMapping(value = \"/{configIds}\", name = \"参数配置管理-删除\")\n    @PreAuthorize(\"@ss.hasPermi('system:config:remove')\")\n    public R remove(@PathVariable Long[] configIds) {\n        configService.deleteConfigByIds(configIds);\n\n        return R.ok();\n    }\n\n    /**\n     * 刷新参数缓存\n     */\n    @PreAuthorize(\"@ss.hasPermi('system:config:remove')\")\n    @DeleteMapping(value = \"/refreshCache\", name = \"参数配置管理-刷新缓存\")\n    public R refreshCache() {\n        configService.resetConfigCache();\n        return R.ok();\n    }\n}",
+      "annotations": [
+        "RequestMapping",
+        "ApiResource",
+        "Autowired",
+        "GetMapping",
+        "PreAuthorize",
+        "ss"
+      ],
+      "called_methods": [
+        "SysConfigController.page",
+        "SysConfigController.resetConfigCache",
+        "SysConfigController.getInfo",
+        "SysConfigController.selectConfigByKey",
+        "SysConfigController.PutMapping",
+        "config.getConfigName",
+        "SysConfigController.refreshCache",
+        "SysConfigService.page",
+        "R.error",
+        "SysConfigController.updateConfig",
+        "SysConfigController.PreAuthorize",
+        "SysConfigController.error",
+        "SysConfigController.getConfigName",
+        "SysConfigController.hasPermi",
+        "SysConfigController.PostMapping",
+        "SysConfigService.selectConfigByKey",
+        "SysConfigController.DeleteMapping",
+        "SysConfigController.GetMapping",
+        "SysConfigService.resetConfigCache",
+        "SysConfigController.ApiResource",
+        "ss.hasPermi",
+        "R.ok",
+        "SysConfigController.remove",
+        "SysConfigController.edit",
+        "SysConfigController.insertConfig",
+        "SysConfigService.selectConfigById",
+        "SysConfigController.RequestMapping",
+        "SysConfigController.add",
+        "SysConfigController.deleteConfigByIds",
+        "SysConfigService.deleteConfigByIds",
+        "SysConfigController.selectConfigById",
+        "SysConfigService.insertConfig",
+        "SysConfigController.PathVariable",
+        "SysConfigController.getConfigKey",
+        "SysConfigController.checkConfigKeyUnique",
+        "SysConfigController.put",
+        "SysConfigService.updateConfig",
+        "SysConfigController.ok",
+        "SysConfigService.checkConfigKeyUnique"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/page",
+      "http_method": "GET"
+    },
+    "remove": {
+      "method_name": "remove",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "configIds",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 33,
+      "line_end": 38,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:config:query')\")\n    public R getInfo(@PathVariable(\"id\") Long id) {\n        SysConfigEntity entity = configService.selectConfigById(id);\n\n        return R.ok().put(entity);\n    }",
+      "annotations": [
+        "ss",
+        "PathVariable",
+        "GetMapping",
+        "PathVariable",
+        "PostMapping",
+        "PreAuthorize",
+        "ss",
+        "Validated",
+        "RequestBody",
+        "PutMapping",
+        "PreAuthorize",
+        "ss",
+        "Validated",
+        "RequestBody",
+        "DeleteMapping",
+        "PreAuthorize",
+        "ss"
+      ],
+      "called_methods": [
+        "SysConfigController.getInfo",
+        "SysConfigController.selectConfigById",
+        "SysConfigController.PreAuthorize",
+        "ss.hasPermi",
+        "R.ok",
+        "SysConfigService.selectConfigById",
+        "SysConfigController.PathVariable",
+        "SysConfigController.hasPermi",
+        "SysConfigController.put",
+        "SysConfigController.ok"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/configKey/{configKey:.+}",
+      "http_method": "GET"
+    },
+    "refreshCache": {
+      "method_name": "refreshCache",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 79,
+      "line_end": 84,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:config:remove')\")\n    @DeleteMapping(value = \"/refreshCache\", name = \"参数配置管理-刷新缓存\")\n    public R refreshCache() {\n        configService.resetConfigCache();\n        return R.ok();\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "DeleteMapping"
+      ],
+      "called_methods": [
+        "SysConfigController.resetConfigCache",
+        "SysConfigController.PreAuthorize",
+        "ss.hasPermi",
+        "R.ok",
+        "SysConfigController.hasPermi",
+        "SysConfigController.ok",
+        "SysConfigController.DeleteMapping",
+        "SysConfigController.refreshCache",
+        "SysConfigService.resetConfigCache"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/refreshCache",
+      "http_method": "DELETE"
+    },
+    "getInfo": {
+      "method_name": "getInfo",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "id",
+          "annotations": [
+            "@PathVariable(\")"
+          ]
+        }
+      ],
+      "line_start": 34,
+      "line_end": 38,
+      "body": "    public R getInfo(@PathVariable(\"id\") Long id) {\n        SysConfigEntity entity = configService.selectConfigById(id);\n\n        return R.ok().put(entity);\n    }",
+      "annotations": [
+        "@GetMapping(value = \"{id}\", name = \"参数配置管理-查询id信息\")",
+        "@PreAuthorize(\"@ss.hasPermi('system:config:query')\")"
+      ],
+      "called_methods": [
+        "SysConfigController.getInfo",
+        "SysConfigController.selectConfigById",
+        "R.ok",
+        "SysConfigService.selectConfigById",
+        "SysConfigController.PathVariable",
+        "SysConfigController.put",
+        "SysConfigController.ok"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/{id}",
+      "http_method": "GET"
+    },
+    "getConfigKey": {
+      "method_name": "getConfigKey",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "configKey",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 44,
+      "line_end": 46,
+      "body": "    public R getConfigKey(@PathVariable String configKey) {\n        return R.ok(configService.selectConfigByKey(configKey));\n    }",
+      "annotations": [
+        "@GetMapping(value = \"/configKey/{configKey:.+}\")"
+      ],
+      "called_methods": [
+        "R.ok",
+        "SysConfigController.selectConfigByKey",
+        "SysConfigController.getConfigKey",
+        "SysConfigService.selectConfigByKey",
+        "SysConfigController.ok"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/configKey/{configKey:.+}",
+      "http_method": "GET"
+    },
+    "add": {
+      "method_name": "add",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysConfigEntity",
+          "name": "config",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 50,
+      "line_end": 56,
+      "body": "    public R add(@Validated @RequestBody SysConfigEntity config) {\n        if (!configService.checkConfigKeyUnique(config)) {\n            return R.error(\"新增参数'\" + config.getConfigName() + \"'失败，参数键名已存在\");\n        }\n        return R.ok(configService.insertConfig(config));\n\n    }",
+      "annotations": [
+        "@PostMapping(name = \"参数配置管理-新增\")",
+        "@PreAuthorize(\"@ss.hasPermi('system:config:add')\")"
+      ],
+      "called_methods": [
+        "R.error",
+        "R.ok",
+        "SysConfigController.error",
+        "SysConfigController.getConfigName",
+        "SysConfigController.insertConfig",
+        "SysConfigService.insertConfig",
+        "SysConfigController.add",
+        "SysConfigController.checkConfigKeyUnique",
+        "config.getConfigName",
+        "SysConfigController.ok",
+        "SysConfigService.checkConfigKeyUnique"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/config",
+      "http_method": "POST"
+    },
+    "edit": {
+      "method_name": "edit",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysConfigEntity",
+          "name": "config",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 60,
+      "line_end": 66,
+      "body": "    public R edit(@Validated @RequestBody SysConfigEntity config) {\n        if (!configService.checkConfigKeyUnique(config)) {\n            return R.error(\"修改参数'\" + config.getConfigName() + \"'失败，参数键名已存在\");\n        }\n        return R.ok(configService.updateConfig(config));\n\n    }",
+      "annotations": [
+        "@PutMapping(name = \"参数配置管理-修改\")",
+        "@PreAuthorize(\"@ss.hasPermi('system:config:edit')\")"
+      ],
+      "called_methods": [
+        "R.error",
+        "SysConfigController.updateConfig",
+        "R.ok",
+        "SysConfigController.edit",
+        "SysConfigService.updateConfig",
+        "SysConfigController.error",
+        "SysConfigController.getConfigName",
+        "SysConfigController.checkConfigKeyUnique",
+        "config.getConfigName",
+        "SysConfigController.ok",
+        "SysConfigService.checkConfigKeyUnique"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/config",
+      "http_method": "PUT"
+    }
+  },
+  "annotations": [
+    "RestController",
+    "RequestMapping",
+    "ApiResource"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 20,
+  "line_end": 85
+}

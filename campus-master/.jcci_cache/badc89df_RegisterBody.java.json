@@ -1,0 +1,33 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\model\\RegisterBody.java",
+  "package_name": "com.oddfar.campus.common.domain.model",
+  "class_name": "RegisterBody",
+  "imports": [
+    "lombok.Data"
+  ],
+  "extends": "LoginBody",
+  "implements": [],
+  "fields": {
+    "email": {
+      "field_name": "email",
+      "field_type": "String",
+      "line_number": [
+        14,
+        13
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [
+    "Data"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    9,
+    8
+  ],
+  "line_end": 0
+}

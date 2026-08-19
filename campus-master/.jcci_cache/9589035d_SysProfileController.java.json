@@ -1,0 +1,333 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysProfileController.java",
+  "package_name": "com.oddfar.campus.admin.controller.system",
+  "class_name": "SysProfileController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.domain.model.LoginUser",
+    "com.oddfar.campus.common.enums.ResBizTypeEnum",
+    "com.oddfar.campus.common.utils.SecurityUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.api.file.FileUploadUtils",
+    "com.oddfar.campus.framework.api.file.MimeTypeUtils",
+    "com.oddfar.campus.framework.api.sysconfig.ConfigExpander",
+    "com.oddfar.campus.framework.mapper.SysUserMapper",
+    "com.oddfar.campus.framework.service.SysUserService",
+    "com.oddfar.campus.framework.web.service.TokenService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.web.multipart.MultipartFile"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "userService": {
+      "field_name": "userService",
+      "field_type": "SysUserService",
+      "line_number": 29,
+      "annotations": [
+        "RestController",
+        "RequestMapping",
+        "ApiResource"
+      ]
+    },
+    "userMapper": {
+      "field_name": "userMapper",
+      "field_type": "SysUserMapper",
+      "line_number": 31,
+      "annotations": [
+        "ApiResource",
+        "Autowired"
+      ]
+    },
+    "tokenService": {
+      "field_name": "tokenService",
+      "field_type": "TokenService",
+      "line_number": 34,
+      "annotations": [
+        "Autowired",
+        "Autowired"
+      ]
+    }
+  },
+  "methods": {
+    "updatePwd": {
+      "method_name": "updatePwd",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "oldPassword",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "newPassword",
+          "annotations": []
+        }
+      ],
+      "line_start": 26,
+      "line_end": 123,
+      "body": "@RequestMapping(\"/system/user/profile\")\n@ApiResource(name = \"个人信息管理\", resBizType = ResBizTypeEnum.SYSTEM)\npublic class SysProfileController {\n    @Autowired\n    private SysUserService userService;\n    @Autowired\n    private SysUserMapper userMapper;\n\n    @Autowired\n    private TokenService tokenService;\n\n    /**\n     * 个人信息\n     */\n    @GetMapping(name = \"个人信息管理-查询\")\n    public R profile() {\n        LoginUser loginUser = getLoginUser();\n        SysUserEntity user = loginUser.getUser();\n        R ajax = R.ok(user);\n        ajax.put(\"roleGroup\", userService.selectUserRoleGroup(loginUser.getUsername()));\n        return ajax;\n    }\n\n    /**\n     * 修改用户\n     */\n    @PutMapping(name = \"个人信息管理-修改\")\n    public R updateProfile(@RequestBody SysUserEntity user) {\n        LoginUser loginUser = getLoginUser();\n        SysUserEntity sysUser = loginUser.getUser();\n        user.setUserName(sysUser.getUserName());\n        if (StringUtils.isNotEmpty(user.getPhonenumber())\n                && !(userService.checkPhoneUnique(user))) {\n            return R.error(\"修改用户'\" + user.getUserName() + \"'失败，手机号码已存在\");\n        }\n        if (StringUtils.isNotEmpty(user.getEmail())\n                && !(userService.checkEmailUnique(user))) {\n            return R.error(\"修改用户'\" + user.getUserName() + \"'失败，邮箱账号已存在\");\n        }\n        user.setUserId(sysUser.getUserId());\n        user.setPassword(null);\n        user.setAvatar(null);\n        if (userService.updateUserProfile(user) > 0) {\n            // 更新缓存用户信息\n            sysUser.setNickName(user.getNickName());\n            sysUser.setPhonenumber(user.getPhonenumber());\n            sysUser.setEmail(user.getEmail());\n            sysUser.setSex(user.getSex());\n            tokenService.setLoginUser(loginUser);\n            return R.ok();\n        }\n        return R.error(\"修改个人信息异常，请联系管理员\");\n    }\n\n    /**\n     * 重置密码\n     */\n    @PutMapping(value = \"/updatePwd\", name = \"个人信息管理-重置密码\")\n    public R updatePwd(String oldPassword, String newPassword) {\n        SysUserEntity user = userMapper.selectById(SecurityUtils.getUserId());\n//        LoginUser loginUser = getLoginUser();\n        String userName = user.getUserName();\n        String password = user.getPassword();\n        if (!SecurityUtils.matchesPassword(oldPassword, password)) {\n            return R.error(\"修改密码失败，旧密码错误\");\n        }\n        if (SecurityUtils.matchesPassword(newPassword, password)) {\n            return R.error(\"新密码不能与旧密码相同\");\n        }\n        if (userService.resetUserPwd(userName, SecurityUtils.encryptPassword(newPassword)) > 0) {\n//            // 更新缓存用户密码\n//            loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPassword));\n//            tokenService.setLoginUser(loginUser);\n            return R.ok();\n        }\n        return R.error(\"修改密码异常，请联系管理员\");\n    }\n\n    /**\n     * 头像上传\n     */\n    @PostMapping(value = \"/avatar\", name = \"个人信息管理-头像上次\")\n    public R avatar(@RequestParam(\"avatarfile\") MultipartFile file) throws Exception {\n        if (!file.isEmpty()) {\n            LoginUser loginUser = getLoginUser();\n            String avatar = FileUploadUtils.upload(ConfigExpander.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);\n            if (userService.updateUserAvatar(loginUser.getUsername(), avatar)) {\n                R ajax = R.ok();\n                ajax.put(\"imgUrl\", avatar);\n                // 更新缓存用户头像\n                loginUser.getUser().setAvatar(avatar);\n                tokenService.setLoginUser(loginUser);\n                return ajax;\n            }\n        }\n        return R.error(\"上传图片异常，请联系管理员\");\n    }\n}",
+      "annotations": [
+        "RequestMapping",
+        "ApiResource",
+        "Autowired",
+        "Autowired",
+        "Autowired",
+        "GetMapping",
+        "PutMapping",
+        "RequestBody",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "SysUserService.updateUserAvatar",
+        "SysProfileController.ApiResource",
+        "SysUserService.checkEmailUnique",
+        "SysProfileController.setPhonenumber",
+        "SysProfileController.error",
+        "SysProfileController.profile",
+        "sysUser.setNickName",
+        "user.getSex",
+        "SysProfileController.getUser",
+        "SysProfileController.upload",
+        "SysProfileController.setSex",
+        "TokenService.setLoginUser",
+        "sysUser.setPhonenumber",
+        "SysProfileController.getUserId",
+        "SysProfileController.setAvatar",
+        "SysProfileController.setUserId",
+        "file.isEmpty",
+        "SysProfileController.updatePwd",
+        "SysProfileController.getLoginUser",
+        "user.setUserId",
+        "sysUser.getUserName",
+        "SysProfileController.encryptPassword",
+        "SysProfileController.RequestParam",
+        "user.getEmail",
+        "sysUser.setEmail",
+        "SysProfileController.getSex",
+        "SysUserService.resetUserPwd",
+        "FileUploadUtils.upload",
+        "user.setPassword",
+        "user.getPhonenumber",
+        "SysProfileController.setUserName",
+        "SysProfileController.RequestMapping",
+        "SysProfileController.GetMapping",
+        "SysProfileController.updateUserProfile",
+        "SysProfileController.getEmail",
+        "SysUserMapper.selectById",
+        "SysProfileController.updateProfile",
+        "SysProfileController.setLoginUser",
+        "SysProfileController.checkPhoneUnique",
+        "user.setUserName",
+        "SysProfileController.resetUserPwd",
+        "SysUserService.updateUserProfile",
+        "loginUser.getUser",
+        "SysProfileController.selectById",
+        "sysUser.getUserId",
+        "SysProfileController.selectUserRoleGroup",
+        "SysProfileController.PutMapping",
+        "SysProfileController.getPhonenumber",
+        "user.getUserName",
+        "SysProfileController.checkEmailUnique",
+        "user.getPassword",
+        "SysProfileController.getUsername",
+        "SysProfileController.isNotEmpty",
+        "ConfigExpander.getAvatarPath",
+        "SysProfileController.setPassword",
+        "SecurityUtils.encryptPassword",
+        "SecurityUtils.getUserId",
+        "SysProfileController.isEmpty",
+        "SysProfileController.updateUserAvatar",
+        "SysProfileController.getPassword",
+        "SysUserService.selectUserRoleGroup",
+        "SysProfileController.getUserName",
+        "R.error",
+        "SysProfileController.setNickName",
+        "ajax.put",
+        "SysProfileController.setEmail",
+        "SysUserService.checkPhoneUnique",
+        "SysProfileController.PostMapping",
+        "SysProfileController.matchesPassword",
+        "SysProfileController.getAvatarPath",
+        "R.ok",
+        "SecurityUtils.matchesPassword",
+        "SysProfileController.ok",
+        "sysUser.setSex",
+        "loginUser.getUsername",
+        "SysProfileController.avatar",
+        "SysProfileController.put",
+        "user.setAvatar",
+        "StringUtils.isNotEmpty",
+        "SysProfileController.getNickName",
+        "user.getNickName"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/user/profile",
+      "http_method": "GET"
+    },
+    "profile": {
+      "method_name": "profile",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 41,
+      "line_end": 47,
+      "body": "    public R profile() {\n        LoginUser loginUser = getLoginUser();\n        SysUserEntity user = loginUser.getUser();\n        R ajax = R.ok(user);\n        ajax.put(\"roleGroup\", userService.selectUserRoleGroup(loginUser.getUsername()));\n        return ajax;\n    }",
+      "annotations": [
+        "@GetMapping(name = \"个人信息管理-查询\")"
+      ],
+      "called_methods": [
+        "SysProfileController.put",
+        "SysProfileController.getLoginUser",
+        "loginUser.getUser",
+        "SysProfileController.getUser",
+        "R.ok",
+        "SysProfileController.profile",
+        "SysProfileController.ok",
+        "SysProfileController.selectUserRoleGroup",
+        "ajax.put",
+        "loginUser.getUsername",
+        "SysProfileController.getUsername",
+        "SysUserService.selectUserRoleGroup"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/user/profile",
+      "http_method": "GET"
+    },
+    "updateProfile": {
+      "method_name": "updateProfile",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": [
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 53,
+      "line_end": 78,
+      "body": "    public R updateProfile(@RequestBody SysUserEntity user) {\n        LoginUser loginUser = getLoginUser();\n        SysUserEntity sysUser = loginUser.getUser();\n        user.setUserName(sysUser.getUserName());\n        if (StringUtils.isNotEmpty(user.getPhonenumber())\n                && !(userService.checkPhoneUnique(user))) {\n            return R.error(\"修改用户'\" + user.getUserName() + \"'失败，手机号码已存在\");\n        }\n        if (StringUtils.isNotEmpty(user.getEmail())\n                && !(userService.checkEmailUnique(user))) {\n            return R.error(\"修改用户'\" + user.getUserName() + \"'失败，邮箱账号已存在\");\n        }\n        user.setUserId(sysUser.getUserId());\n        user.setPassword(null);\n        user.setAvatar(null);\n        if (userService.updateUserProfile(user) > 0) {\n            // 更新缓存用户信息\n            sysUser.setNickName(user.getNickName());\n            sysUser.setPhonenumber(user.getPhonenumber());\n            sysUser.setEmail(user.getEmail());\n            sysUser.setSex(user.getSex());\n            tokenService.setLoginUser(loginUser);\n            return R.ok();\n        }\n        return R.error(\"修改个人信息异常，请联系管理员\");\n    }",
+      "annotations": [
+        "@PutMapping(name = \"个人信息管理-修改\")"
+      ],
+      "called_methods": [
+        "SysProfileController.getLoginUser",
+        "user.setUserId",
+        "sysUser.getUserName",
+        "SysUserService.updateUserProfile",
+        "SysProfileController.getUserName",
+        "SysUserService.checkEmailUnique",
+        "R.error",
+        "loginUser.getUser",
+        "user.getEmail",
+        "SysProfileController.setPhonenumber",
+        "SysProfileController.error",
+        "sysUser.setEmail",
+        "sysUser.getUserId",
+        "SysProfileController.getSex",
+        "sysUser.setNickName",
+        "user.getSex",
+        "SysProfileController.getUser",
+        "SysProfileController.getPhonenumber",
+        "SysUserService.checkPhoneUnique",
+        "SysProfileController.setEmail",
+        "SysProfileController.checkPhoneUnique",
+        "user.getUserName",
+        "SysProfileController.setSex",
+        "user.setPassword",
+        "TokenService.setLoginUser",
+        "SysProfileController.checkEmailUnique",
+        "R.ok",
+        "SysProfileController.ok",
+        "user.getPhonenumber",
+        "sysUser.setPhonenumber",
+        "SysProfileController.setUserName",
+        "sysUser.setSex",
+        "SysProfileController.getUserId",
+        "SysProfileController.setAvatar",
+        "SysProfileController.setUserId",
+        "SysProfileController.updateUserProfile",
+        "SysProfileController.isNotEmpty",
+        "SysProfileController.getEmail",
+        "SysProfileController.updateProfile",
+        "SysProfileController.getNickName",
+        "SysProfileController.setLoginUser",
+        "user.setAvatar",
+        "SysProfileController.setPassword",
+        "StringUtils.isNotEmpty",
+        "SysProfileController.setNickName",
+        "user.setUserName",
+        "user.getNickName"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/user/profile",
+      "http_method": "PUT"
+    },
+    "avatar": {
+      "method_name": "avatar",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "MultipartFile",
+          "name": "file",
+          "annotations": [
+            "@RequestParam(\")"
+          ]
+        }
+      ],
+      "line_start": 108,
+      "line_end": 122,
+      "body": "    public R avatar(@RequestParam(\"avatarfile\") MultipartFile file) throws Exception {\n        if (!file.isEmpty()) {\n            LoginUser loginUser = getLoginUser();\n            String avatar = FileUploadUtils.upload(ConfigExpander.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);\n            if (userService.updateUserAvatar(loginUser.getUsername(), avatar)) {\n                R ajax = R.ok();\n                ajax.put(\"imgUrl\", avatar);\n                // 更新缓存用户头像\n                loginUser.getUser().setAvatar(avatar);\n                tokenService.setLoginUser(loginUser);\n                return ajax;\n            }\n        }\n        return R.error(\"上传图片异常，请联系管理员\");\n    }",
+      "annotations": [
+        "@PostMapping(value = \"/avatar\", name = \"个人信息管理-头像上次\")"
+      ],
+      "called_methods": [
+        "SysProfileController.getLoginUser",
+        "SysProfileController.isEmpty",
+        "SysProfileController.updateUserAvatar",
+        "SysUserService.updateUserAvatar",
+        "SysProfileController.RequestParam",
+        "R.error",
+        "loginUser.getUser",
+        "SysProfileController.error",
+        "ajax.put",
+        "SysProfileController.getUser",
+        "FileUploadUtils.upload",
+        "SysProfileController.upload",
+        "SysProfileController.getAvatarPath",
+        "TokenService.setLoginUser",
+        "R.ok",
+        "SysProfileController.ok",
+        "SysProfileController.setAvatar",
+        "loginUser.getUsername",
+        "SysProfileController.avatar",
+        "SysProfileController.getUsername",
+        "SysProfileController.put",
+        "file.isEmpty",
+        "ConfigExpander.getAvatarPath",
+        "SysProfileController.setLoginUser"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/avatar",
+      "http_method": "POST"
+    }
+  },
+  "annotations": [
+    "RestController",
+    "RequestMapping",
+    "ApiResource"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 28,
+  "line_end": 124
+}

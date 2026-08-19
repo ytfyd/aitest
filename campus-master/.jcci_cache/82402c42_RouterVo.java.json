@@ -1,0 +1,445 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\vo\\RouterVo.java",
+  "package_name": "com.oddfar.campus.common.domain.vo",
+  "class_name": "RouterVo",
+  "imports": [
+    "com.fasterxml.jackson.annotation.JsonInclude",
+    "com.oddfar.campus.common.utils.MetaVo",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "name": {
+      "field_name": "name",
+      "field_type": "String",
+      "line_number": 18,
+      "annotations": [
+        "author",
+        "JsonInclude"
+      ]
+    },
+    "path": {
+      "field_name": "path",
+      "field_type": "String",
+      "line_number": 23,
+      "annotations": [
+        "author",
+        "JsonInclude"
+      ]
+    },
+    "hidden": {
+      "field_name": "hidden",
+      "field_type": "boolean",
+      "line_number": 28,
+      "annotations": []
+    },
+    "redirect": {
+      "field_name": "redirect",
+      "field_type": "String",
+      "line_number": 33,
+      "annotations": []
+    },
+    "component": {
+      "field_name": "component",
+      "field_type": "String",
+      "line_number": 38,
+      "annotations": []
+    },
+    "query": {
+      "field_name": "query",
+      "field_type": "String",
+      "line_number": 43,
+      "annotations": []
+    },
+    "alwaysShow": {
+      "field_name": "alwaysShow",
+      "field_type": "Boolean",
+      "line_number": 48,
+      "annotations": []
+    },
+    "meta": {
+      "field_name": "meta",
+      "field_type": "MetaVo",
+      "line_number": 53,
+      "annotations": []
+    },
+    "children": {
+      "field_name": "children",
+      "field_type": "List<RouterVo>",
+      "line_number": 58,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "getName": {
+      "method_name": "getName",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 60,
+      "line_end": 62,
+      "body": "    public String getName() {\n        return name;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.getName"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setName": {
+      "method_name": "setName",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "name",
+          "annotations": []
+        }
+      ],
+      "line_start": 64,
+      "line_end": 66,
+      "body": "    public void setName(String name) {\n        this.name = name;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.setName"
+      ],
+      "used_fields": [
+        "name"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getPath": {
+      "method_name": "getPath",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 68,
+      "line_end": 70,
+      "body": "    public String getPath() {\n        return path;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.getPath"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setPath": {
+      "method_name": "setPath",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "path",
+          "annotations": []
+        }
+      ],
+      "line_start": 72,
+      "line_end": 74,
+      "body": "    public void setPath(String path) {\n        this.path = path;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.setPath"
+      ],
+      "used_fields": [
+        "path"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getHidden": {
+      "method_name": "getHidden",
+      "return_type": "boolean",
+      "parameters": [],
+      "line_start": 76,
+      "line_end": 78,
+      "body": "    public boolean getHidden() {\n        return hidden;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.getHidden"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setHidden": {
+      "method_name": "setHidden",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "boolean",
+          "name": "hidden",
+          "annotations": []
+        }
+      ],
+      "line_start": 80,
+      "line_end": 82,
+      "body": "    public void setHidden(boolean hidden) {\n        this.hidden = hidden;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.setHidden"
+      ],
+      "used_fields": [
+        "hidden"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getRedirect": {
+      "method_name": "getRedirect",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 84,
+      "line_end": 86,
+      "body": "    public String getRedirect() {\n        return redirect;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.getRedirect"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setRedirect": {
+      "method_name": "setRedirect",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "redirect",
+          "annotations": []
+        }
+      ],
+      "line_start": 88,
+      "line_end": 90,
+      "body": "    public void setRedirect(String redirect) {\n        this.redirect = redirect;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.setRedirect"
+      ],
+      "used_fields": [
+        "redirect"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getComponent": {
+      "method_name": "getComponent",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 92,
+      "line_end": 94,
+      "body": "    public String getComponent() {\n        return component;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.getComponent"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setComponent": {
+      "method_name": "setComponent",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "component",
+          "annotations": []
+        }
+      ],
+      "line_start": 96,
+      "line_end": 98,
+      "body": "    public void setComponent(String component) {\n        this.component = component;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.setComponent"
+      ],
+      "used_fields": [
+        "component"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getQuery": {
+      "method_name": "getQuery",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 100,
+      "line_end": 102,
+      "body": "    public String getQuery() {\n        return query;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.getQuery"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setQuery": {
+      "method_name": "setQuery",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "query",
+          "annotations": []
+        }
+      ],
+      "line_start": 104,
+      "line_end": 106,
+      "body": "    public void setQuery(String query) {\n        this.query = query;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.setQuery"
+      ],
+      "used_fields": [
+        "query"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getAlwaysShow": {
+      "method_name": "getAlwaysShow",
+      "return_type": "Boolean",
+      "parameters": [],
+      "line_start": 108,
+      "line_end": 110,
+      "body": "    public Boolean getAlwaysShow() {\n        return alwaysShow;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.getAlwaysShow"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setAlwaysShow": {
+      "method_name": "setAlwaysShow",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Boolean",
+          "name": "alwaysShow",
+          "annotations": []
+        }
+      ],
+      "line_start": 112,
+      "line_end": 114,
+      "body": "    public void setAlwaysShow(Boolean alwaysShow) {\n        this.alwaysShow = alwaysShow;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.setAlwaysShow"
+      ],
+      "used_fields": [
+        "alwaysShow"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getMeta": {
+      "method_name": "getMeta",
+      "return_type": "MetaVo",
+      "parameters": [],
+      "line_start": 116,
+      "line_end": 118,
+      "body": "    public MetaVo getMeta() {\n        return meta;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.getMeta"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setMeta": {
+      "method_name": "setMeta",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "MetaVo",
+          "name": "meta",
+          "annotations": []
+        }
+      ],
+      "line_start": 120,
+      "line_end": 122,
+      "body": "    public void setMeta(MetaVo meta) {\n        this.meta = meta;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.setMeta"
+      ],
+      "used_fields": [
+        "meta"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getChildren": {
+      "method_name": "getChildren",
+      "return_type": "List<RouterVo>",
+      "parameters": [],
+      "line_start": 124,
+      "line_end": 126,
+      "body": "    public List<RouterVo> getChildren() {\n        return children;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.getChildren"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setChildren": {
+      "method_name": "setChildren",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "List<RouterVo>",
+          "name": "children",
+          "annotations": []
+        }
+      ],
+      "line_start": 128,
+      "line_end": 130,
+      "body": "    public void setChildren(List<RouterVo> children) {\n        this.children = children;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "RouterVo.setChildren"
+      ],
+      "used_fields": [
+        "children"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "JsonInclude"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 14,
+  "line_end": 132
+}

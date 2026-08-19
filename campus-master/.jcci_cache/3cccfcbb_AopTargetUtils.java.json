@@ -1,0 +1,126 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\spring\\AopTargetUtils.java",
+  "package_name": "com.oddfar.campus.common.utils.spring",
+  "class_name": "AopTargetUtils",
+  "imports": [
+    "lombok.extern.slf4j.Slf4j",
+    "org.springframework.aop.framework.AdvisedSupport",
+    "org.springframework.aop.framework.AopProxy",
+    "org.springframework.aop.support.AopUtils",
+    "java.lang.reflect.Field"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getTarget": {
+      "method_name": "getTarget",
+      "return_type": "Object",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "proxy",
+          "annotations": []
+        }
+      ],
+      "line_start": 49,
+      "line_end": 67,
+      "body": "    public static Object getTarget(Object proxy) {\n\n        // 不是代理对象，直接返回参数对象\n        if (!AopUtils.isAopProxy(proxy)) {\n            return proxy;\n        }\n\n        // 判断是否是jdk还是cglib代理的对象\n        try {\n            if (AopUtils.isJdkDynamicProxy(proxy)) {\n                return getJdkDynamicProxyTargetObject(proxy);\n            } else {\n                return getCglibProxyTargetObject(proxy);\n            }\n        } catch (Exception e) {\n            log.error(\"获取代理对象异常\", e);\n            return null;\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "AopTargetUtils.isJdkDynamicProxy",
+        "AopTargetUtils.getCglibProxyTargetObject",
+        "AopTargetUtils.getJdkDynamicProxyTargetObject",
+        "log.error",
+        "AopTargetUtils.error",
+        "AopUtils.isAopProxy",
+        "AopUtils.isJdkDynamicProxy",
+        "AopTargetUtils.getTarget",
+        "AopTargetUtils.isAopProxy"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getCglibProxyTargetObject": {
+      "method_name": "getCglibProxyTargetObject",
+      "return_type": "Object",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "proxy",
+          "annotations": []
+        }
+      ],
+      "line_start": 75,
+      "line_end": 82,
+      "body": "    private static Object getCglibProxyTargetObject(Object proxy) throws Exception {\n        Field h = proxy.getClass().getDeclaredField(\"CGLIB$CALLBACK_0\");\n        h.setAccessible(true);\n        Object dynamicAdvisedInterceptor = h.get(proxy);\n        Field advised = dynamicAdvisedInterceptor.getClass().getDeclaredField(\"advised\");\n        advised.setAccessible(true);\n        return ((AdvisedSupport) advised.get(dynamicAdvisedInterceptor)).getTargetSource().getTarget();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "advised.setAccessible",
+        "AopTargetUtils.getCglibProxyTargetObject",
+        "dynamicAdvisedInterceptor.getClass",
+        "h.get",
+        "AopTargetUtils.setAccessible",
+        "AopTargetUtils.getTargetSource",
+        "advised.get",
+        "proxy.getClass",
+        "AopTargetUtils.getDeclaredField",
+        "AopTargetUtils.getClass",
+        "AopTargetUtils.getTarget",
+        "AopTargetUtils.get",
+        "h.setAccessible"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getJdkDynamicProxyTargetObject": {
+      "method_name": "getJdkDynamicProxyTargetObject",
+      "return_type": "Object",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "proxy",
+          "annotations": []
+        }
+      ],
+      "line_start": 90,
+      "line_end": 97,
+      "body": "    private static Object getJdkDynamicProxyTargetObject(Object proxy) throws Exception {\n        Field h = proxy.getClass().getSuperclass().getDeclaredField(\"h\");\n        h.setAccessible(true);\n        AopProxy aopProxy = (AopProxy) h.get(proxy);\n        Field advised = aopProxy.getClass().getDeclaredField(\"advised\");\n        advised.setAccessible(true);\n        return ((AdvisedSupport) advised.get(aopProxy)).getTargetSource().getTarget();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "advised.setAccessible",
+        "h.get",
+        "AopTargetUtils.setAccessible",
+        "AopTargetUtils.getTargetSource",
+        "advised.get",
+        "AopTargetUtils.getJdkDynamicProxyTargetObject",
+        "proxy.getClass",
+        "AopTargetUtils.getDeclaredField",
+        "AopTargetUtils.getSuperclass",
+        "AopTargetUtils.getClass",
+        "aopProxy.getClass",
+        "AopTargetUtils.getTarget",
+        "AopTargetUtils.get",
+        "h.setAccessible"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "since",
+    "Slf4j"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 41,
+  "line_end": 99
+}

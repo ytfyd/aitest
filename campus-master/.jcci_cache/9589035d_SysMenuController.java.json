@@ -1,0 +1,326 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysMenuController.java",
+  "package_name": "com.oddfar.campus.admin.controller.system",
+  "class_name": "SysMenuController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.constant.UserConstants",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.entity.SysMenuEntity",
+    "com.oddfar.campus.common.enums.ResBizTypeEnum",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.service.SysMenuService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.security.access.prepost.PreAuthorize",
+    "org.springframework.validation.annotation.Validated",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "menuService": {
+      "field_name": "menuService",
+      "field_type": "SysMenuService",
+      "line_number": 24,
+      "annotations": [
+        "RestController",
+        "RequestMapping",
+        "ApiResource"
+      ]
+    }
+  },
+  "methods": {
+    "list": {
+      "method_name": "list",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        }
+      ],
+      "line_start": 30,
+      "line_end": 35,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:menu:list')\")\n    @GetMapping(value = \"/list\", name = \"菜单管理-分页\")\n    public R list(SysMenuEntity menu) {\n        List<SysMenuEntity> menus = menuService.selectMenuList(menu, getUserId());\n        return R.ok(menus);\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "ss.hasPermi",
+        "SysMenuController.selectMenuList",
+        "SysMenuController.ok",
+        "SysMenuController.hasPermi",
+        "SysMenuService.selectMenuList",
+        "SysMenuController.GetMapping",
+        "SysMenuController.list",
+        "SysMenuController.getUserId",
+        "SysMenuController.PreAuthorize",
+        "R.ok"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/list",
+      "http_method": "GET"
+    },
+    "getInfo": {
+      "method_name": "getInfo",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "menuId",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 40,
+      "line_end": 41,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:menu:query')\")\n    @GetMapping(value = \"/{menuId}\", name = \"菜单管理-查询\")",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysMenuController.GetMapping",
+        "ss.hasPermi",
+        "SysMenuController.PreAuthorize",
+        "SysMenuController.hasPermi"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/{menuId}",
+      "http_method": "GET"
+    },
+    "treeSelect": {
+      "method_name": "treeSelect",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": []
+        }
+      ],
+      "line_start": 49,
+      "line_end": 53,
+      "body": "    @GetMapping(value = \"/treeselect\", name = \"菜单管理-获取菜单下拉树列表\")\n    public R treeSelect(SysMenuEntity menu) {\n        List<SysMenuEntity> menus = menuService.selectMenuList(menu, getUserId());\n        return R.ok(menuService.buildMenuTreeSelect(menus));\n    }",
+      "annotations": [
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysMenuController.selectMenuList",
+        "SysMenuController.ok",
+        "SysMenuService.selectMenuList",
+        "SysMenuController.GetMapping",
+        "SysMenuService.buildMenuTreeSelect",
+        "SysMenuController.getUserId",
+        "SysMenuController.buildMenuTreeSelect",
+        "SysMenuController.treeSelect",
+        "R.ok"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/treeselect",
+      "http_method": "GET"
+    },
+    "add": {
+      "method_name": "add",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 70,
+      "line_end": 79,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:menu:add')\")\n    @PostMapping(name = \"菜单管理-新增\")\n    public R add(@Validated @RequestBody SysMenuEntity menu) {\n        if (!menuService.checkMenuNameUnique(menu)) {\n            return R.error(\"新增菜单'\" + menu.getMenuName() + \"'失败，菜单名称已存在\");\n        } else if (UserConstants.YES_FRAME.equals(menu.getIsFrame()) && !StringUtils.ishttp(menu.getPath())) {\n            return R.error(\"新增菜单'\" + menu.getMenuName() + \"'失败，地址必须以http(s)://开头\");\n        }\n        return R.ok(menuService.insertMenu(menu));\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PostMapping"
+      ],
+      "called_methods": [
+        "SysMenuController.PostMapping",
+        "SysMenuController.ok",
+        "menu.getMenuName",
+        "SysMenuController.checkMenuNameUnique",
+        "R.ok",
+        "StringUtils.ishttp",
+        "SysMenuService.checkMenuNameUnique",
+        "ss.hasPermi",
+        "menu.getPath",
+        "SysMenuController.hasPermi",
+        "R.error",
+        "SysMenuController.equals",
+        "SysMenuController.getMenuName",
+        "SysMenuController.地址必须以http",
+        "SysMenuController.insertMenu",
+        "SysMenuController.PreAuthorize",
+        "YES_FRAME.equals",
+        "SysMenuController.error",
+        "SysMenuController.add",
+        "SysMenuService.insertMenu",
+        "SysMenuController.getIsFrame",
+        "SysMenuController.ishttp",
+        "SysMenuController.getPath",
+        "menu.getIsFrame"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/menu",
+      "http_method": "POST"
+    },
+    "edit": {
+      "method_name": "edit",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysMenuEntity",
+          "name": "menu",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 84,
+      "line_end": 95,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:menu:edit')\")\n    @PutMapping(name = \"菜单管理-修改\")\n    public R edit(@Validated @RequestBody SysMenuEntity menu) {\n        if (!menuService.checkMenuNameUnique(menu)) {\n            return R.error(\"修改菜单'\" + menu.getMenuName() + \"'失败，菜单名称已存在\");\n        } else if (UserConstants.YES_FRAME.equals(menu.getIsFrame()) && !StringUtils.ishttp(menu.getPath())) {\n            return R.error(\"修改菜单'\" + menu.getMenuName() + \"'失败，地址必须以http(s)://开头\");\n        } else if (menu.getMenuId().equals(menu.getParentId())) {\n            return R.error(\"修改菜单'\" + menu.getMenuName() + \"'失败，上级菜单不能选择自己\");\n        }\n        return R.ok(menuService.updateMenu(menu));\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "SysMenuController.PutMapping",
+        "SysMenuController.getParentId",
+        "SysMenuController.ok",
+        "menu.getMenuName",
+        "SysMenuController.edit",
+        "SysMenuService.updateMenu",
+        "SysMenuController.checkMenuNameUnique",
+        "R.ok",
+        "SysMenuController.updateMenu",
+        "StringUtils.ishttp",
+        "SysMenuService.checkMenuNameUnique",
+        "ss.hasPermi",
+        "menu.getPath",
+        "SysMenuController.hasPermi",
+        "R.error",
+        "SysMenuController.getMenuId",
+        "SysMenuController.equals",
+        "menu.getMenuId",
+        "SysMenuController.getMenuName",
+        "menu.getParentId",
+        "SysMenuController.地址必须以http",
+        "SysMenuController.PreAuthorize",
+        "YES_FRAME.equals",
+        "SysMenuController.error",
+        "SysMenuController.getIsFrame",
+        "SysMenuController.ishttp",
+        "SysMenuController.getPath",
+        "menu.getIsFrame"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/menu",
+      "http_method": "PUT"
+    },
+    "roleMenuTreeselect": {
+      "method_name": "roleMenuTreeselect",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": [
+            "@PathVariable(\")"
+          ]
+        }
+      ],
+      "line_start": 59,
+      "line_end": 65,
+      "body": "    public R roleMenuTreeselect(@PathVariable(\"roleId\") Long roleId) {\n        List<SysMenuEntity> menus = menuService.selectMenuList(getUserId());\n        R ajax = R.ok();\n        ajax.put(\"checkedKeys\", menuService.selectMenuListByRoleId(roleId));\n        ajax.put(\"menus\", menuService.buildMenuTreeSelect(menus));\n        return ajax;\n    }",
+      "annotations": [
+        "@GetMapping(value = \"/roleMenuTreeselect/{roleId}\", name = \"菜单管理-加载对应角色菜单列表树\")"
+      ],
+      "called_methods": [
+        "SysMenuController.selectMenuList",
+        "SysMenuController.roleMenuTreeselect",
+        "SysMenuController.ok",
+        "SysMenuService.selectMenuList",
+        "SysMenuController.selectMenuListByRoleId",
+        "SysMenuController.put",
+        "SysMenuService.buildMenuTreeSelect",
+        "SysMenuController.getUserId",
+        "SysMenuController.buildMenuTreeSelect",
+        "SysMenuController.PathVariable",
+        "SysMenuService.selectMenuListByRoleId",
+        "R.ok",
+        "ajax.put"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/roleMenuTreeselect/{roleId}",
+      "http_method": "GET"
+    },
+    "remove": {
+      "method_name": "remove",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "menuId",
+          "annotations": [
+            "@PathVariable(\")"
+          ]
+        }
+      ],
+      "line_start": 102,
+      "line_end": 110,
+      "body": "    public R remove(@PathVariable(\"menuId\") Long menuId) {\n        if (menuService.hasChildByMenuId(menuId)) {\n            return R.error(\"存在子菜单,不允许删除.\");\n        }\n        if (menuService.checkMenuExistRole(menuId)) {\n            return R.error(\"菜单已分配,不允许删除.\");\n        }\n        return R.ok(menuService.deleteMenuById(menuId));\n    }",
+      "annotations": [
+        "@PreAuthorize(\"@ss.hasPermi('system:menu:remove')\")",
+        "@DeleteMapping(value = \"/{menuId}\", name = \"菜单管理-删除\")"
+      ],
+      "called_methods": [
+        "SysMenuController.error",
+        "SysMenuService.deleteMenuById",
+        "SysMenuController.ok",
+        "R.error",
+        "SysMenuController.remove",
+        "SysMenuController.checkMenuExistRole",
+        "SysMenuService.hasChildByMenuId",
+        "SysMenuController.hasChildByMenuId",
+        "SysMenuService.checkMenuExistRole",
+        "SysMenuController.PathVariable",
+        "R.ok",
+        "SysMenuController.deleteMenuById"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/{menuId}",
+      "http_method": "DELETE"
+    }
+  },
+  "annotations": [
+    "RestController",
+    "RequestMapping",
+    "ApiResource"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 22,
+  "line_end": 114
+}

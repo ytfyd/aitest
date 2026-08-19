@@ -1,0 +1,520 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\aspectj\\LogAspect.java",
+  "package_name": "com.oddfar.campus.framework.aspectj",
+  "class_name": "LogAspect",
+  "imports": [
+    "cn.hutool.core.util.StrUtil",
+    "cn.hutool.extra.spring.SpringUtil",
+    "com.alibaba.fastjson2.JSON",
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.annotation.Log",
+    "com.oddfar.campus.common.domain.entity.SysOperLogEntity",
+    "com.oddfar.campus.common.domain.model.LoginUser",
+    "com.oddfar.campus.common.enums.BusinessStatus",
+    "com.oddfar.campus.common.filter.PropertyPreExcludeFilter",
+    "com.oddfar.campus.common.utils.SecurityUtils",
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.common.utils.ip.IpUtils",
+    "com.oddfar.campus.framework.api.sysconfig.ConfigExpander",
+    "org.aspectj.lang.JoinPoint",
+    "org.aspectj.lang.annotation.AfterReturning",
+    "org.aspectj.lang.annotation.AfterThrowing",
+    "org.aspectj.lang.annotation.Aspect",
+    "org.aspectj.lang.annotation.Pointcut",
+    "org.aspectj.lang.reflect.MethodSignature",
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory",
+    "org.springframework.beans.factory.annotation.Value",
+    "org.springframework.http.HttpMethod",
+    "org.springframework.stereotype.Component",
+    "org.springframework.validation.BindingResult",
+    "org.springframework.web.multipart.MultipartFile",
+    "org.springframework.web.servlet.HandlerMapping",
+    "javax.servlet.http.HttpServletRequest",
+    "javax.servlet.http.HttpServletResponse",
+    "java.lang.annotation.Annotation",
+    "java.lang.reflect.InvocationTargetException",
+    "java.lang.reflect.Method",
+    "java.util.Collection",
+    "java.util.Date",
+    "java.util.HashMap",
+    "java.util.Map"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "springApplicationName": {
+      "field_name": "springApplicationName",
+      "field_type": "String",
+      "line_number": 60,
+      "annotations": [
+        "Value"
+      ]
+    }
+  },
+  "methods": {
+    "webLog": {
+      "method_name": "webLog",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 66,
+      "line_end": 69,
+      "body": "    @Pointcut(\"execution(* *..controller..*(..))\")\n    public void webLog() {\n\n    }",
+      "annotations": [
+        "Pointcut"
+      ],
+      "called_methods": [
+        "LogAspect.webLog",
+        "LogAspect.Pointcut",
+        "LogAspect.execution"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "doAfterReturning": {
+      "method_name": "doAfterReturning",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "JoinPoint",
+          "name": "joinPoint",
+          "annotations": []
+        },
+        {
+          "type": "Object",
+          "name": "jsonResult",
+          "annotations": []
+        }
+      ],
+      "line_start": 76,
+      "line_end": 86,
+      "body": "    @AfterReturning(pointcut = \"webLog()\", returning = \"jsonResult\")\n    public void doAfterReturning(JoinPoint joinPoint, Object jsonResult) {\n        boolean ensureMakeLog = this.ensureMakeLog(joinPoint);\n        if (!ensureMakeLog) {\n            return;\n        }\n        // 获取接口上@GetMapper等的name属性\n        Map<String, Object> annotationProp = getAnnotationProp(joinPoint);\n\n        handleLog(joinPoint, annotationProp, null, jsonResult);\n    }",
+      "annotations": [
+        "AfterReturning"
+      ],
+      "called_methods": [
+        "LogAspect.webLog",
+        "LogAspect.getAnnotationProp",
+        "LogAspect.ensureMakeLog",
+        "LogAspect.AfterReturning",
+        "LogAspect.handleLog",
+        "LogAspect.doAfterReturning"
+      ],
+      "used_fields": [
+        "ensureMakeLog"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "doAfterThrowing": {
+      "method_name": "doAfterThrowing",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "JoinPoint",
+          "name": "joinPoint",
+          "annotations": []
+        },
+        {
+          "type": "Exception",
+          "name": "e",
+          "annotations": []
+        }
+      ],
+      "line_start": 94,
+      "line_end": 104,
+      "body": "    @AfterThrowing(pointcut = \"webLog()\", throwing = \"e\")\n    public void doAfterThrowing(JoinPoint joinPoint, Exception e) {\n        boolean ensureMakeLog = this.ensureMakeLog(joinPoint);\n        if (!ensureMakeLog) {\n            return;\n        }\n        // 获取接口上@GetMapper等的name属性\n        Map<String, Object> annotationProp = getAnnotationProp(joinPoint);\n\n        handleLog(joinPoint, annotationProp, e, null);\n    }",
+      "annotations": [
+        "AfterThrowing"
+      ],
+      "called_methods": [
+        "LogAspect.webLog",
+        "LogAspect.getAnnotationProp",
+        "LogAspect.ensureMakeLog",
+        "LogAspect.doAfterThrowing",
+        "LogAspect.AfterThrowing",
+        "LogAspect.handleLog"
+      ],
+      "used_fields": [
+        "ensureMakeLog"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getAnnotationProp": {
+      "method_name": "getAnnotationProp",
+      "return_type": "Map<String, Object>",
+      "parameters": [
+        {
+          "type": "JoinPoint",
+          "name": "joinPoint",
+          "annotations": []
+        }
+      ],
+      "line_start": 112,
+      "line_end": 148,
+      "body": "    private Map<String, Object> getAnnotationProp(JoinPoint joinPoint) {\n        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();\n        Method method = methodSignature.getMethod();\n\n        // 通过map封装参数和参数值，key参数名，value是参数值\n        Map<String, Object> propMap = new HashMap<>(2);\n\n        // 获取接口上的@GetMapping等的name属性 填充到map\n        ApiResource apiResource = method.getDeclaringClass().getAnnotation(ApiResource.class);\n\n        for (Annotation annotation : method.getAnnotations()) {\n            //若是 spring 的请求注解\n            if (annotation.toString().contains(\"Mapping(\")) {\n                // 填充其他属性\n                String name = invokeAnnotationMethod(annotation, \"name\", String.class);\n                propMap.put(\"log_content\", StringUtils.isNull(name) ? \"\" : name);\n            }\n        }\n\n        propMap.put(\"app_name\", apiResource != null && StrUtil.isNotBlank(apiResource.appCode()) ? apiResource.appCode()\n                : springApplicationName);\n\n        /**\n         * 以下是只填充 GetMapping 和 PostMapping\n         */\n//        GetMapping getResource = method.getAnnotation(GetMapping.class);\n//        PostMapping postResource = method.getAnnotation(PostMapping.class);\n//        if (getResource != null) {\n//            propMap.put(\"log_content\", getResource.name());\n//        }\n//\n//        if (postResource != null) {\n//            propMap.put(\"log_content\", postResource.name());\n//        }\n\n        return propMap;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LogAspect.getAnnotations",
+        "LogAspect.put",
+        "LogAspect.invokeAnnotationMethod",
+        "LogAspect.getDeclaringClass",
+        "LogAspect.getMethod",
+        "propMap.put",
+        "annotation.toString",
+        "LogAspect.contains",
+        "LogAspect.isNull",
+        "LogAspect.getAnnotationProp",
+        "LogAspect.getSignature",
+        "method.getAnnotation",
+        "getResource.name",
+        "StrUtil.isNotBlank",
+        "LogAspect.appCode",
+        "apiResource.appCode",
+        "StringUtils.isNull",
+        "LogAspect.Mapping",
+        "methodSignature.getMethod",
+        "postResource.name",
+        "LogAspect.isNotBlank",
+        "method.getAnnotations",
+        "LogAspect.toString",
+        "method.getDeclaringClass",
+        "joinPoint.getSignature",
+        "LogAspect.getAnnotation",
+        "LogAspect.name"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "handleLog": {
+      "method_name": "handleLog",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "JoinPoint",
+          "name": "joinPoint",
+          "annotations": []
+        },
+        {
+          "type": "Object>",
+          "name": "annotationProp",
+          "annotations": []
+        },
+        {
+          "type": "Exception",
+          "name": "e",
+          "annotations": []
+        },
+        {
+          "type": "Object",
+          "name": "jsonResult",
+          "annotations": []
+        }
+      ],
+      "line_start": 151,
+      "line_end": 194,
+      "body": "    protected void handleLog(final JoinPoint joinPoint, Map<String, Object> annotationProp, final Exception e, Object jsonResult) {\n\n        try {\n            // *========数据库日志=========*//\n            SysOperLogEntity operLog = new SysOperLogEntity();\n            //设置appcode\n            operLog.setAppName(annotationProp.get(\"app_name\").toString());\n            operLog.setLogName(\"API接口日志记录\");\n            operLog.setLogContent(annotationProp.get(\"log_content\").toString());\n\n            operLog.setStatus(BusinessStatus.SUCCESS.ordinal());\n            // 请求的地址\n            String ip = IpUtils.getIpAddr(ServletUtils.getRequest());\n            operLog.setOperIp(ip);\n            operLog.setOperUrl(StringUtils.substring(ServletUtils.getRequest().getRequestURI(), 0, 255));\n\n            if (SecurityUtils.isLogin()) {\n                // 获取当前的用户\n                LoginUser loginUser = SecurityUtils.getLoginUser();\n                operLog.setOperUserId(loginUser.getUserId());\n            }\n\n            if (e != null) {\n                operLog.setStatus(BusinessStatus.FAIL.ordinal());\n                operLog.setErrorMsg(StringUtils.substring(e.getMessage(), 0, 2000));\n            }\n            // 设置方法名称\n            String className = joinPoint.getTarget().getClass().getName();\n            String methodName = joinPoint.getSignature().getName();\n            operLog.setMethod(className + \".\" + methodName + \"()\");\n            // 设置请求方式\n            operLog.setRequestMethod(ServletUtils.getRequest().getMethod());\n            // 处理设置注解上的参数 app name那些\n            getControllerMethodDescription(joinPoint, operLog, jsonResult);\n            operLog.setOperTime(new Date());\n            // 保存数据库\n            SpringUtil.getApplicationContext().publishEvent(operLog);\n        } catch (Exception exp) {\n            // 记录本地异常日志\n            log.error(\"==前置通知异常==\");\n            log.error(\"异常信息:{}\", exp.getMessage());\n            exp.printStackTrace();\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LogAspect.setLogContent",
+        "e.getMessage",
+        "LogAspect.setRequestMethod",
+        "loginUser.getUserId",
+        "operLog.setStatus",
+        "LogAspect.substring",
+        "LogAspect.publishEvent",
+        "log.error",
+        "LogAspect.getMethod",
+        "operLog.setLogName",
+        "LogAspect.printStackTrace",
+        "LogAspect.error",
+        "operLog.setOperUserId",
+        "LogAspect.setOperUserId",
+        "LogAspect.getUserId",
+        "LogAspect.getRequest",
+        "LogAspect.setErrorMsg",
+        "LogAspect.getName",
+        "LogAspect.Date",
+        "operLog.setOperTime",
+        "LogAspect.get",
+        "LogAspect.getApplicationContext",
+        "LogAspect.getSignature",
+        "SecurityUtils.getLoginUser",
+        "SecurityUtils.isLogin",
+        "LogAspect.getMessage",
+        "LogAspect.setMethod",
+        "operLog.setOperIp",
+        "LogAspect.isLogin",
+        "operLog.setAppName",
+        "LogAspect.handleLog",
+        "LogAspect.setAppName",
+        "LogAspect.getIpAddr",
+        "LogAspect.getControllerMethodDescription",
+        "operLog.setLogContent",
+        "LogAspect.getClass",
+        "operLog.setOperUrl",
+        "SUCCESS.ordinal",
+        "joinPoint.getTarget",
+        "operLog.setRequestMethod",
+        "SpringUtil.getApplicationContext",
+        "LogAspect.setOperIp",
+        "LogAspect.setOperUrl",
+        "ServletUtils.getRequest",
+        "LogAspect.setOperTime",
+        "annotationProp.get",
+        "LogAspect.SysOperLogEntity",
+        "LogAspect.getRequestURI",
+        "LogAspect.toString",
+        "IpUtils.getIpAddr",
+        "LogAspect.getLoginUser",
+        "StringUtils.substring",
+        "LogAspect.setLogName",
+        "LogAspect.ordinal",
+        "exp.printStackTrace",
+        "LogAspect.setStatus",
+        "operLog.setErrorMsg",
+        "joinPoint.getSignature",
+        "operLog.setMethod",
+        "exp.getMessage",
+        "LogAspect.getTarget",
+        "FAIL.ordinal"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getControllerMethodDescription": {
+      "method_name": "getControllerMethodDescription",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "JoinPoint",
+          "name": "joinPoint",
+          "annotations": []
+        },
+        {
+          "type": "SysOperLogEntity",
+          "name": "operLog",
+          "annotations": []
+        },
+        {
+          "type": "Object",
+          "name": "jsonResult",
+          "annotations": []
+        }
+      ],
+      "line_start": 202,
+      "line_end": 211,
+      "body": "    public void getControllerMethodDescription(JoinPoint joinPoint, SysOperLogEntity operLog, Object jsonResult) throws Exception {\n\n        // 保存request，参数和值,获取参数的信息，传入到数据库中。\n        setRequestValue(joinPoint, operLog);\n\n        //保存response，参数和值\n        if (StringUtils.isNotNull(jsonResult)) {\n            operLog.setJsonResult(StringUtils.substring(JSON.toJSONString(jsonResult), 0, 2000));\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LogAspect.setRequestValue",
+        "LogAspect.getControllerMethodDescription",
+        "LogAspect.substring",
+        "LogAspect.isNotNull",
+        "LogAspect.setJsonResult",
+        "LogAspect.toJSONString",
+        "StringUtils.substring",
+        "operLog.setJsonResult",
+        "JSON.toJSONString",
+        "StringUtils.isNotNull"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setRequestValue": {
+      "method_name": "setRequestValue",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "JoinPoint",
+          "name": "joinPoint",
+          "annotations": []
+        },
+        {
+          "type": "SysOperLogEntity",
+          "name": "operLog",
+          "annotations": []
+        }
+      ],
+      "line_start": 219,
+      "line_end": 228,
+      "body": "    private void setRequestValue(JoinPoint joinPoint, SysOperLogEntity operLog) throws Exception {\n        String requestMethod = operLog.getRequestMethod();\n        if (HttpMethod.PUT.name().equals(requestMethod) || HttpMethod.POST.name().equals(requestMethod)) {\n            String params = argsArrayToString(joinPoint.getArgs());\n            operLog.setOperParam(StringUtils.substring(params, 0, 2000));\n        } else {\n            Map<?, ?> paramsMap = (Map<?, ?>) ServletUtils.getRequest().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);\n            operLog.setOperParam(StringUtils.substring(paramsMap.toString(), 0, 2000));\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "joinPoint.getArgs",
+        "LogAspect.setOperParam",
+        "LogAspect.substring",
+        "LogAspect.getRequestMethod",
+        "LogAspect.equals",
+        "LogAspect.getArgs",
+        "LogAspect.getRequest",
+        "POST.name",
+        "operLog.getRequestMethod",
+        "PUT.name",
+        "paramsMap.toString",
+        "LogAspect.argsArrayToString",
+        "LogAspect.getAttribute",
+        "ServletUtils.getRequest",
+        "LogAspect.setRequestValue",
+        "LogAspect.toString",
+        "StringUtils.substring",
+        "operLog.setOperParam",
+        "LogAspect.name"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "argsArrayToString": {
+      "method_name": "argsArrayToString",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "Object[]",
+          "name": "paramsArray",
+          "annotations": []
+        }
+      ],
+      "line_start": 233,
+      "line_end": 247,
+      "body": "    private String argsArrayToString(Object[] paramsArray) {\n        String params = \"\";\n        if (paramsArray != null && paramsArray.length > 0) {\n            for (Object o : paramsArray) {\n                if (StringUtils.isNotNull(o) && !isFilterObject(o)) {\n                    try {\n                        String jsonObj = JSON.toJSONString(o, excludePropertyPreFilter());\n                        params += jsonObj.toString() + \" \";\n                    } catch (Exception e) {\n                    }\n                }\n            }\n        }\n        return params.trim();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LogAspect.argsArrayToString",
+        "LogAspect.toString",
+        "LogAspect.isNotNull",
+        "LogAspect.excludePropertyPreFilter",
+        "LogAspect.toJSONString",
+        "LogAspect.isFilterObject",
+        "params.trim",
+        "jsonObj.toString",
+        "JSON.toJSONString",
+        "StringUtils.isNotNull",
+        "LogAspect.trim"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "ensureMakeLog": {
+      "method_name": "ensureMakeLog",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "JoinPoint",
+          "name": "point",
+          "annotations": []
+        }
+      ],
+      "line_start": 253,
+      "line_end": 293,
+      "body": "    private boolean ensureMakeLog(JoinPoint point) {\n        // 判断是否需要记录日志，如果不需要直接返回\n        Boolean openFlag = ConfigExpander.getGlobalControllerOpenFlag();\n\n        // 获取类上的业务日志开关注解\n        Class<?> controllerClass = point.getTarget().getClass();\n        Log businessLog = controllerClass.getAnnotation(Log.class);\n\n        // 获取方法上的业务日志开关注解\n        Log methodBusinessLog = null;\n        MethodSignature methodSignature = null;\n        if (!(point.getSignature() instanceof MethodSignature)) {\n            return false;\n        }\n        methodSignature = (MethodSignature) point.getSignature();\n        Object target = point.getTarget();\n        try {\n            Method currentMethod = target.getClass().getMethod(methodSignature.getName(), methodSignature.getParameterTypes());\n            methodBusinessLog = currentMethod.getAnnotation(Log.class);\n        } catch (NoSuchMethodException e) {\n            return false;\n        }\n\n        // 如果开关开启\n        if (openFlag) {\n            // 如果控制器类上特意标明不做日志，则不记录日志\n            if (businessLog != null && !businessLog.openLog()) {\n                return false;\n            }\n            // 如果方法上标明不记录日志，则不记录日志\n            return methodBusinessLog == null || methodBusinessLog.openLog();\n        } else {\n            // 如果全局开关没开启，但是类上有特殊标记开启日志，则以类上标注为准\n            if (businessLog != null && businessLog.openLog()) {\n                return true;\n            }\n            // 如果方法上标明不记录日志，则不记录日志\n            return methodBusinessLog != null && methodBusinessLog.openLog();\n        }\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LogAspect.getMethod",
+        "LogAspect.getParameterTypes",
+        "LogAspect.getName",
+        "methodSignature.getName",
+        "methodSignature.getParameterTypes",
+        "businessLog.openLog",
+        "ConfigExpander.getGlobalControllerOpenFlag",
+        "LogAspect.ensureMakeLog",
+        "currentMethod.getAnnotation",
+        "LogAspect.getSignature",
+        "controllerClass.getAnnotation",
+        "LogAspect.getGlobalControllerOpenFlag",
+        "LogAspect.openLog",
+        "point.getSignature",
+        "LogAspect.getClass",
+        "target.getClass",
+        "methodBusinessLog.openLog",
+        "LogAspect.getAnnotation",
+        "LogAspect.getTarget",
+        "point.getTarget"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "excludePropertyPreFilter": {
+      "method_name": "excludePropertyPreFilter",
+      "return_type": "PropertyPreExcludeFilter",
+      "parameters": [],
+      "line_start": 312,
+      "line_end": 314,
+      "body": "    public PropertyPreExcludeFilter excludePropertyPreFilter() {\n        return new PropertyPreExcludeFilter().addExcludes(EXCLUDE_PROPERTIES);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LogAspect.addExcludes",
+        "LogAspect.PropertyPreExcludeFilter",
+        "LogAspect.excludePropertyPreFilter"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isFilterObject": {
+      "method_name": "isFilterObject",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Object",
+          "name": "o",
+          "annotations": []
+        }
+      ],
+      "line_start": 322,
+      "line_end": 341,
+      "body": "    @SuppressWarnings(\"rawtypes\")\n    public boolean isFilterObject(final Object o) {\n        Class<?> clazz = o.getClass();\n        if (clazz.isArray()) {\n            return clazz.getComponentType().isAssignableFrom(MultipartFile.class);\n        } else if (Collection.class.isAssignableFrom(clazz)) {\n            Collection collection = (Collection) o;\n            for (Object value : collection) {\n                return value instanceof MultipartFile;\n            }\n        } else if (Map.class.isAssignableFrom(clazz)) {\n            Map map = (Map) o;\n            for (Object value : map.entrySet()) {\n                Map.Entry entry = (Map.Entry) value;\n                return entry.getValue() instanceof MultipartFile;\n            }\n        }\n        return o instanceof MultipartFile || o instanceof HttpServletRequest || o instanceof HttpServletResponse\n                || o instanceof BindingResult;\n    }",
+      "annotations": [
+        "SuppressWarnings"
+      ],
+      "called_methods": [
+        "LogAspect.getComponentType",
+        "map.entrySet",
+        "clazz.getComponentType",
+        "class.isAssignableFrom",
+        "entry.getValue",
+        "LogAspect.getClass",
+        "LogAspect.isArray",
+        "LogAspect.entrySet",
+        "LogAspect.getValue",
+        "LogAspect.isAssignableFrom",
+        "LogAspect.isFilterObject",
+        "clazz.isArray",
+        "LogAspect.SuppressWarnings",
+        "o.getClass"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Aspect",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 49,
+  "line_end": 344
+}

@@ -1,0 +1,84 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\config\\SensitiveSerializer.java",
+  "package_name": "com.oddfar.campus.common.config",
+  "class_name": "SensitiveSerializer",
+  "imports": [
+    "com.fasterxml.jackson.core.JsonGenerator",
+    "com.fasterxml.jackson.databind.BeanProperty",
+    "com.fasterxml.jackson.databind.JsonMappingException",
+    "com.fasterxml.jackson.databind.JsonSerializer",
+    "com.fasterxml.jackson.databind.SerializerProvider",
+    "com.fasterxml.jackson.databind.ser.ContextualSerializer",
+    "com.oddfar.campus.common.annotation.Sensitive",
+    "com.oddfar.campus.common.enums.SensitiveStrategy",
+    "lombok.extern.slf4j.Slf4j",
+    "org.springframework.beans.BeansException",
+    "java.io.IOException",
+    "java.util.Objects"
+  ],
+  "extends": "JsonSerializer",
+  "implements": [],
+  "fields": {
+    "strategy": {
+      "field_name": "strategy",
+      "field_type": "SensitiveStrategy",
+      "line_number": 25,
+      "annotations": [
+        "author",
+        "Slf4j"
+      ]
+    }
+  },
+  "methods": {
+    "serialize": {
+      "method_name": "serialize",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "value",
+          "annotations": []
+        },
+        {
+          "type": "JsonGenerator",
+          "name": "gen",
+          "annotations": []
+        },
+        {
+          "type": "SerializerProvider",
+          "name": "serializers",
+          "annotations": []
+        }
+      ],
+      "line_start": 28,
+      "line_end": 35,
+      "body": "    public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {\n        try {\n            gen.writeString(strategy.desensitizer().apply(value));\n        } catch (BeansException e) {\n            log.error(\"脱敏实现不存在, 采用默认处理 => {}\", e.getMessage());\n            gen.writeString(value);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SensitiveSerializer.getMessage",
+        "e.getMessage",
+        "SensitiveSerializer.apply",
+        "SensitiveSerializer.desensitizer",
+        "log.error",
+        "SensitiveSerializer.writeString",
+        "gen.writeString",
+        "SensitiveSerializer.serialize",
+        "SensitiveSerializer.error",
+        "SensitiveStrategy.desensitizer"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Slf4j"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 23,
+  "line_end": 47
+}

@@ -1,0 +1,102 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\web\\service\\SysRegisterService.java",
+  "package_name": "com.oddfar.campus.framework.web.service",
+  "class_name": "SysRegisterService",
+  "imports": [
+    "cn.hutool.extra.spring.SpringUtil",
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.constant.UserConstants",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.domain.event.LogininforEvent",
+    "com.oddfar.campus.common.domain.model.RegisterBody",
+    "com.oddfar.campus.common.utils.MessageUtils",
+    "com.oddfar.campus.common.utils.SecurityUtils",
+    "com.oddfar.campus.common.utils.ServletUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.service.SysUserService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.stereotype.Component"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "userService": {
+      "field_name": "userService",
+      "field_type": "SysUserService",
+      "line_number": 22,
+      "annotations": [
+        "Component"
+      ]
+    }
+  },
+  "methods": {
+    "register": {
+      "method_name": "register",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "RegisterBody",
+          "name": "registerBody",
+          "annotations": []
+        }
+      ],
+      "line_start": 28,
+      "line_end": 62,
+      "body": "    public String register(RegisterBody registerBody) {\n        String msg = \"\", username = registerBody.getUsername(), password = registerBody.getPassword();\n        SysUserEntity sysUser = new SysUserEntity();\n        sysUser.setUserName(username);\n\n        if (StringUtils.isEmpty(username)) {\n            msg = \"用户名不能为空\";\n        } else if (StringUtils.isEmpty(password)) {\n            msg = \"用户密码不能为空\";\n        } else if (username.length() < UserConstants.USERNAME_MIN_LENGTH\n                || username.length() > UserConstants.USERNAME_MAX_LENGTH) {\n            msg = \"账户长度必须在2到20个字符之间\";\n        } else if (password.length() < UserConstants.PASSWORD_MIN_LENGTH\n                || password.length() > UserConstants.PASSWORD_MAX_LENGTH) {\n            msg = \"密码长度必须在5到20个字符之间\";\n        } else if (!(userService.checkUserNameUnique(sysUser))) {\n            msg = \"保存用户'\" + username + \"'失败，注册账号已存在\";\n        } else {\n            sysUser.setNickName(username);\n            sysUser.setPassword(SecurityUtils.encryptPassword(password));\n            boolean regFlag = userService.registerUser(sysUser);\n            if (!regFlag) {\n                msg = \"注册失败,请联系系统管理人员\";\n            } else {\n                //注册失败异步记录信息\n                LogininforEvent logininforEvent = new LogininforEvent();\n                logininforEvent.setUsername(username);\n                logininforEvent.setStatus(Constants.REGISTER);\n                logininforEvent.setMessage(MessageUtils.message(\"user.register.success\"));\n                logininforEvent.setRequest(ServletUtils.getRequest2());\n                SpringUtil.getApplicationContext().publishEvent(logininforEvent);\n            }\n        }\n        return msg;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "sysUser.setUserName",
+        "SysRegisterService.isEmpty",
+        "SysRegisterService.setStatus",
+        "logininforEvent.setRequest",
+        "SysRegisterService.SysUserEntity",
+        "sysUser.setPassword",
+        "SysRegisterService.register",
+        "SysRegisterService.message",
+        "logininforEvent.setStatus",
+        "SysRegisterService.setPassword",
+        "SysRegisterService.setRequest",
+        "SysRegisterService.encryptPassword",
+        "registerBody.getPassword",
+        "SysUserService.checkUserNameUnique",
+        "SysRegisterService.registerUser",
+        "sysUser.setNickName",
+        "logininforEvent.setUsername",
+        "logininforEvent.setMessage",
+        "SysRegisterService.checkUserNameUnique",
+        "registerBody.getUsername",
+        "username.length",
+        "SysRegisterService.LogininforEvent",
+        "SysRegisterService.publishEvent",
+        "ServletUtils.getRequest2",
+        "SysRegisterService.getPassword",
+        "SpringUtil.getApplicationContext",
+        "MessageUtils.message",
+        "SysRegisterService.setNickName",
+        "SysRegisterService.setMessage",
+        "SysRegisterService.length",
+        "SysRegisterService.getApplicationContext",
+        "password.length",
+        "SysRegisterService.setUserName",
+        "SysRegisterService.getUsername",
+        "SysRegisterService.getRequest2",
+        "SysUserService.registerUser",
+        "SysRegisterService.setUsername",
+        "StringUtils.isEmpty",
+        "SecurityUtils.encryptPassword"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 21,
+  "line_end": 64
+}

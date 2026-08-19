@@ -1,0 +1,38 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\sysconfig\\ConfigContext.java",
+  "package_name": "com.oddfar.campus.framework.api.sysconfig",
+  "class_name": "ConfigContext",
+  "imports": [
+    "cn.hutool.extra.spring.SpringUtil",
+    "com.oddfar.campus.framework.service.SysConfigService"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "me": {
+      "method_name": "me",
+      "return_type": "SysConfigService",
+      "parameters": [],
+      "line_start": 14,
+      "line_end": 16,
+      "body": "    public static SysConfigService me() {\n        return SpringUtil.getBean(SysConfigService.class);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ConfigContext.getBean",
+        "SpringUtil.getBean",
+        "ConfigContext.me"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 9,
+  "line_end": 19
+}

@@ -1,0 +1,87 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\listener\\ReadyEventListener.java",
+  "package_name": "com.oddfar.campus.framework.listener",
+  "class_name": "ReadyEventListener",
+  "imports": [
+    "com.oddfar.campus.common.domain.entity.SysResourceEntity",
+    "com.oddfar.campus.framework.api.resource.ResourceCollectorApi",
+    "com.oddfar.campus.framework.service.SysResourceService",
+    "com.oddfar.campus.framework.service.SysRoleService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.boot.context.event.ApplicationReadyEvent",
+    "org.springframework.context.ApplicationListener",
+    "org.springframework.context.ConfigurableApplicationContext",
+    "org.springframework.stereotype.Component",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [
+    "ApplicationListener"
+  ],
+  "fields": {
+    "resourceService": {
+      "field_name": "resourceService",
+      "field_type": "SysResourceService",
+      "line_number": 24,
+      "annotations": [
+        "author",
+        "Component"
+      ]
+    },
+    "roleService": {
+      "field_name": "roleService",
+      "field_type": "SysRoleService",
+      "line_number": 26,
+      "annotations": [
+        "author",
+        "Component",
+        "Autowired"
+      ]
+    }
+  },
+  "methods": {
+    "onApplicationEvent": {
+      "method_name": "onApplicationEvent",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "ApplicationReadyEvent",
+          "name": "event",
+          "annotations": []
+        }
+      ],
+      "line_start": 30,
+      "line_end": 45,
+      "body": "    public void onApplicationEvent(ApplicationReadyEvent event) {\n        //导入资源数据\n        ConfigurableApplicationContext applicationContext = event.getApplicationContext();\n\n        //清空数据\n        resourceService.truncateResource();\n\n        // 获取当前系统的所有资源\n        ResourceCollectorApi resourceCollectorApi = applicationContext.getBean(ResourceCollectorApi.class);\n        List<SysResourceEntity> allResources = resourceCollectorApi.getAllResources();\n        //添加api接口资源到数据库\n        resourceService.saveBatch(allResources);\n\n        //把用户资源和权限缓存\n        roleService.resetRoleAuthCache();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ReadyEventListener.saveBatch",
+        "event.getApplicationContext",
+        "ReadyEventListener.truncateResource",
+        "applicationContext.getBean",
+        "SysResourceService.truncateResource",
+        "resourceCollectorApi.getAllResources",
+        "ReadyEventListener.onApplicationEvent",
+        "ReadyEventListener.resetRoleAuthCache",
+        "SysRoleService.resetRoleAuthCache",
+        "SysResourceService.saveBatch",
+        "ReadyEventListener.getAllResources",
+        "ReadyEventListener.getBean",
+        "ReadyEventListener.getApplicationContext"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 22,
+  "line_end": 49
+}

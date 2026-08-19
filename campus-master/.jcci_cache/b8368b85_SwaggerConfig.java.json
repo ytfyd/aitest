@@ -1,0 +1,185 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\config\\SwaggerConfig.java",
+  "package_name": "com.oddfar.campus.admin.config",
+  "class_name": "SwaggerConfig",
+  "imports": [
+    "io.swagger.models.auth.In",
+    "io.swagger.v3.oas.annotations.Operation",
+    "org.springframework.beans.factory.annotation.Value",
+    "org.springframework.context.annotation.Bean",
+    "org.springframework.context.annotation.Configuration",
+    "springfox.documentation.builders.ApiInfoBuilder",
+    "springfox.documentation.builders.PathSelectors",
+    "springfox.documentation.builders.RequestHandlerSelectors",
+    "springfox.documentation.spi.DocumentationType",
+    "springfox.documentation.spi.service.contexts.SecurityContext",
+    "springfox.documentation.spring.web.plugins.Docket",
+    "java.util.ArrayList",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "enabled": {
+      "field_name": "enabled",
+      "field_type": "boolean",
+      "line_number": 32,
+      "annotations": [
+        "author",
+        "Configuration",
+        "Value"
+      ]
+    },
+    "version": {
+      "field_name": "version",
+      "field_type": "String",
+      "line_number": 38,
+      "annotations": [
+        "Value",
+        "Value"
+      ]
+    }
+  },
+  "methods": {
+    "createRestApi": {
+      "method_name": "createRestApi",
+      "return_type": "Docket",
+      "parameters": [],
+      "line_start": 44,
+      "line_end": 62,
+      "body": "    public Docket createRestApi() {\n        return new Docket(DocumentationType.OAS_30)\n                // 是否启用Swagger\n                .enable(enabled)\n                // 用来创建该API的基本信息，展示在文档的页面中（自定义展示的信息）\n                .apiInfo(apiInfo())\n                // 设置哪些接口暴露给Swagger展示\n                .select()\n                // 扫描所有有注解的api，用这种方式更灵活\n                // .apis(RequestHandlerSelectors.withMethodAnnotation(Operation.class))\n                // 扫描指定包中的swagger注解\n                .apis(RequestHandlerSelectors.basePackage(\"com.oddfar.campus\"))\n                // 扫描所有 .apis(RequestHandlerSelectors.any())\n                .paths(PathSelectors.any())\n                .build()\n                /* 设置安全模式，swagger可以设置访问token */\n                .securitySchemes(securitySchemes())\n                .securityContexts(securityContexts());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SwaggerConfig.createRestApi",
+        "SwaggerConfig.securityContexts",
+        "SwaggerConfig.apis",
+        "SwaggerConfig.enable",
+        "SwaggerConfig.any",
+        "PathSelectors.any",
+        "SwaggerConfig.build",
+        "RequestHandlerSelectors.basePackage",
+        "扫描所有.apis",
+        "SwaggerConfig.basePackage",
+        "SwaggerConfig.apiInfo",
+        "SwaggerConfig.paths",
+        "SwaggerConfig.securitySchemes",
+        "SwaggerConfig.withMethodAnnotation",
+        "SwaggerConfig.Docket",
+        "是否启用Swagger.enable",
+        "SwaggerConfig.select",
+        "设置哪些接口暴露给Swagger展示.select",
+        "扫描指定包中的swagger注解.apis",
+        "RequestHandlerSelectors.any",
+        "RequestHandlerSelectors.withMethodAnnotation"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "securitySchemes": {
+      "method_name": "securitySchemes",
+      "return_type": "List<SecurityScheme>",
+      "parameters": [],
+      "line_start": 67,
+      "line_end": 71,
+      "body": "    private List<SecurityScheme> securitySchemes() {\n        List<SecurityScheme> apiKeyList = new ArrayList<SecurityScheme>();\n        apiKeyList.add(new ApiKey(\"Authorization\", \"Authorization\", In.HEADER.toValue()));\n        return apiKeyList;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "HEADER.toValue",
+        "SwaggerConfig.securitySchemes",
+        "apiKeyList.add",
+        "SwaggerConfig.add",
+        "SwaggerConfig.ApiKey",
+        "SwaggerConfig.toValue"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "securityContexts": {
+      "method_name": "securityContexts",
+      "return_type": "List<SecurityContext>",
+      "parameters": [],
+      "line_start": 76,
+      "line_end": 84,
+      "body": "    private List<SecurityContext> securityContexts() {\n        List<SecurityContext> securityContexts = new ArrayList<>();\n        securityContexts.add(\n                SecurityContext.builder()\n                        .securityReferences(defaultAuth())\n                        .operationSelector(o -> o.requestMappingPattern().matches(\"/.*\"))\n                        .build());\n        return securityContexts;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SwaggerConfig.build",
+        "o.requestMappingPattern",
+        "securityContexts.add",
+        "SwaggerConfig.securityContexts",
+        "SwaggerConfig.add",
+        "SwaggerConfig.builder",
+        "SecurityContext.builder",
+        "SwaggerConfig.matches",
+        "SwaggerConfig.requestMappingPattern",
+        "SwaggerConfig.defaultAuth",
+        "SwaggerConfig.securityReferences",
+        "SwaggerConfig.operationSelector"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "defaultAuth": {
+      "method_name": "defaultAuth",
+      "return_type": "List<SecurityReference>",
+      "parameters": [],
+      "line_start": 89,
+      "line_end": 96,
+      "body": "    private List<SecurityReference> defaultAuth() {\n        AuthorizationScope authorizationScope = new AuthorizationScope(\"global\", \"accessEverything\");\n        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];\n        authorizationScopes[0] = authorizationScope;\n        List<SecurityReference> securityReferences = new ArrayList<>();\n        securityReferences.add(new SecurityReference(\"Authorization\", authorizationScopes));\n        return securityReferences;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "securityReferences.add",
+        "SwaggerConfig.add",
+        "SwaggerConfig.AuthorizationScope",
+        "SwaggerConfig.SecurityReference",
+        "SwaggerConfig.defaultAuth"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "apiInfo": {
+      "method_name": "apiInfo",
+      "return_type": "ApiInfo",
+      "parameters": [],
+      "line_start": 101,
+      "line_end": 113,
+      "body": "    private ApiInfo apiInfo() {\n        // 用ApiInfoBuilder进行定制\n        return new ApiInfoBuilder()\n                // 设置标题\n                .title(\"标题：Campus_接口文档\")\n                // 描述\n                .description(\"描述：Campus的接口文档列表\")\n                // 作者信息\n                .contact(new Contact(\"oddfar\", null, null))\n                // 版本\n                .version(\"版本号:\" + version)\n                .build();\n    }",
+      "annotations": [],
+      "called_methods": [
+        "设置标题.title",
+        "SwaggerConfig.build",
+        "SwaggerConfig.apiInfo",
+        "作者信息.contact",
+        "SwaggerConfig.description",
+        "描述.description",
+        "SwaggerConfig.contact",
+        "SwaggerConfig.ApiInfoBuilder",
+        "版本.version",
+        "SwaggerConfig.title",
+        "SwaggerConfig.Contact",
+        "SwaggerConfig.version"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Configuration"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 26,
+  "line_end": 115
+}

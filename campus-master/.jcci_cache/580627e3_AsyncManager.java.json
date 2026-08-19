@@ -1,0 +1,92 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\manager\\AsyncManager.java",
+  "package_name": "com.oddfar.campus.framework.manager",
+  "class_name": "AsyncManager",
+  "imports": [
+    "com.oddfar.campus.common.utils.SpringUtils",
+    "com.oddfar.campus.common.utils.Threads",
+    "java.util.TimerTask",
+    "java.util.concurrent.ScheduledExecutorService",
+    "java.util.concurrent.TimeUnit"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "executor": {
+      "field_name": "executor",
+      "field_type": "ScheduledExecutorService",
+      "line_number": 24,
+      "annotations": [
+        "author"
+      ]
+    }
+  },
+  "methods": {
+    "me": {
+      "method_name": "me",
+      "return_type": "AsyncManager",
+      "parameters": [],
+      "line_start": 34,
+      "line_end": 36,
+      "body": "    public static AsyncManager me() {\n        return me;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "AsyncManager.me"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "execute": {
+      "method_name": "execute",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "TimerTask",
+          "name": "task",
+          "annotations": []
+        }
+      ],
+      "line_start": 43,
+      "line_end": 45,
+      "body": "    public void execute(TimerTask task) {\n        executor.schedule(task, OPERATE_DELAY_TIME, TimeUnit.MILLISECONDS);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "AsyncManager.execute",
+        "AsyncManager.schedule",
+        "ScheduledExecutorService.schedule"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "shutdown": {
+      "method_name": "shutdown",
+      "return_type": "void",
+      "parameters": [],
+      "line_start": 50,
+      "line_end": 52,
+      "body": "    public void shutdown() {\n        Threads.shutdownAndAwaitTermination(executor);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "AsyncManager.shutdown",
+        "AsyncManager.shutdownAndAwaitTermination",
+        "Threads.shutdownAndAwaitTermination"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 15,
+  "line_end": 54
+}

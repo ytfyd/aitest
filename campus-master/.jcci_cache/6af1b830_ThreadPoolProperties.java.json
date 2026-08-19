@@ -1,0 +1,53 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\config\\properties\\ThreadPoolProperties.java",
+  "package_name": "com.oddfar.campus.common.config.properties",
+  "class_name": "ThreadPoolProperties",
+  "imports": [
+    "lombok.Data",
+    "org.springframework.boot.context.properties.ConfigurationProperties"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "enabled": {
+      "field_name": "enabled",
+      "field_type": "boolean",
+      "line_number": [
+        18,
+        13
+      ],
+      "annotations": []
+    },
+    "queueCapacity": {
+      "field_name": "queueCapacity",
+      "field_type": "int",
+      "line_number": [
+        23,
+        13
+      ],
+      "annotations": []
+    },
+    "keepAliveSeconds": {
+      "field_name": "keepAliveSeconds",
+      "field_type": "int",
+      "line_number": [
+        28,
+        13
+      ],
+      "annotations": []
+    }
+  },
+  "methods": {},
+  "annotations": [
+    "Data",
+    "ConfigurationProperties"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": [
+    13,
+    8
+  ],
+  "line_end": 0
+}

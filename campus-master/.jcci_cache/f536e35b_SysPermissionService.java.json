@@ -1,0 +1,307 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\web\\service\\SysPermissionService.java",
+  "package_name": "com.oddfar.campus.framework.web.service",
+  "class_name": "SysPermissionService",
+  "imports": [
+    "com.oddfar.campus.common.core.RedisCache",
+    "com.oddfar.campus.common.domain.entity.SysRoleEntity",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.domain.model.LoginUser",
+    "com.oddfar.campus.framework.service.SysMenuService",
+    "com.oddfar.campus.framework.service.SysResourceService",
+    "com.oddfar.campus.framework.service.SysRoleService",
+    "com.oddfar.campus.framework.service.SysUserService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.stereotype.Component",
+    "java.util.HashSet",
+    "java.util.List",
+    "java.util.Set"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "roleService": {
+      "field_name": "roleService",
+      "field_type": "SysRoleService",
+      "line_number": 25,
+      "annotations": [
+        "author",
+        "Component"
+      ]
+    },
+    "menuService": {
+      "field_name": "menuService",
+      "field_type": "SysMenuService",
+      "line_number": 27,
+      "annotations": [
+        "author",
+        "Component",
+        "Autowired"
+      ]
+    },
+    "resourceService": {
+      "field_name": "resourceService",
+      "field_type": "SysResourceService",
+      "line_number": 29,
+      "annotations": [
+        "author",
+        "Component",
+        "Autowired",
+        "Autowired"
+      ]
+    },
+    "userService": {
+      "field_name": "userService",
+      "field_type": "SysUserService",
+      "line_number": 31,
+      "annotations": [
+        "Autowired",
+        "Autowired",
+        "Autowired"
+      ]
+    },
+    "tokenService": {
+      "field_name": "tokenService",
+      "field_type": "TokenService",
+      "line_number": 33,
+      "annotations": [
+        "Autowired",
+        "Autowired",
+        "Autowired"
+      ]
+    },
+    "redisCache": {
+      "field_name": "redisCache",
+      "field_type": "RedisCache",
+      "line_number": 36,
+      "annotations": [
+        "Autowired",
+        "Autowired",
+        "Autowired"
+      ]
+    }
+  },
+  "methods": {
+    "getRolePermission": {
+      "method_name": "getRolePermission",
+      "return_type": "Set<String>",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 45,
+      "line_end": 54,
+      "body": "    public Set<String> getRolePermission(SysUserEntity user) {\n        Set<String> roles = new HashSet<String>();\n        // 管理员拥有所有权限\n        if (user.isAdmin()) {\n            roles.add(\"admin\");\n        } else {\n            roles.addAll(roleService.selectRolePermissionByUserId(user.getUserId()));\n        }\n        return roles;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "roles.add",
+        "SysPermissionService.getUserId",
+        "user.isAdmin",
+        "roles.addAll",
+        "SysRoleService.selectRolePermissionByUserId",
+        "user.getUserId",
+        "SysPermissionService.add",
+        "SysPermissionService.getRolePermission",
+        "SysPermissionService.addAll",
+        "SysPermissionService.selectRolePermissionByUserId",
+        "SysPermissionService.isAdmin"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getMenuPermission": {
+      "method_name": "getMenuPermission",
+      "return_type": "Set<String>",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 62,
+      "line_end": 81,
+      "body": "    public Set<String> getMenuPermission(SysUserEntity user) {\n        Set<String> perms = new HashSet<String>();\n        // 管理员拥有所有权限\n        if (user.isAdmin()) {\n            perms.add(\"*:*:*\");\n        } else {\n            List<SysRoleEntity> roles = user.getRoles();\n            if (!roles.isEmpty() && roles.size() > 1) {\n                // 多角色设置permissions属性，以便数据权限匹配权限\n                for (SysRoleEntity role : roles) {\n                    Set<String> rolePerms = menuService.selectMenuPermsByRoleId(role.getRoleId());\n                    role.setPermissions(rolePerms);\n                    perms.addAll(rolePerms);\n                }\n            } else {\n                perms.addAll(menuService.selectMenuPermsByUserId(user.getUserId()));\n            }\n        }\n        return perms;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "role.setPermissions",
+        "SysPermissionService.getUserId",
+        "SysPermissionService.getMenuPermission",
+        "SysPermissionService.getRoleId",
+        "SysPermissionService.selectMenuPermsByRoleId",
+        "SysPermissionService.isAdmin",
+        "SysPermissionService.size",
+        "roles.isEmpty",
+        "SysPermissionService.getRoles",
+        "SysPermissionService.add",
+        "role.getRoleId",
+        "perms.addAll",
+        "user.isAdmin",
+        "SysPermissionService.selectMenuPermsByUserId",
+        "user.getRoles",
+        "SysMenuService.selectMenuPermsByRoleId",
+        "SysPermissionService.setPermissions",
+        "SysPermissionService.isEmpty",
+        "user.getUserId",
+        "perms.add",
+        "SysPermissionService.addAll",
+        "SysMenuService.selectMenuPermsByUserId",
+        "roles.size"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getMenuPermissionByRoleId": {
+      "method_name": "getMenuPermissionByRoleId",
+      "return_type": "Set<String>",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleID",
+          "annotations": []
+        }
+      ],
+      "line_start": 89,
+      "line_end": 98,
+      "body": "    public Set<String> getMenuPermissionByRoleId(Long roleID) {\n        Set<String> perms = new HashSet<String>();\n        // 管理员拥有所有权限\n        if (roleID == 1) {\n            perms.add(\"*:*:*\");\n        } else {\n            perms = menuService.selectMenuPermsByRoleId(roleID);\n        }\n        return perms;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysMenuService.selectMenuPermsByRoleId",
+        "SysPermissionService.selectMenuPermsByRoleId",
+        "SysPermissionService.add",
+        "perms.add",
+        "SysPermissionService.getMenuPermissionByRoleId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getResources": {
+      "method_name": "getResources",
+      "return_type": "Set<String>",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 106,
+      "line_end": 121,
+      "body": "    public Set<String> getResources(SysUserEntity user) {\n        Set<String> res = new HashSet<String>();\n        // 超级管理员拥有所有权限\n        if (user.isAdmin()) {\n            res.add(\"*:*:*\");\n        } else {\n            List<SysRoleEntity> roles = user.getRoles();\n            if (roles != null && !roles.isEmpty()) {\n                for (SysRoleEntity role : roles) {\n                    Set<String> code = resourceService.selectResourceCodeByRoleId(role.getRoleId());\n                    res.addAll(code);\n                }\n            }\n        }\n        return res;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysResourceService.selectResourceCodeByRoleId",
+        "user.isAdmin",
+        "SysPermissionService.getRoleId",
+        "SysPermissionService.isEmpty",
+        "roles.isEmpty",
+        "SysPermissionService.getRoles",
+        "res.add",
+        "SysPermissionService.add",
+        "SysPermissionService.getResources",
+        "res.addAll",
+        "SysPermissionService.selectResourceCodeByRoleId",
+        "user.getRoles",
+        "SysPermissionService.addAll",
+        "SysPermissionService.isAdmin",
+        "role.getRoleId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "resetLoginUserRoleCache": {
+      "method_name": "resetLoginUserRoleCache",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "long",
+          "name": "roleId",
+          "annotations": []
+        }
+      ],
+      "line_start": 129,
+      "line_end": 136,
+      "body": "    public void resetLoginUserRoleCache(long roleId) {\n//        Collection<String> keys = redisCache.keys(CacheConstants.LOGIN_USER_KEY + \"*\");\n        SysUserEntity user = new SysUserEntity();\n        user.setRoleId(roleId);\n        List<SysUserEntity> sysUserEntities = userService.selectAllocatedList(user).getRecords();\n\n        sysUserEntities.forEach(u -> resetUserRoleAuthCache(u.getUserId()));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysPermissionService.getUserId",
+        "sysUserEntities.forEach",
+        "user.setRoleId",
+        "SysPermissionService.keys",
+        "SysPermissionService.resetUserRoleAuthCache",
+        "SysPermissionService.resetLoginUserRoleCache",
+        "RedisCache.keys",
+        "SysUserService.selectAllocatedList",
+        "SysPermissionService.forEach",
+        "SysPermissionService.SysUserEntity",
+        "u.getUserId",
+        "SysPermissionService.selectAllocatedList",
+        "SysPermissionService.setRoleId",
+        "SysPermissionService.getRecords"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "resetUserRoleAuthCache": {
+      "method_name": "resetUserRoleAuthCache",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 143,
+      "line_end": 154,
+      "body": "    public void resetUserRoleAuthCache(long userId) {\n\n        LoginUser loginUser = tokenService.getLoginUserByUserId(userId);\n        if (loginUser != null) {\n            loginUser.setPermissions(getMenuPermission(loginUser.getUser()));\n            loginUser.setUser(userService.selectUserByUserName(loginUser.getUser().getUserName()));\n            loginUser.setResources(getResources(loginUser.getUser()));\n            tokenService.setLoginUser(loginUser);\n        }\n\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserService.selectUserByUserName",
+        "SysPermissionService.getMenuPermission",
+        "loginUser.getUser",
+        "SysPermissionService.setPermissions",
+        "loginUser.setUser",
+        "TokenService.setLoginUser",
+        "TokenService.getLoginUserByUserId",
+        "SysPermissionService.setLoginUser",
+        "SysPermissionService.setResources",
+        "SysPermissionService.getUser",
+        "SysPermissionService.resetUserRoleAuthCache",
+        "SysPermissionService.setUser",
+        "SysPermissionService.selectUserByUserName",
+        "SysPermissionService.getUserName",
+        "loginUser.setPermissions",
+        "SysPermissionService.getResources",
+        "loginUser.setResources",
+        "SysPermissionService.getLoginUserByUserId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 24,
+  "line_end": 156
+}

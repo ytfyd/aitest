@@ -1,0 +1,178 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\interceptor\\impl\\SameUrlDataInterceptor.java",
+  "package_name": "com.oddfar.campus.framework.interceptor.impl",
+  "class_name": "SameUrlDataInterceptor",
+  "imports": [
+    "com.alibaba.fastjson2.JSON",
+    "com.oddfar.campus.common.annotation.RepeatSubmit",
+    "com.oddfar.campus.common.constant.CacheConstants",
+    "com.oddfar.campus.common.core.RedisCache",
+    "com.oddfar.campus.common.filter.RepeatedlyRequestWrapper",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.common.utils.http.HttpHelper",
+    "com.oddfar.campus.framework.interceptor.RepeatSubmitInterceptor",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.beans.factory.annotation.Value",
+    "org.springframework.stereotype.Component",
+    "javax.servlet.http.HttpServletRequest",
+    "java.util.HashMap",
+    "java.util.Map",
+    "java.util.concurrent.TimeUnit"
+  ],
+  "extends": "RepeatSubmitInterceptor",
+  "implements": [],
+  "fields": {
+    "header": {
+      "field_name": "header",
+      "field_type": "String",
+      "line_number": 35,
+      "annotations": [
+        "Value"
+      ]
+    },
+    "redisCache": {
+      "field_name": "redisCache",
+      "field_type": "RedisCache",
+      "line_number": 37,
+      "annotations": [
+        "Value"
+      ]
+    }
+  },
+  "methods": {
+    "isRepeatSubmit": {
+      "method_name": "isRepeatSubmit",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        },
+        {
+          "type": "RepeatSubmit",
+          "name": "annotation",
+          "annotations": []
+        }
+      ],
+      "line_start": 42,
+      "line_end": 86,
+      "body": "    public boolean isRepeatSubmit(HttpServletRequest request, RepeatSubmit annotation)\n    {\n        String nowParams = \"\";\n        if (request instanceof RepeatedlyRequestWrapper)\n        {\n            RepeatedlyRequestWrapper repeatedlyRequest = (RepeatedlyRequestWrapper) request;\n            nowParams = HttpHelper.getBodyString(repeatedlyRequest);\n        }\n\n        // body参数为空，获取Parameter的数据\n        if (StringUtils.isEmpty(nowParams))\n        {\n            nowParams = JSON.toJSONString(request.getParameterMap());\n        }\n        Map<String, Object> nowDataMap = new HashMap<String, Object>();\n        nowDataMap.put(REPEAT_PARAMS, nowParams);\n        nowDataMap.put(REPEAT_TIME, System.currentTimeMillis());\n\n        // 请求地址（作为存放cache的key值）\n        String url = request.getRequestURI();\n\n        // 唯一值（没有消息头则使用请求地址）\n        String submitKey = StringUtils.trimToEmpty(request.getHeader(header));\n\n        // 唯一标识（指定key + url + 消息头）\n        String cacheRepeatKey = CacheConstants.REPEAT_SUBMIT_KEY + url + submitKey;\n\n        Object sessionObj = redisCache.getCacheObject(cacheRepeatKey);\n        if (sessionObj != null)\n        {\n            Map<String, Object> sessionMap = (Map<String, Object>) sessionObj;\n            if (sessionMap.containsKey(url))\n            {\n                Map<String, Object> preDataMap = (Map<String, Object>) sessionMap.get(url);\n                if (compareParams(nowDataMap, preDataMap) && compareTime(nowDataMap, preDataMap, annotation.interval()))\n                {\n                    return true;\n                }\n            }\n        }\n        Map<String, Object> cacheMap = new HashMap<String, Object>();\n        cacheMap.put(url, nowDataMap);\n        redisCache.setCacheObject(cacheRepeatKey, cacheMap, annotation.interval(), TimeUnit.MILLISECONDS);\n        return false;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SameUrlDataInterceptor.getRequestURI",
+        "SameUrlDataInterceptor.trimToEmpty",
+        "SameUrlDataInterceptor.get",
+        "SameUrlDataInterceptor.setCacheObject",
+        "SameUrlDataInterceptor.isEmpty",
+        "SameUrlDataInterceptor.getBodyString",
+        "SameUrlDataInterceptor.isRepeatSubmit",
+        "SameUrlDataInterceptor.toJSONString",
+        "SameUrlDataInterceptor.getParameterMap",
+        "nowDataMap.put",
+        "request.getHeader",
+        "request.getParameterMap",
+        "System.currentTimeMillis",
+        "SameUrlDataInterceptor.compareTime",
+        "SameUrlDataInterceptor.put",
+        "cacheMap.put",
+        "SameUrlDataInterceptor.compareParams",
+        "SameUrlDataInterceptor.getCacheObject",
+        "SameUrlDataInterceptor.containsKey",
+        "StringUtils.trimToEmpty",
+        "JSON.toJSONString",
+        "RedisCache.getCacheObject",
+        "annotation.interval",
+        "HttpHelper.getBodyString",
+        "sessionMap.get",
+        "request.getRequestURI",
+        "SameUrlDataInterceptor.interval",
+        "RedisCache.setCacheObject",
+        "sessionMap.containsKey",
+        "SameUrlDataInterceptor.getHeader",
+        "SameUrlDataInterceptor.currentTimeMillis",
+        "StringUtils.isEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "compareParams": {
+      "method_name": "compareParams",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Object>",
+          "name": "nowMap",
+          "annotations": []
+        },
+        {
+          "type": "Object>",
+          "name": "preMap",
+          "annotations": []
+        }
+      ],
+      "line_start": 91,
+      "line_end": 96,
+      "body": "    private boolean compareParams(Map<String, Object> nowMap, Map<String, Object> preMap)\n    {\n        String nowParams = (String) nowMap.get(REPEAT_PARAMS);\n        String preParams = (String) preMap.get(REPEAT_PARAMS);\n        return nowParams.equals(preParams);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "preMap.get",
+        "SameUrlDataInterceptor.equals",
+        "nowMap.get",
+        "SameUrlDataInterceptor.get",
+        "nowParams.equals",
+        "SameUrlDataInterceptor.compareParams"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "compareTime": {
+      "method_name": "compareTime",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Object>",
+          "name": "nowMap",
+          "annotations": []
+        },
+        {
+          "type": "Object>",
+          "name": "preMap",
+          "annotations": []
+        },
+        {
+          "type": "int",
+          "name": "interval",
+          "annotations": []
+        }
+      ],
+      "line_start": 101,
+      "line_end": 110,
+      "body": "    private boolean compareTime(Map<String, Object> nowMap, Map<String, Object> preMap, int interval)\n    {\n        long time1 = (Long) nowMap.get(REPEAT_TIME);\n        long time2 = (Long) preMap.get(REPEAT_TIME);\n        if ((time1 - time2) < interval)\n        {\n            return true;\n        }\n        return false;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "nowMap.get",
+        "SameUrlDataInterceptor.get",
+        "SameUrlDataInterceptor.compareTime",
+        "preMap.get"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 27,
+  "line_end": 112
+}

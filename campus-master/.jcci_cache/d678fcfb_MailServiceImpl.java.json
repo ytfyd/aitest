@@ -1,0 +1,91 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\mail\\Impl\\MailServiceImpl.java",
+  "package_name": "com.oddfar.campus.framework.api.mail.Impl",
+  "class_name": "MailServiceImpl",
+  "imports": [
+    "cn.hutool.extra.mail.MailAccount",
+    "cn.hutool.extra.mail.MailUtil",
+    "com.oddfar.campus.framework.api.mail.MailConfigRead",
+    "com.oddfar.campus.framework.api.mail.MailSendApi",
+    "org.springframework.scheduling.annotation.Async",
+    "org.springframework.stereotype.Service",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [
+    "MailSendApi"
+  ],
+  "fields": {},
+  "methods": {
+    "sendQQMail": {
+      "method_name": "sendQQMail",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "List<String>",
+          "name": "tos",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "subject",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "content",
+          "annotations": []
+        },
+        {
+          "type": "Boolean",
+          "name": "isHtml",
+          "annotations": []
+        }
+      ],
+      "line_start": 17,
+      "line_end": 35,
+      "body": "    public void sendQQMail(List<String> tos, String subject, String content, Boolean isHtml) {\n\n        String host = MailConfigRead.getSmtpHost();\n        String port = MailConfigRead.getSmtpPort();\n        String account = MailConfigRead.getSendAccount();\n        String password = MailConfigRead.getPassword();\n\n        MailAccount mailAccount = new MailAccount();\n        mailAccount.setHost(host);\n        mailAccount.setPort(Integer.parseInt(port));\n        mailAccount.setAuth(true);\n        mailAccount.setFrom(account);\n        mailAccount.setPass(password);\n        //在使用QQ或Gmail邮箱时，需要强制开启SSL支持\n        mailAccount.setSslEnable(true);\n\n        MailUtil.send(mailAccount, tos, subject, content, isHtml);\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "mailAccount.setPass",
+        "mailAccount.setHost",
+        "mailAccount.setSslEnable",
+        "mailAccount.setAuth",
+        "MailServiceImpl.setPass",
+        "MailServiceImpl.setSslEnable",
+        "MailUtil.send",
+        "MailConfigRead.getSmtpHost",
+        "MailServiceImpl.getSmtpHost",
+        "MailServiceImpl.parseInt",
+        "MailServiceImpl.setFrom",
+        "MailConfigRead.getPassword",
+        "MailConfigRead.getSmtpPort",
+        "MailServiceImpl.setHost",
+        "MailServiceImpl.MailAccount",
+        "MailServiceImpl.setAuth",
+        "Integer.parseInt",
+        "MailServiceImpl.getPassword",
+        "MailServiceImpl.getSendAccount",
+        "MailServiceImpl.send",
+        "mailAccount.setFrom",
+        "MailServiceImpl.getSmtpPort",
+        "mailAccount.setPort",
+        "MailConfigRead.getSendAccount",
+        "MailServiceImpl.sendQQMail",
+        "MailServiceImpl.setPort"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Service"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 13,
+  "line_end": 39
+}

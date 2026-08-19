@@ -1,0 +1,50 @@
+{
+  "file_path": "campus-modular\\src\\main\\java\\com\\oddfar\\campus\\CampusApplication.java",
+  "package_name": "com.oddfar.campus",
+  "class_name": "CampusApplication",
+  "imports": [
+    "org.springframework.boot.SpringApplication",
+    "org.springframework.boot.autoconfigure.SpringBootApplication"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "main": {
+      "method_name": "main",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String[]",
+          "name": "args",
+          "annotations": []
+        }
+      ],
+      "line_start": 12,
+      "line_end": 15,
+      "body": "    public static void main(String[] args) {\n        SpringApplication.run(CampusApplication.class, args);\n        System.out.println(\"(♥◠‿◠)ﾉﾞ  启动成功   ლ(´ڡ`ლ)ﾞ\");\n    }",
+      "annotations": [],
+      "called_methods": [
+        "CampusApplication.ლ",
+        "out.println",
+        "SpringApplication.run",
+        "CampusApplication.main",
+        "CampusApplication.run",
+        "CampusApplication.println"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "SpringBootApplication"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 10,
+  "line_end": 18
+}

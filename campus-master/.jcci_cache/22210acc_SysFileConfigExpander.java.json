@@ -1,0 +1,114 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\expander\\SysFileConfigExpander.java",
+  "package_name": "com.oddfar.campus.framework.expander",
+  "class_name": "SysFileConfigExpander",
+  "imports": [
+    "com.oddfar.campus.framework.api.sysconfig.ConfigContext",
+    "org.springframework.stereotype.Component"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getProfile": {
+      "method_name": "getProfile",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 14,
+      "line_end": 27,
+      "body": "    public static String getProfile() {\n\n        String osName = System.getProperty(\"os.name\").toLowerCase();\n        if (osName.contains(\"win\")) {\n            return ConfigContext.me().selectConfigByKey(\"sys.local.profile.win\", String.class, \"D:\\\\uploadPath\");\n        }\n        if (osName.contains(\"mac\")) {\n            return ConfigContext.me().selectConfigByKey(\"sys.local.profile.mac\", String.class, \"~/uploadPath\");\n        }\n        if (osName.contains(\"linux\")) {\n            return ConfigContext.me().selectConfigByKey(\"sys.local.profile.linux\", String.class, \"/data/uploadPath\");\n        }\n        return null;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysFileConfigExpander.contains",
+        "SysFileConfigExpander.getProperty",
+        "System.getProperty",
+        "SysFileConfigExpander.me",
+        "SysFileConfigExpander.getProfile",
+        "SysFileConfigExpander.toLowerCase",
+        "SysFileConfigExpander.selectConfigByKey",
+        "ConfigContext.me",
+        "osName.contains"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getImportPath": {
+      "method_name": "getImportPath",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 32,
+      "line_end": 35,
+      "body": "    public static String getImportPath()\n    {\n        return getProfile() + \"/import\";\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysFileConfigExpander.getImportPath",
+        "SysFileConfigExpander.getProfile"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getAvatarPath": {
+      "method_name": "getAvatarPath",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 39,
+      "line_end": 42,
+      "body": "    public static String getAvatarPath()\n    {\n        return getProfile() + \"/avatar\";\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysFileConfigExpander.getAvatarPath",
+        "SysFileConfigExpander.getProfile"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getDownloadPath": {
+      "method_name": "getDownloadPath",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 47,
+      "line_end": 50,
+      "body": "    public static String getDownloadPath()\n    {\n        return getProfile() + \"/download/\";\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysFileConfigExpander.getDownloadPath",
+        "SysFileConfigExpander.getProfile"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getUploadPath": {
+      "method_name": "getUploadPath",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 55,
+      "line_end": 58,
+      "body": "    public static String getUploadPath()\n    {\n        return getProfile() + \"/upload\";\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysFileConfigExpander.getProfile",
+        "SysFileConfigExpander.getUploadPath"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 10,
+  "line_end": 61
+}

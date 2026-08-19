@@ -1,0 +1,47 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\filter\\PropertyPreExcludeFilter.java",
+  "package_name": "com.oddfar.campus.common.filter",
+  "class_name": "PropertyPreExcludeFilter",
+  "imports": [
+    "com.alibaba.fastjson2.filter.SimplePropertyPreFilter"
+  ],
+  "extends": "SimplePropertyPreFilter",
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "addExcludes": {
+      "method_name": "addExcludes",
+      "return_type": "PropertyPreExcludeFilter",
+      "parameters": [
+        {
+          "type": "String...",
+          "name": "filters",
+          "annotations": []
+        }
+      ],
+      "line_start": 14,
+      "line_end": 19,
+      "body": "    public PropertyPreExcludeFilter addExcludes(String... filters) {\n        for (int i = 0; i < filters.length; i++) {\n            this.getExcludes().add(filters[i]);\n        }\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "PropertyPreExcludeFilter.getExcludes",
+        "PropertyPreExcludeFilter.add",
+        "PropertyPreExcludeFilter.addExcludes"
+      ],
+      "used_fields": [
+        "getExcludes"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 10,
+  "line_end": 21
+}

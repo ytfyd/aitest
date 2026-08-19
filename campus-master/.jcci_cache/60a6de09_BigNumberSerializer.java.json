@@ -1,0 +1,64 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\handler\\BigNumberSerializer.java",
+  "package_name": "com.oddfar.campus.framework.handler",
+  "class_name": "BigNumberSerializer",
+  "imports": [
+    "com.fasterxml.jackson.core.JsonGenerator",
+    "com.fasterxml.jackson.databind.SerializerProvider",
+    "com.fasterxml.jackson.databind.annotation.JacksonStdImpl",
+    "com.fasterxml.jackson.databind.ser.std.NumberSerializer",
+    "java.io.IOException"
+  ],
+  "extends": "NumberSerializer",
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "serialize": {
+      "method_name": "serialize",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Number",
+          "name": "value",
+          "annotations": []
+        },
+        {
+          "type": "JsonGenerator",
+          "name": "gen",
+          "annotations": []
+        },
+        {
+          "type": "SerializerProvider",
+          "name": "provider",
+          "annotations": []
+        }
+      ],
+      "line_start": 34,
+      "line_end": 41,
+      "body": "    public void serialize(Number value, JsonGenerator gen, SerializerProvider provider) throws IOException {\n        // 超出范围 序列化位字符串\n        if (value.longValue() > MIN_SAFE_INTEGER && value.longValue() < MAX_SAFE_INTEGER) {\n            super.serialize(value, gen, provider);\n        } else {\n            gen.writeString(value.toString());\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "BigNumberSerializer.toString",
+        "value.toString",
+        "gen.writeString",
+        "BigNumberSerializer.longValue",
+        "BigNumberSerializer.serialize",
+        "BigNumberSerializer.writeString",
+        "value.longValue"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "JacksonStdImpl"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 16,
+  "line_end": 43
+}

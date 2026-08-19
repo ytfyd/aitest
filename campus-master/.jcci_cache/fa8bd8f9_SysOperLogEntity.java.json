@@ -1,0 +1,171 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\entity\\SysOperLogEntity.java",
+  "package_name": "com.oddfar.campus.common.domain.entity",
+  "class_name": "SysOperLogEntity",
+  "imports": [
+    "com.fasterxml.jackson.annotation.JsonFormat",
+    "com.fasterxml.jackson.annotation.JsonIgnore",
+    "lombok.Data",
+    "javax.validation.constraints.Max",
+    "javax.validation.constraints.Min",
+    "javax.validation.constraints.NotNull",
+    "java.util.Date",
+    "java.util.HashMap",
+    "java.util.Map"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "operId": {
+      "field_name": "operId",
+      "field_type": "Long",
+      "line_number": 28,
+      "annotations": [
+        "Data",
+        "TableName",
+        "TableId"
+      ]
+    },
+    "appName": {
+      "field_name": "appName",
+      "field_type": "String",
+      "line_number": 33,
+      "annotations": [
+        "TableId"
+      ]
+    },
+    "logName": {
+      "field_name": "logName",
+      "field_type": "String",
+      "line_number": 38,
+      "annotations": [
+        "TableId"
+      ]
+    },
+    "logContent": {
+      "field_name": "logContent",
+      "field_type": "String",
+      "line_number": 43,
+      "annotations": []
+    },
+    "method": {
+      "field_name": "method",
+      "field_type": "String",
+      "line_number": 48,
+      "annotations": []
+    },
+    "requestMethod": {
+      "field_name": "requestMethod",
+      "field_type": "String",
+      "line_number": 53,
+      "annotations": []
+    },
+    "operUserId": {
+      "field_name": "operUserId",
+      "field_type": "Long",
+      "line_number": 58,
+      "annotations": []
+    },
+    "operUrl": {
+      "field_name": "operUrl",
+      "field_type": "String",
+      "line_number": 63,
+      "annotations": []
+    },
+    "operIp": {
+      "field_name": "operIp",
+      "field_type": "String",
+      "line_number": 68,
+      "annotations": []
+    },
+    "operParam": {
+      "field_name": "operParam",
+      "field_type": "String",
+      "line_number": 74,
+      "annotations": []
+    },
+    "jsonResult": {
+      "field_name": "jsonResult",
+      "field_type": "String",
+      "line_number": 79,
+      "annotations": []
+    },
+    "status": {
+      "field_name": "status",
+      "field_type": "Integer",
+      "line_number": 85,
+      "annotations": []
+    },
+    "errorMsg": {
+      "field_name": "errorMsg",
+      "field_type": "String",
+      "line_number": 90,
+      "annotations": []
+    },
+    "operTime": {
+      "field_name": "operTime",
+      "field_type": "Date",
+      "line_number": 96,
+      "annotations": [
+        "JsonFormat"
+      ]
+    },
+    "params": {
+      "field_name": "params",
+      "field_type": "Map<String, Object>",
+      "line_number": 103,
+      "annotations": [
+        "TableField"
+      ]
+    },
+    "pageNum": {
+      "field_name": "pageNum",
+      "field_type": "Integer",
+      "line_number": 108,
+      "annotations": [
+        "TableField",
+        "NotNull",
+        "Min",
+        "TableField"
+      ]
+    },
+    "pageSize": {
+      "field_name": "pageSize",
+      "field_type": "Integer",
+      "line_number": 115,
+      "annotations": [
+        "NotNull",
+        "Min",
+        "Max",
+        "TableField"
+      ]
+    }
+  },
+  "methods": {
+    "getParams": {
+      "method_name": "getParams",
+      "return_type": "Map<String, Object>",
+      "parameters": [],
+      "line_start": 118,
+      "line_end": 123,
+      "body": "    public Map<String, Object> getParams() {\n        if (params == null) {\n            params = new HashMap<>();\n        }\n        return params;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysOperLogEntity.getParams"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Data",
+    "TableName"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 20,
+  "line_end": 125
+}

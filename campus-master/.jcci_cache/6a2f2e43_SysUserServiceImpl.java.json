@@ -1,0 +1,736 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\service\\impl\\SysUserServiceImpl.java",
+  "package_name": "com.oddfar.campus.framework.service.impl",
+  "class_name": "SysUserServiceImpl",
+  "imports": [
+    "cn.hutool.core.util.ObjectUtil",
+    "com.baomidou.mybatisplus.core.conditions.query.QueryWrapper",
+    "com.baomidou.mybatisplus.core.toolkit.Wrappers",
+    "com.baomidou.mybatisplus.extension.plugins.pagination.Page",
+    "com.oddfar.campus.common.constant.UserConstants",
+    "com.oddfar.campus.common.core.page.PageQuery",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.entity.SysRoleEntity",
+    "com.oddfar.campus.common.domain.entity.SysUserEntity",
+    "com.oddfar.campus.common.domain.entity.SysUserRoleEntity",
+    "com.oddfar.campus.common.exception.ServiceException",
+    "com.oddfar.campus.common.utils.SecurityUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.framework.api.sysconfig.ConfigExpander",
+    "com.oddfar.campus.framework.mapper.SysRoleMapper",
+    "com.oddfar.campus.framework.mapper.SysUserMapper",
+    "com.oddfar.campus.framework.mapper.SysUserRoleMapper",
+    "com.oddfar.campus.framework.service.SysRoleService",
+    "com.oddfar.campus.framework.service.SysUserService",
+    "org.springframework.stereotype.Service",
+    "org.springframework.transaction.annotation.Transactional",
+    "org.springframework.util.CollectionUtils",
+    "javax.annotation.Resource",
+    "java.util.ArrayList",
+    "java.util.Arrays",
+    "java.util.List",
+    "java.util.Set",
+    "java.util.stream.Collectors"
+  ],
+  "extends": null,
+  "implements": [
+    "SysUserService"
+  ],
+  "fields": {
+    "userMapper": {
+      "field_name": "userMapper",
+      "field_type": "SysUserMapper",
+      "line_number": 36,
+      "annotations": [
+        "Service"
+      ]
+    },
+    "userRoleMapper": {
+      "field_name": "userRoleMapper",
+      "field_type": "SysUserRoleMapper",
+      "line_number": 38,
+      "annotations": [
+        "Service",
+        "Resource"
+      ]
+    },
+    "roleMapper": {
+      "field_name": "roleMapper",
+      "field_type": "SysRoleMapper",
+      "line_number": 40,
+      "annotations": [
+        "Service",
+        "Resource",
+        "Resource"
+      ]
+    },
+    "roleService": {
+      "field_name": "roleService",
+      "field_type": "SysRoleService",
+      "line_number": 42,
+      "annotations": [
+        "Resource",
+        "Resource",
+        "Resource"
+      ]
+    }
+  },
+  "methods": {
+    "page": {
+      "method_name": "page",
+      "return_type": "PageResult<SysUserEntity>",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "sysUserEntity",
+          "annotations": []
+        }
+      ],
+      "line_start": 46,
+      "line_end": 48,
+      "body": "    public PageResult<SysUserEntity> page(SysUserEntity sysUserEntity) {\n        return userMapper.selectPage(sysUserEntity);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserServiceImpl.selectPage",
+        "SysUserMapper.selectPage",
+        "SysUserServiceImpl.page"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectUserByUserName": {
+      "method_name": "selectUserByUserName",
+      "return_type": "SysUserEntity",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "userName",
+          "annotations": []
+        }
+      ],
+      "line_start": 51,
+      "line_end": 57,
+      "body": "    public SysUserEntity selectUserByUserName(String userName) {\n        SysUserEntity userEntity = userMapper.selectUserByUserName(userName);\n        if (userEntity != null && StringUtils.isEmpty(userEntity.getAvatar())) {\n            userEntity.setAvatar(ConfigExpander.getUserDefaultAvatar());\n        }\n        return userEntity;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "userEntity.getAvatar",
+        "SysUserServiceImpl.setAvatar",
+        "SysUserMapper.selectUserByUserName",
+        "ConfigExpander.getUserDefaultAvatar",
+        "SysUserServiceImpl.getUserDefaultAvatar",
+        "userEntity.setAvatar",
+        "SysUserServiceImpl.getAvatar",
+        "SysUserServiceImpl.selectUserByUserName",
+        "StringUtils.isEmpty",
+        "SysUserServiceImpl.isEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectUserById": {
+      "method_name": "selectUserById",
+      "return_type": "SysUserEntity",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        }
+      ],
+      "line_start": 60,
+      "line_end": 66,
+      "body": "    public SysUserEntity selectUserById(Long userId) {\n        SysUserEntity userEntity = userMapper.selectUserById(userId);\n        if (userEntity != null && StringUtils.isEmpty(userEntity.getAvatar())) {\n            userEntity.setAvatar(ConfigExpander.getUserDefaultAvatar());\n        }\n        return userEntity;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserServiceImpl.selectUserById",
+        "userEntity.getAvatar",
+        "SysUserServiceImpl.setAvatar",
+        "ConfigExpander.getUserDefaultAvatar",
+        "SysUserServiceImpl.getUserDefaultAvatar",
+        "userEntity.setAvatar",
+        "SysUserServiceImpl.getAvatar",
+        "StringUtils.isEmpty",
+        "SysUserMapper.selectUserById",
+        "SysUserServiceImpl.isEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectAllocatedList": {
+      "method_name": "selectAllocatedList",
+      "return_type": "Page<SysUserEntity>",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 69,
+      "line_end": 79,
+      "body": "    public Page<SysUserEntity> selectAllocatedList(SysUserEntity user) {\n        Page<SysUserEntity> page = new PageQuery().buildPage();\n\n        QueryWrapper<SysUserEntity> wrapper = Wrappers.query();\n        wrapper.eq(\"u.del_flag\", UserConstants.NORMAL)\n                .eq(\"r.role_id\", user.getRoleId())\n                .eq(ObjectUtil.isNotNull(user.getPhonenumber()), \"u.phonenumber\", user.getPhonenumber())\n                .like(ObjectUtil.isNotNull(user.getUserName()), \"u.user_name\", user.getUserName());\n        Page<SysUserEntity> sysUserPage = userMapper.selectAllocatedList(page, wrapper);\n        return sysUserPage;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "user.getUserName",
+        "user.getRoleId",
+        "SysUserMapper.selectAllocatedList",
+        "SysUserServiceImpl.getRoleId",
+        "SysUserServiceImpl.eq",
+        "ObjectUtil.isNotNull",
+        "user.getPhonenumber",
+        "SysUserServiceImpl.isNotNull",
+        "SysUserServiceImpl.buildPage",
+        "SysUserServiceImpl.getPhonenumber",
+        "SysUserServiceImpl.getUserName",
+        "Wrappers.query",
+        "SysUserServiceImpl.PageQuery",
+        "SysUserServiceImpl.selectAllocatedList",
+        "SysUserServiceImpl.like",
+        "wrapper.eq",
+        "SysUserServiceImpl.query"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectUnallocatedList": {
+      "method_name": "selectUnallocatedList",
+      "return_type": "Page<SysUserEntity>",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 82,
+      "line_end": 85,
+      "body": "    public Page<SysUserEntity> selectUnallocatedList(SysUserEntity user) {\n        Page<SysUserEntity> page = new PageQuery().buildPage();\n        return userMapper.selectUnallocatedList(page, user);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserServiceImpl.PageQuery",
+        "SysUserServiceImpl.buildPage",
+        "SysUserServiceImpl.selectUnallocatedList",
+        "SysUserMapper.selectUnallocatedList"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectUserRoleGroup": {
+      "method_name": "selectUserRoleGroup",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "userName",
+          "annotations": []
+        }
+      ],
+      "line_start": 88,
+      "line_end": 94,
+      "body": "    public String selectUserRoleGroup(String userName) {\n        List<SysRoleEntity> list = roleMapper.selectRolesByUserName(userName);\n        if (CollectionUtils.isEmpty(list)) {\n            return StringUtils.EMPTY;\n        }\n        return list.stream().map(SysRoleEntity::getRoleName).collect(Collectors.joining(\",\"));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Collectors.joining",
+        "SysUserServiceImpl.map",
+        "SysUserServiceImpl.selectUserRoleGroup",
+        "SysUserServiceImpl.collect",
+        "SysUserServiceImpl.selectRolesByUserName",
+        "SysUserServiceImpl.stream",
+        "SysUserServiceImpl.joining",
+        "list.stream",
+        "CollectionUtils.isEmpty",
+        "SysRoleMapper.selectRolesByUserName",
+        "SysUserServiceImpl.isEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "registerUser": {
+      "method_name": "registerUser",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 97,
+      "line_end": 99,
+      "body": "    public boolean registerUser(SysUserEntity user) {\n        return userMapper.insert(user) > 0;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserServiceImpl.insert",
+        "SysUserServiceImpl.registerUser",
+        "SysUserMapper.insert"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertUser": {
+      "method_name": "insertUser",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 103,
+      "line_end": 122,
+      "body": "    public int insertUser(SysUserEntity user) {\n        if (StringUtils.isNotEmpty(user.getUserName())\n                && !checkUserNameUnique(user)) {\n            throw new ServiceException(\"新增用户'\" + user.getUserName() + \"'失败，登录账号已存在\");\n        }\n        if (StringUtils.isNotEmpty(user.getPhonenumber())\n                && !(checkPhoneUnique(user))) {\n            throw new ServiceException(\"新增用户'\" + user.getUserName() + \"'失败，手机号码已存在\");\n        }\n        if (StringUtils.isNotEmpty(user.getEmail())\n                && !(checkEmailUnique(user))) {\n            throw new ServiceException(\"新增用户'\" + user.getUserName() + \"'失败，邮箱账号已存在\");\n        }\n        user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));\n        // 新增用户信息\n        int rows = userMapper.insert(user);\n        // 新增用户与角色管理\n        insertUserRole(user);\n        return rows;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserServiceImpl.getPassword",
+        "SysUserServiceImpl.insert",
+        "SysUserServiceImpl.encryptPassword",
+        "user.getEmail",
+        "SysUserServiceImpl.isNotEmpty",
+        "SysUserServiceImpl.insertUserRole",
+        "SysUserServiceImpl.getUserName",
+        "SysUserServiceImpl.checkUserNameUnique",
+        "SysUserServiceImpl.setPassword",
+        "SysUserServiceImpl.checkEmailUnique",
+        "SysUserServiceImpl.getEmail",
+        "user.getUserName",
+        "user.setPassword",
+        "SysUserServiceImpl.insertUser",
+        "SysUserServiceImpl.checkPhoneUnique",
+        "user.getPhonenumber",
+        "user.getPassword",
+        "SysUserServiceImpl.getPhonenumber",
+        "SysUserServiceImpl.ServiceException",
+        "SysUserMapper.insert",
+        "StringUtils.isNotEmpty",
+        "SecurityUtils.encryptPassword"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "updateUser": {
+      "method_name": "updateUser",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 126,
+      "line_end": 134,
+      "body": "    public int updateUser(SysUserEntity user) {\n\n        Long userId = user.getUserId();\n        // 删除用户与角色关联\n        userRoleMapper.deleteUserRoleByUserId(userId);\n        // 新增用户与角色管理\n        insertUserRole(user);\n        return userMapper.updateById(user);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserMapper.updateById",
+        "SysUserServiceImpl.updateById",
+        "SysUserServiceImpl.getUserId",
+        "user.getUserId",
+        "SysUserServiceImpl.updateUser",
+        "SysUserServiceImpl.deleteUserRoleByUserId",
+        "SysUserServiceImpl.insertUserRole",
+        "SysUserRoleMapper.deleteUserRoleByUserId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteUserByIds": {
+      "method_name": "deleteUserByIds",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "userIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 138,
+      "line_end": 145,
+      "body": "    public int deleteUserByIds(Long[] userIds) {\n        for (Long userId : userIds) {\n            checkUserAllowed(new SysUserEntity(userId));\n        }\n        // 删除用户与角色关联\n        userRoleMapper.deleteUserRole(userIds);\n        return userMapper.deleteBatchIds(Arrays.asList(userIds));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserRoleMapper.deleteUserRole",
+        "SysUserServiceImpl.deleteBatchIds",
+        "SysUserServiceImpl.deleteUserRole",
+        "SysUserServiceImpl.SysUserEntity",
+        "SysUserMapper.deleteBatchIds",
+        "Arrays.asList",
+        "SysUserServiceImpl.asList",
+        "SysUserServiceImpl.deleteUserByIds",
+        "SysUserServiceImpl.checkUserAllowed"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "updateUserProfile": {
+      "method_name": "updateUserProfile",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 149,
+      "line_end": 151,
+      "body": "    public int updateUserProfile(SysUserEntity user) {\n        return userMapper.updateById(user);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserMapper.updateById",
+        "SysUserServiceImpl.updateUserProfile",
+        "SysUserServiceImpl.updateById"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "updateUserStatus": {
+      "method_name": "updateUserStatus",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 154,
+      "line_end": 156,
+      "body": "    public int updateUserStatus(SysUserEntity user) {\n        return userMapper.updateById(user);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserMapper.updateById",
+        "SysUserServiceImpl.updateUserStatus",
+        "SysUserServiceImpl.updateById"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "updateUserAvatar": {
+      "method_name": "updateUserAvatar",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "userName",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "avatar",
+          "annotations": []
+        }
+      ],
+      "line_start": 159,
+      "line_end": 161,
+      "body": "    public boolean updateUserAvatar(String userName, String avatar) {\n        return userMapper.updateUserAvatar(userName, avatar) > 0;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserMapper.updateUserAvatar",
+        "SysUserServiceImpl.updateUserAvatar"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "resetPwd": {
+      "method_name": "resetPwd",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 164,
+      "line_end": 166,
+      "body": "    public int resetPwd(SysUserEntity user) {\n        return userMapper.updateById(user);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserMapper.updateById",
+        "SysUserServiceImpl.updateById",
+        "SysUserServiceImpl.resetPwd"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkUserAllowed": {
+      "method_name": "checkUserAllowed",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 169,
+      "line_end": 173,
+      "body": "    public void checkUserAllowed(SysUserEntity user) {\n        if (StringUtils.isNotNull(user.getUserId()) && user.isAdmin()) {\n            throw new ServiceException(\"不允许操作超级管理员用户\");\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "user.isAdmin",
+        "SysUserServiceImpl.isAdmin",
+        "SysUserServiceImpl.getUserId",
+        "user.getUserId",
+        "SysUserServiceImpl.isNotNull",
+        "SysUserServiceImpl.ServiceException",
+        "StringUtils.isNotNull",
+        "SysUserServiceImpl.checkUserAllowed"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertUserAuth": {
+      "method_name": "insertUserAuth",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        },
+        {
+          "type": "Set<String>",
+          "name": "roleKey",
+          "annotations": []
+        }
+      ],
+      "line_start": 183,
+      "line_end": 194,
+      "body": "    public void insertUserAuth(Long userId, Set<String> roleKey) {\n        //查询现有的权限字符\n        Set<String> roleSet = roleService.selectRolePermissionByUserId(userId);\n        roleKey.addAll(roleSet);\n\n        List<SysRoleEntity> sysRoleList = roleMapper.selectRoleListByKey(roleKey);\n        List<Long> roleIds = sysRoleList.stream().map(SysRoleEntity::getRoleId).collect(Collectors.toList());\n\n        userRoleMapper.deleteUserRoleByUserId(userId);\n        insertUserRole(userId, roleIds.toArray(new Long[0]));\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserServiceImpl.selectRolePermissionByUserId",
+        "SysUserServiceImpl.map",
+        "Collectors.toList",
+        "SysRoleService.selectRolePermissionByUserId",
+        "sysRoleList.stream",
+        "SysUserServiceImpl.collect",
+        "SysUserServiceImpl.toArray",
+        "SysUserServiceImpl.insertUserAuth",
+        "roleIds.toArray",
+        "SysRoleMapper.selectRoleListByKey",
+        "SysUserServiceImpl.stream",
+        "SysUserServiceImpl.addAll",
+        "roleKey.addAll",
+        "SysUserServiceImpl.toList",
+        "SysUserServiceImpl.deleteUserRoleByUserId",
+        "SysUserServiceImpl.insertUserRole",
+        "SysUserServiceImpl.selectRoleListByKey",
+        "SysUserRoleMapper.deleteUserRoleByUserId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "resetUserPwd": {
+      "method_name": "resetUserPwd",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "userName",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "password",
+          "annotations": []
+        }
+      ],
+      "line_start": 197,
+      "line_end": 199,
+      "body": "    public int resetUserPwd(String userName, String password) {\n        return userMapper.resetUserPwd(userName, password);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserMapper.resetUserPwd",
+        "SysUserServiceImpl.resetUserPwd"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkUserNameUnique": {
+      "method_name": "checkUserNameUnique",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 202,
+      "line_end": 209,
+      "body": "    public boolean checkUserNameUnique(SysUserEntity user) {\n        Long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();\n        SysUserEntity info = userMapper.checkUserNameUnique(user.getUserName());\n        if (StringUtils.isNotNull(info) && info.getUserId().longValue() != userId.longValue()) {\n            return false;\n        }\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "user.getUserName",
+        "SysUserServiceImpl.isNull",
+        "SysUserMapper.checkUserNameUnique",
+        "info.getUserId",
+        "SysUserServiceImpl.getUserId",
+        "user.getUserId",
+        "StringUtils.isNull",
+        "SysUserServiceImpl.isNotNull",
+        "SysUserServiceImpl.longValue",
+        "StringUtils.isNotNull",
+        "SysUserServiceImpl.checkUserNameUnique",
+        "SysUserServiceImpl.getUserName",
+        "userId.longValue"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkPhoneUnique": {
+      "method_name": "checkPhoneUnique",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 212,
+      "line_end": 219,
+      "body": "    public boolean checkPhoneUnique(SysUserEntity user) {\n        Long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();\n        SysUserEntity info = userMapper.checkPhoneUnique(user.getPhonenumber());\n        if (StringUtils.isNotNull(info) && info.getUserId().longValue() != userId.longValue()) {\n            return false;\n        }\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserServiceImpl.isNull",
+        "info.getUserId",
+        "SysUserServiceImpl.getUserId",
+        "user.getUserId",
+        "StringUtils.isNull",
+        "SysUserServiceImpl.checkPhoneUnique",
+        "user.getPhonenumber",
+        "SysUserServiceImpl.isNotNull",
+        "SysUserServiceImpl.longValue",
+        "SysUserServiceImpl.getPhonenumber",
+        "StringUtils.isNotNull",
+        "SysUserMapper.checkPhoneUnique",
+        "userId.longValue"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "checkEmailUnique": {
+      "method_name": "checkEmailUnique",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "SysUserEntity",
+          "name": "user",
+          "annotations": []
+        }
+      ],
+      "line_start": 222,
+      "line_end": 229,
+      "body": "    public boolean checkEmailUnique(SysUserEntity user) {\n        Long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();\n        SysUserEntity info = userMapper.checkEmailUnique(user.getEmail());\n        if (StringUtils.isNotNull(info) && info.getUserId().longValue() != userId.longValue()) {\n            return false;\n        }\n        return true;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysUserServiceImpl.checkEmailUnique",
+        "SysUserServiceImpl.isNull",
+        "user.getEmail",
+        "info.getUserId",
+        "SysUserServiceImpl.getUserId",
+        "user.getUserId",
+        "StringUtils.isNull",
+        "SysUserServiceImpl.isNotNull",
+        "SysUserServiceImpl.longValue",
+        "StringUtils.isNotNull",
+        "userId.longValue",
+        "SysUserMapper.checkEmailUnique",
+        "SysUserServiceImpl.getEmail"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertUserRole": {
+      "method_name": "insertUserRole",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "userId",
+          "annotations": []
+        },
+        {
+          "type": "Long[]",
+          "name": "roleIds",
+          "annotations": []
+        }
+      ],
+      "line_start": 247,
+      "line_end": 259,
+      "body": "    public void insertUserRole(Long userId, Long[] roleIds) {\n        if (StringUtils.isNotEmpty(roleIds)) {\n            // 新增用户与角色管理\n            List<SysUserRoleEntity> list = new ArrayList<SysUserRoleEntity>(roleIds.length);\n            for (Long roleId : roleIds) {\n                SysUserRoleEntity ur = new SysUserRoleEntity();\n                ur.setUserId(userId);\n                ur.setRoleId(roleId);\n                list.add(ur);\n            }\n            userRoleMapper.insertBatch(list);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "list.add",
+        "ur.setUserId",
+        "SysUserServiceImpl.setUserId",
+        "SysUserServiceImpl.insertBatch",
+        "SysUserServiceImpl.isNotEmpty",
+        "SysUserServiceImpl.insertUserRole",
+        "SysUserServiceImpl.setRoleId",
+        "StringUtils.isNotEmpty",
+        "SysUserServiceImpl.add",
+        "ur.setRoleId",
+        "SysUserRoleMapper.insertBatch",
+        "SysUserServiceImpl.SysUserRoleEntity"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Service"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 34,
+  "line_end": 261
+}

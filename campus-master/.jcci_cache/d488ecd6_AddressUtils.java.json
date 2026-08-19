@@ -1,0 +1,65 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\utils\\ip\\AddressUtils.java",
+  "package_name": "com.oddfar.campus.common.utils.ip",
+  "class_name": "AddressUtils",
+  "imports": [
+    "com.alibaba.fastjson2.JSON",
+    "com.alibaba.fastjson2.JSONObject",
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.common.utils.http.HttpUtils",
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getRealAddressByIP": {
+      "method_name": "getRealAddressByIP",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "ip",
+          "annotations": []
+        }
+      ],
+      "line_start": 25,
+      "line_end": 47,
+      "body": "    public static String getRealAddressByIP(String ip) {\n        // 内网不查询\n        if (IpUtils.internalIp(ip)) {\n            return \"内网IP\";\n        }\n//        if (RuoYiConfig.isAddressEnabled())\n        {\n            try {\n                String rspStr = HttpUtils.sendGet(IP_URL, \"ip=\" + ip + \"&json=true\", Constants.GBK);\n                if (StringUtils.isEmpty(rspStr)) {\n                    log.error(\"获取地理位置异常 {}\", ip);\n                    return UNKNOWN;\n                }\n                JSONObject obj = JSON.parseObject(rspStr);\n                String region = obj.getString(\"pro\");\n                String city = obj.getString(\"city\");\n                return String.format(\"%s %s\", region, city);\n            } catch (Exception e) {\n                log.error(\"获取地理位置异常 {}\", ip);\n            }\n        }\n        return UNKNOWN;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "AddressUtils.isEmpty",
+        "AddressUtils.isAddressEnabled",
+        "AddressUtils.getString",
+        "RuoYiConfig.isAddressEnabled",
+        "log.error",
+        "IpUtils.internalIp",
+        "HttpUtils.sendGet",
+        "obj.getString",
+        "AddressUtils.getRealAddressByIP",
+        "String.format",
+        "AddressUtils.format",
+        "AddressUtils.error",
+        "AddressUtils.parseObject",
+        "StringUtils.isEmpty",
+        "JSON.parseObject",
+        "AddressUtils.sendGet",
+        "AddressUtils.internalIp"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 16,
+  "line_end": 49
+}

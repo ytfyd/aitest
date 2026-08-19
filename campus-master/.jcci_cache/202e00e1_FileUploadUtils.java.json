@@ -1,0 +1,323 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\file\\FileUploadUtils.java",
+  "package_name": "com.oddfar.campus.framework.api.file",
+  "class_name": "FileUploadUtils",
+  "imports": [
+    "com.oddfar.campus.common.constant.Constants",
+    "com.oddfar.campus.common.exception.file.FileNameLengthLimitExceededException",
+    "com.oddfar.campus.common.exception.file.FileSizeLimitExceededException",
+    "com.oddfar.campus.common.exception.file.InvalidExtensionException",
+    "com.oddfar.campus.common.utils.DateUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.common.utils.uuid.Seq",
+    "com.oddfar.campus.framework.api.sysconfig.ConfigExpander",
+    "org.apache.commons.io.FilenameUtils",
+    "org.slf4j.Logger",
+    "org.slf4j.LoggerFactory",
+    "org.springframework.web.multipart.MultipartFile",
+    "java.io.File",
+    "java.io.IOException",
+    "java.nio.file.Paths",
+    "java.util.Objects"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "setDefaultBaseDir": {
+      "method_name": "setDefaultBaseDir",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "defaultBaseDir",
+          "annotations": []
+        }
+      ],
+      "line_start": 44,
+      "line_end": 46,
+      "body": "    public static void setDefaultBaseDir(String defaultBaseDir) {\n        FileUploadUtils.defaultBaseDir = defaultBaseDir;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "FileUploadUtils.setDefaultBaseDir"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getDefaultBaseDir": {
+      "method_name": "getDefaultBaseDir",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 48,
+      "line_end": 50,
+      "body": "    public static String getDefaultBaseDir() {\n        return defaultBaseDir;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "FileUploadUtils.getDefaultBaseDir"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "upload": {
+      "method_name": "upload",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "baseDir",
+          "annotations": []
+        },
+        {
+          "type": "MultipartFile",
+          "name": "file",
+          "annotations": []
+        },
+        {
+          "type": "String[]",
+          "name": "allowedExtension",
+          "annotations": []
+        }
+      ],
+      "line_start": 95,
+      "line_end": 110,
+      "body": "    public static final String upload(String baseDir, MultipartFile file, String[] allowedExtension)\n            throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,\n            InvalidExtensionException {\n        int fileNamelength = Objects.requireNonNull(file.getOriginalFilename()).length();\n        if (fileNamelength > FileUploadUtils.DEFAULT_FILE_NAME_LENGTH) {\n            throw new FileNameLengthLimitExceededException(FileUploadUtils.DEFAULT_FILE_NAME_LENGTH);\n        }\n\n        assertAllowed(file, allowedExtension);\n\n        String fileName = extractFilename(file);\n\n        String absPath = getAbsoluteFile(baseDir, fileName).getAbsolutePath();\n        file.transferTo(Paths.get(absPath));\n        return getPathFileName(baseDir, fileName);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "file.transferTo",
+        "file.getOriginalFilename",
+        "FileUploadUtils.FileNameLengthLimitExceededException",
+        "Paths.get",
+        "FileUploadUtils.getOriginalFilename",
+        "FileUploadUtils.transferTo",
+        "FileUploadUtils.requireNonNull",
+        "Objects.requireNonNull",
+        "FileUploadUtils.get",
+        "FileUploadUtils.extractFilename",
+        "FileUploadUtils.assertAllowed",
+        "FileUploadUtils.upload",
+        "FileUploadUtils.getAbsoluteFile",
+        "FileUploadUtils.getPathFileName",
+        "FileUploadUtils.getAbsolutePath",
+        "FileUploadUtils.length"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "extractFilename": {
+      "method_name": "extractFilename",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "MultipartFile",
+          "name": "file",
+          "annotations": []
+        }
+      ],
+      "line_start": 115,
+      "line_end": 119,
+      "body": "    public static final String extractFilename(MultipartFile file) {\n\n        return StringUtils.format(\"{}/{}_{}.{}\", DateUtils.datePath(),\n                FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType), getExtension(file));\n    }",
+      "annotations": [],
+      "called_methods": [
+        "file.getOriginalFilename",
+        "FileUploadUtils.getId",
+        "FileUploadUtils.getOriginalFilename",
+        "StringUtils.format",
+        "FileUploadUtils.format",
+        "FileUploadUtils.getExtension",
+        "FilenameUtils.getBaseName",
+        "FileUploadUtils.getBaseName",
+        "FileUploadUtils.extractFilename",
+        "DateUtils.datePath",
+        "Seq.getId",
+        "FileUploadUtils.datePath"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getAbsoluteFile": {
+      "method_name": "getAbsoluteFile",
+      "return_type": "File",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "uploadDir",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "fileName",
+          "annotations": []
+        }
+      ],
+      "line_start": 121,
+      "line_end": 130,
+      "body": "    public static final File getAbsoluteFile(String uploadDir, String fileName) throws IOException {\n        File desc = new File(uploadDir + File.separator + fileName);\n\n        if (!desc.exists()) {\n            if (!desc.getParentFile().exists()) {\n                desc.getParentFile().mkdirs();\n            }\n        }\n        return desc;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "desc.exists",
+        "FileUploadUtils.getParentFile",
+        "FileUploadUtils.File",
+        "desc.getParentFile",
+        "FileUploadUtils.exists",
+        "FileUploadUtils.getAbsoluteFile",
+        "FileUploadUtils.mkdirs"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getPathFileName": {
+      "method_name": "getPathFileName",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "uploadDir",
+          "annotations": []
+        },
+        {
+          "type": "String",
+          "name": "fileName",
+          "annotations": []
+        }
+      ],
+      "line_start": 132,
+      "line_end": 136,
+      "body": "    public static final String getPathFileName(String uploadDir, String fileName) throws IOException {\n        int dirLastIndex = ConfigExpander.getFileProfile().length() + 1;\n        String currentDir = StringUtils.substring(uploadDir, dirLastIndex);\n        return Constants.RESOURCE_PREFIX + \"/\" + currentDir + \"/\" + fileName;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ConfigExpander.getFileProfile",
+        "StringUtils.substring",
+        "FileUploadUtils.substring",
+        "FileUploadUtils.getFileProfile",
+        "FileUploadUtils.getPathFileName",
+        "FileUploadUtils.length"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "assertAllowed": {
+      "method_name": "assertAllowed",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "MultipartFile",
+          "name": "file",
+          "annotations": []
+        },
+        {
+          "type": "String[]",
+          "name": "allowedExtension",
+          "annotations": []
+        }
+      ],
+      "line_start": 146,
+      "line_end": 172,
+      "body": "    public static final void assertAllowed(MultipartFile file, String[] allowedExtension)\n            throws FileSizeLimitExceededException, InvalidExtensionException {\n        long size = file.getSize();\n        if (size > DEFAULT_MAX_SIZE) {\n            throw new FileSizeLimitExceededException(DEFAULT_MAX_SIZE / 1024 / 1024);\n        }\n\n        String fileName = file.getOriginalFilename();\n        String extension = getExtension(file);\n        if (allowedExtension != null && !isAllowedExtension(extension, allowedExtension)) {\n            if (allowedExtension == MimeTypeUtils.IMAGE_EXTENSION) {\n                throw new InvalidExtensionException.InvalidImageExtensionException(allowedExtension, extension,\n                        fileName);\n            } else if (allowedExtension == MimeTypeUtils.FLASH_EXTENSION) {\n                throw new InvalidExtensionException.InvalidFlashExtensionException(allowedExtension, extension,\n                        fileName);\n            } else if (allowedExtension == MimeTypeUtils.MEDIA_EXTENSION) {\n                throw new InvalidExtensionException.InvalidMediaExtensionException(allowedExtension, extension,\n                        fileName);\n            } else if (allowedExtension == MimeTypeUtils.VIDEO_EXTENSION) {\n                throw new InvalidExtensionException.InvalidVideoExtensionException(allowedExtension, extension,\n                        fileName);\n            } else {\n                throw new InvalidExtensionException(allowedExtension, extension, fileName);\n            }\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "file.getOriginalFilename",
+        "FileUploadUtils.InvalidMediaExtensionException",
+        "InvalidExtensionException.InvalidVideoExtensionException",
+        "FileUploadUtils.InvalidExtensionException",
+        "FileUploadUtils.getOriginalFilename",
+        "FileUploadUtils.getSize",
+        "FileUploadUtils.getExtension",
+        "FileUploadUtils.InvalidVideoExtensionException",
+        "InvalidExtensionException.InvalidMediaExtensionException",
+        "FileUploadUtils.isAllowedExtension",
+        "FileUploadUtils.InvalidFlashExtensionException",
+        "FileUploadUtils.FileSizeLimitExceededException",
+        "InvalidExtensionException.InvalidFlashExtensionException",
+        "file.getSize",
+        "InvalidExtensionException.InvalidImageExtensionException",
+        "FileUploadUtils.InvalidImageExtensionException",
+        "FileUploadUtils.assertAllowed"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "isAllowedExtension": {
+      "method_name": "isAllowedExtension",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "extension",
+          "annotations": []
+        },
+        {
+          "type": "String[]",
+          "name": "allowedExtension",
+          "annotations": []
+        }
+      ],
+      "line_start": 181,
+      "line_end": 188,
+      "body": "    public static final boolean isAllowedExtension(String extension, String[] allowedExtension) {\n        for (String str : allowedExtension) {\n            if (str.equalsIgnoreCase(extension)) {\n                return true;\n            }\n        }\n        return false;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "str.equalsIgnoreCase",
+        "FileUploadUtils.isAllowedExtension",
+        "FileUploadUtils.equalsIgnoreCase"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getExtension": {
+      "method_name": "getExtension",
+      "return_type": "String",
+      "parameters": [
+        {
+          "type": "MultipartFile",
+          "name": "file",
+          "annotations": []
+        }
+      ],
+      "line_start": 196,
+      "line_end": 202,
+      "body": "    public static final String getExtension(MultipartFile file) {\n        String extension = FilenameUtils.getExtension(file.getOriginalFilename());\n        if (StringUtils.isEmpty(extension)) {\n            extension = MimeTypeUtils.getExtension(Objects.requireNonNull(file.getContentType()));\n        }\n        return extension;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "MimeTypeUtils.getExtension",
+        "FilenameUtils.getExtension",
+        "file.getOriginalFilename",
+        "FileUploadUtils.getContentType",
+        "file.getContentType",
+        "FileUploadUtils.getOriginalFilename",
+        "FileUploadUtils.getExtension",
+        "FileUploadUtils.isEmpty",
+        "FileUploadUtils.requireNonNull",
+        "Objects.requireNonNull",
+        "StringUtils.isEmpty"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 26,
+  "line_end": 204
+}

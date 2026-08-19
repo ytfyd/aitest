@@ -1,0 +1,123 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\model\\LoginBody.java",
+  "package_name": "com.oddfar.campus.common.domain.model",
+  "class_name": "LoginBody",
+  "imports": [
+    "io.swagger.annotations.ApiModel",
+    "io.swagger.annotations.ApiModelProperty"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "username": {
+      "field_name": "username",
+      "field_type": "String",
+      "line_number": 17,
+      "annotations": [
+        "author",
+        "ApiModel",
+        "ApiModelProperty"
+      ]
+    },
+    "password": {
+      "field_name": "password",
+      "field_type": "String",
+      "line_number": 23,
+      "annotations": [
+        "ApiModelProperty",
+        "ApiModelProperty"
+      ]
+    }
+  },
+  "methods": {
+    "getUsername": {
+      "method_name": "getUsername",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 25,
+      "line_end": 27,
+      "body": "    public String getUsername() {\n        return username;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LoginBody.getUsername"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setUsername": {
+      "method_name": "setUsername",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "username",
+          "annotations": []
+        }
+      ],
+      "line_start": 29,
+      "line_end": 31,
+      "body": "    public void setUsername(String username) {\n        this.username = username;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LoginBody.setUsername"
+      ],
+      "used_fields": [
+        "username"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getPassword": {
+      "method_name": "getPassword",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 33,
+      "line_end": 35,
+      "body": "    public String getPassword() {\n        return password;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LoginBody.getPassword"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setPassword": {
+      "method_name": "setPassword",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "password",
+          "annotations": []
+        }
+      ],
+      "line_start": 37,
+      "line_end": 39,
+      "body": "    public void setPassword(String password) {\n        this.password = password;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "LoginBody.setPassword"
+      ],
+      "used_fields": [
+        "password"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "ApiModel"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 12,
+  "line_end": 41
+}

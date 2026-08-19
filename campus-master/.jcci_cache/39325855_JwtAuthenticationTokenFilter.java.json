@@ -1,0 +1,133 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\security\\filter\\JwtAuthenticationTokenFilter.java",
+  "package_name": "com.oddfar.campus.framework.security.filter",
+  "class_name": "JwtAuthenticationTokenFilter",
+  "imports": [
+    "com.oddfar.campus.common.domain.model.LoginUser",
+    "com.oddfar.campus.common.utils.SecurityUtils",
+    "com.oddfar.campus.common.utils.StringUtils",
+    "com.oddfar.campus.common.utils.web.WebFrameworkUtils",
+    "com.oddfar.campus.framework.web.service.TokenService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.security.authentication.UsernamePasswordAuthenticationToken",
+    "org.springframework.security.core.context.SecurityContextHolder",
+    "org.springframework.security.web.authentication.WebAuthenticationDetailsSource",
+    "org.springframework.stereotype.Component",
+    "org.springframework.web.filter.OncePerRequestFilter",
+    "javax.servlet.FilterChain",
+    "javax.servlet.ServletException",
+    "javax.servlet.http.HttpServletRequest",
+    "javax.servlet.http.HttpServletResponse",
+    "java.io.IOException"
+  ],
+  "extends": "OncePerRequestFilter",
+  "implements": [],
+  "fields": {
+    "tokenService": {
+      "field_name": "tokenService",
+      "field_type": "TokenService",
+      "line_number": 28,
+      "annotations": [
+        "author",
+        "Component"
+      ]
+    }
+  },
+  "methods": {
+    "doFilterInternal": {
+      "method_name": "doFilterInternal",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        },
+        {
+          "type": "HttpServletResponse",
+          "name": "response",
+          "annotations": []
+        },
+        {
+          "type": "FilterChain",
+          "name": "chain",
+          "annotations": []
+        }
+      ],
+      "line_start": 32,
+      "line_end": 46,
+      "body": "    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)\n            throws ServletException, IOException {\n        LoginUser loginUser = tokenService.getLoginUser(request);\n        if (StringUtils.isNotNull(loginUser) && StringUtils.isNull(SecurityUtils.getAuthentication())) {\n            // 设置当前用户\n            setLoginUser(loginUser, request);\n\n            tokenService.verifyToken(loginUser);\n            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());\n            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));\n            SecurityContextHolder.getContext().setAuthentication(authenticationToken);\n\n        }\n        chain.doFilter(request, response);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "JwtAuthenticationTokenFilter.doFilter",
+        "JwtAuthenticationTokenFilter.getAuthentication",
+        "JwtAuthenticationTokenFilter.doFilterInternal",
+        "TokenService.verifyToken",
+        "JwtAuthenticationTokenFilter.buildDetails",
+        "JwtAuthenticationTokenFilter.getContext",
+        "JwtAuthenticationTokenFilter.verifyToken",
+        "loginUser.getAuthorities",
+        "SecurityContextHolder.getContext",
+        "JwtAuthenticationTokenFilter.setDetails",
+        "TokenService.getLoginUser",
+        "JwtAuthenticationTokenFilter.setLoginUser",
+        "authenticationToken.setDetails",
+        "JwtAuthenticationTokenFilter.WebAuthenticationDetailsSource",
+        "SecurityUtils.getAuthentication",
+        "JwtAuthenticationTokenFilter.getLoginUser",
+        "JwtAuthenticationTokenFilter.setAuthentication",
+        "StringUtils.isNull",
+        "JwtAuthenticationTokenFilter.isNotNull",
+        "JwtAuthenticationTokenFilter.UsernamePasswordAuthenticationToken",
+        "JwtAuthenticationTokenFilter.isNull",
+        "chain.doFilter",
+        "StringUtils.isNotNull",
+        "JwtAuthenticationTokenFilter.getAuthorities"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setLoginUser": {
+      "method_name": "setLoginUser",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "LoginUser",
+          "name": "loginUser",
+          "annotations": []
+        },
+        {
+          "type": "HttpServletRequest",
+          "name": "request",
+          "annotations": []
+        }
+      ],
+      "line_start": 54,
+      "line_end": 58,
+      "body": "    public static void setLoginUser(LoginUser loginUser, HttpServletRequest request) {\n\n        // 额外设置到 request 中，有的过滤器在 Spring Security 之前\n        WebFrameworkUtils.setLoginUserId(request, loginUser.getUserId());\n    }",
+      "annotations": [],
+      "called_methods": [
+        "loginUser.getUserId",
+        "JwtAuthenticationTokenFilter.setLoginUserId",
+        "JwtAuthenticationTokenFilter.setLoginUser",
+        "WebFrameworkUtils.setLoginUserId",
+        "JwtAuthenticationTokenFilter.getUserId"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "Component"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 27,
+  "line_end": 61
+}

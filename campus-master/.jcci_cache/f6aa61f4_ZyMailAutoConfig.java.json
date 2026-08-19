@@ -1,0 +1,44 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\mail\\ZyMailAutoConfig.java",
+  "package_name": "com.oddfar.campus.framework.api.mail",
+  "class_name": "ZyMailAutoConfig",
+  "imports": [
+    "com.oddfar.campus.framework.api.mail.Impl.MailServiceImpl",
+    "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean",
+    "org.springframework.context.annotation.Bean",
+    "org.springframework.context.annotation.Configuration"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "mailSenderApi": {
+      "method_name": "mailSenderApi",
+      "return_type": "MailSendApi",
+      "parameters": [],
+      "line_start": 16,
+      "line_end": 19,
+      "body": "    @ConditionalOnMissingBean(MailSendApi.class)\n    public MailSendApi mailSenderApi() {\n        return new MailServiceImpl();\n    }",
+      "annotations": [
+        "ConditionalOnMissingBean"
+      ],
+      "called_methods": [
+        "ZyMailAutoConfig.MailServiceImpl",
+        "ZyMailAutoConfig.ConditionalOnMissingBean",
+        "ZyMailAutoConfig.mailSenderApi"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Configuration"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 9,
+  "line_end": 21
+}

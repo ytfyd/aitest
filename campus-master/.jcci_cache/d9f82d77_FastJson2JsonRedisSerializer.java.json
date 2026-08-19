@@ -1,0 +1,60 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\config\\FastJson2JsonRedisSerializer.java",
+  "package_name": "com.oddfar.campus.common.config",
+  "class_name": "FastJson2JsonRedisSerializer",
+  "imports": [
+    "com.alibaba.fastjson2.JSON",
+    "com.alibaba.fastjson2.JSONReader",
+    "com.alibaba.fastjson2.JSONWriter",
+    "org.springframework.data.redis.serializer.RedisSerializer",
+    "org.springframework.data.redis.serializer.SerializationException",
+    "java.nio.charset.Charset"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "clazz": {
+      "field_name": "clazz",
+      "field_type": "Class<T>",
+      "line_number": 20,
+      "annotations": [
+        "author"
+      ]
+    }
+  },
+  "methods": {
+    "deserialize": {
+      "method_name": "deserialize",
+      "return_type": "T",
+      "parameters": [
+        {
+          "type": "byte[]",
+          "name": "bytes",
+          "annotations": []
+        }
+      ],
+      "line_start": 39,
+      "line_end": 48,
+      "body": "    public T deserialize(byte[] bytes) throws SerializationException\n    {\n        if (bytes == null || bytes.length <= 0)\n        {\n            return null;\n        }\n        String str = new String(bytes, DEFAULT_CHARSET);\n\n        return JSON.parseObject(str, clazz, JSONReader.Feature.SupportAutoType);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "FastJson2JsonRedisSerializer.parseObject",
+        "JSON.parseObject",
+        "FastJson2JsonRedisSerializer.String",
+        "FastJson2JsonRedisSerializer.deserialize"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 16,
+  "line_end": 50
+}

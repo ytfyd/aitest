@@ -1,0 +1,179 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\service\\impl\\SysDictDataServiceImpl.java",
+  "package_name": "com.oddfar.campus.framework.service.impl",
+  "class_name": "SysDictDataServiceImpl",
+  "imports": [
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.entity.SysDictDataEntity",
+    "com.oddfar.campus.common.utils.DictUtils",
+    "com.oddfar.campus.framework.mapper.SysDictDataMapper",
+    "com.oddfar.campus.framework.service.SysDictDataService",
+    "org.springframework.stereotype.Service",
+    "javax.annotation.Resource",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [
+    "SysDictDataService"
+  ],
+  "fields": {
+    "dictDataMapper": {
+      "field_name": "dictDataMapper",
+      "field_type": "SysDictDataMapper",
+      "line_number": 16,
+      "annotations": [
+        "Service"
+      ]
+    }
+  },
+  "methods": {
+    "page": {
+      "method_name": "page",
+      "return_type": "PageResult<SysDictDataEntity>",
+      "parameters": [
+        {
+          "type": "SysDictDataEntity",
+          "name": "dictDataEntity",
+          "annotations": []
+        }
+      ],
+      "line_start": 21,
+      "line_end": 23,
+      "body": "    public PageResult<SysDictDataEntity> page(SysDictDataEntity dictDataEntity) {\n        return dictDataMapper.selectPage(dictDataEntity);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysDictDataServiceImpl.page",
+        "SysDictDataServiceImpl.selectPage",
+        "SysDictDataMapper.selectPage"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "insertDictData": {
+      "method_name": "insertDictData",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysDictDataEntity",
+          "name": "dictData",
+          "annotations": []
+        }
+      ],
+      "line_start": 26,
+      "line_end": 33,
+      "body": "    public int insertDictData(SysDictDataEntity dictData) {\n        int row = dictDataMapper.insert(dictData);\n        if (row > 0) {\n            List<SysDictDataEntity> dictDatas = dictDataMapper.selectDictDataByType(dictData.getDictType());\n            DictUtils.setDictCache(dictData.getDictType(), dictDatas);\n        }\n        return row;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DictUtils.setDictCache",
+        "SysDictDataServiceImpl.getDictType",
+        "SysDictDataServiceImpl.insertDictData",
+        "SysDictDataMapper.insert",
+        "SysDictDataMapper.selectDictDataByType",
+        "SysDictDataServiceImpl.setDictCache",
+        "SysDictDataServiceImpl.selectDictDataByType",
+        "dictData.getDictType",
+        "SysDictDataServiceImpl.insert"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "selectDictDataById": {
+      "method_name": "selectDictDataById",
+      "return_type": "SysDictDataEntity",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "dictCode",
+          "annotations": []
+        }
+      ],
+      "line_start": 36,
+      "line_end": 38,
+      "body": "    public SysDictDataEntity selectDictDataById(Long dictCode) {\n        return dictDataMapper.selectById(dictCode);\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysDictDataMapper.selectById",
+        "SysDictDataServiceImpl.selectById",
+        "SysDictDataServiceImpl.selectDictDataById"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "updateDictData": {
+      "method_name": "updateDictData",
+      "return_type": "int",
+      "parameters": [
+        {
+          "type": "SysDictDataEntity",
+          "name": "data",
+          "annotations": []
+        }
+      ],
+      "line_start": 42,
+      "line_end": 49,
+      "body": "    public int updateDictData(SysDictDataEntity data) {\n        int row = dictDataMapper.updateById(data);\n        if (row > 0) {\n            List<SysDictDataEntity> dictDatas = dictDataMapper.selectDictDataByType(data.getDictType());\n            DictUtils.setDictCache(data.getDictType(), dictDatas);\n        }\n        return row;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DictUtils.setDictCache",
+        "SysDictDataServiceImpl.getDictType",
+        "SysDictDataMapper.selectDictDataByType",
+        "SysDictDataServiceImpl.setDictCache",
+        "SysDictDataMapper.updateById",
+        "SysDictDataServiceImpl.updateById",
+        "SysDictDataServiceImpl.selectDictDataByType",
+        "SysDictDataServiceImpl.updateDictData",
+        "data.getDictType"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "deleteDictDataByIds": {
+      "method_name": "deleteDictDataByIds",
+      "return_type": "void",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "dictCodes",
+          "annotations": []
+        }
+      ],
+      "line_start": 52,
+      "line_end": 59,
+      "body": "    public void deleteDictDataByIds(Long[] dictCodes) {\n        for (Long dictCode : dictCodes) {\n            SysDictDataEntity data = dictDataMapper.selectById(dictCode);\n            dictDataMapper.deleteById(dictCode);\n            List<SysDictDataEntity> dictDatas = dictDataMapper.selectDictDataByType(data.getDictType());\n            DictUtils.setDictCache(data.getDictType(), dictDatas);\n        }\n    }",
+      "annotations": [],
+      "called_methods": [
+        "DictUtils.setDictCache",
+        "SysDictDataServiceImpl.getDictType",
+        "SysDictDataMapper.selectDictDataByType",
+        "SysDictDataServiceImpl.deleteById",
+        "SysDictDataServiceImpl.setDictCache",
+        "SysDictDataServiceImpl.selectDictDataByType",
+        "SysDictDataServiceImpl.deleteDictDataByIds",
+        "SysDictDataServiceImpl.selectById",
+        "SysDictDataMapper.selectById",
+        "SysDictDataMapper.deleteById",
+        "data.getDictType"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "Service"
+  ],
+  "is_controller": false,
+  "is_service": true,
+  "is_repository": false,
+  "line_start": 14,
+  "line_end": 61
+}

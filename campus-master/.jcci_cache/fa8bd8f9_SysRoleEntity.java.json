@@ -1,0 +1,138 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\domain\\entity\\SysRoleEntity.java",
+  "package_name": "com.oddfar.campus.common.domain.entity",
+  "class_name": "SysRoleEntity",
+  "imports": [
+    "com.baomidou.mybatisplus.annotation.TableField",
+    "com.baomidou.mybatisplus.annotation.TableId",
+    "com.baomidou.mybatisplus.annotation.TableName",
+    "com.oddfar.campus.common.domain.BaseEntity",
+    "lombok.AllArgsConstructor",
+    "lombok.Data",
+    "lombok.EqualsAndHashCode",
+    "lombok.NoArgsConstructor",
+    "javax.validation.constraints.NotBlank",
+    "javax.validation.constraints.Size",
+    "java.util.Set"
+  ],
+  "extends": "BaseEntity",
+  "implements": [],
+  "fields": {
+    "roleId": {
+      "field_name": "roleId",
+      "field_type": "Long",
+      "line_number": 34,
+      "annotations": [
+        "AllArgsConstructor",
+        "NoArgsConstructor",
+        "TableId"
+      ]
+    },
+    "roleName": {
+      "field_name": "roleName",
+      "field_type": "String",
+      "line_number": 41,
+      "annotations": [
+        "TableId",
+        "NotBlank",
+        "Size"
+      ]
+    },
+    "roleKey": {
+      "field_name": "roleKey",
+      "field_type": "String",
+      "line_number": 48,
+      "annotations": [
+        "NotBlank",
+        "Size"
+      ]
+    },
+    "roleSort": {
+      "field_name": "roleSort",
+      "field_type": "String",
+      "line_number": 54,
+      "annotations": [
+        "NotBlank",
+        "Size",
+        "NotBlank"
+      ]
+    },
+    "menuCheckStrictly": {
+      "field_name": "menuCheckStrictly",
+      "field_type": "boolean",
+      "line_number": 60,
+      "annotations": [
+        "NotBlank"
+      ]
+    },
+    "status": {
+      "field_name": "status",
+      "field_type": "String",
+      "line_number": 66,
+      "annotations": []
+    },
+    "flag": {
+      "field_name": "flag",
+      "field_type": "boolean",
+      "line_number": 72,
+      "annotations": [
+        "TableField"
+      ]
+    },
+    "permissions": {
+      "field_name": "permissions",
+      "field_type": "Set<String>",
+      "line_number": 84,
+      "annotations": [
+        "TableField",
+        "TableField"
+      ]
+    },
+    "remark": {
+      "field_name": "remark",
+      "field_type": "String",
+      "line_number": 89,
+      "annotations": [
+        "TableField",
+        "TableField"
+      ]
+    }
+  },
+  "methods": {
+    "isAdmin": {
+      "method_name": "isAdmin",
+      "return_type": "boolean",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "roleId",
+          "annotations": []
+        }
+      ],
+      "line_start": 99,
+      "line_end": 101,
+      "body": "    public static boolean isAdmin(Long roleId) {\n        return roleId != null && 1L == roleId;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "SysRoleEntity.isAdmin"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author",
+    "TableName",
+    "EqualsAndHashCode",
+    "Data",
+    "AllArgsConstructor",
+    "NoArgsConstructor"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 27,
+  "line_end": 104
+}

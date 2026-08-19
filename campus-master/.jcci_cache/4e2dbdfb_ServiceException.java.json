@@ -1,0 +1,136 @@
+{
+  "file_path": "campus-common\\src\\main\\java\\com\\oddfar\\campus\\common\\exception\\ServiceException.java",
+  "package_name": "com.oddfar.campus.common.exception",
+  "class_name": "ServiceException",
+  "imports": [],
+  "extends": "RuntimeException",
+  "implements": [],
+  "fields": {
+    "code": {
+      "field_name": "code",
+      "field_type": "Integer",
+      "line_number": 14,
+      "annotations": [
+        "author"
+      ]
+    },
+    "message": {
+      "field_name": "message",
+      "field_type": "String",
+      "line_number": 19,
+      "annotations": []
+    },
+    "detailMessage": {
+      "field_name": "detailMessage",
+      "field_type": "String",
+      "line_number": 24,
+      "annotations": []
+    }
+  },
+  "methods": {
+    "getDetailMessage": {
+      "method_name": "getDetailMessage",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 42,
+      "line_end": 44,
+      "body": "    public String getDetailMessage() {\n        return detailMessage;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServiceException.getDetailMessage"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getMessage": {
+      "method_name": "getMessage",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 47,
+      "line_end": 49,
+      "body": "    public String getMessage() {\n        return message;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServiceException.getMessage"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getCode": {
+      "method_name": "getCode",
+      "return_type": "Integer",
+      "parameters": [],
+      "line_start": 51,
+      "line_end": 53,
+      "body": "    public Integer getCode() {\n        return code;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServiceException.getCode"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setMessage": {
+      "method_name": "setMessage",
+      "return_type": "ServiceException",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "message",
+          "annotations": []
+        }
+      ],
+      "line_start": 55,
+      "line_end": 58,
+      "body": "    public ServiceException setMessage(String message) {\n        this.message = message;\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServiceException.setMessage"
+      ],
+      "used_fields": [
+        "message"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "setDetailMessage": {
+      "method_name": "setDetailMessage",
+      "return_type": "ServiceException",
+      "parameters": [
+        {
+          "type": "String",
+          "name": "detailMessage",
+          "annotations": []
+        }
+      ],
+      "line_start": 60,
+      "line_end": 63,
+      "body": "    public ServiceException setDetailMessage(String detailMessage) {\n        this.detailMessage = detailMessage;\n        return this;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ServiceException.setDetailMessage"
+      ],
+      "used_fields": [
+        "detailMessage"
+      ],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [
+    "author"
+  ],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 8,
+  "line_end": 64
+}

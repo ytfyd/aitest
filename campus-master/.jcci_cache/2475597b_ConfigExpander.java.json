@@ -1,0 +1,100 @@
+{
+  "file_path": "campus-framework\\src\\main\\java\\com\\oddfar\\campus\\framework\\api\\sysconfig\\ConfigExpander.java",
+  "package_name": "com.oddfar.campus.framework.api.sysconfig",
+  "class_name": "ConfigExpander",
+  "imports": [
+    "cn.hutool.core.convert.Convert"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {},
+  "methods": {
+    "getUserDefaultAvatar": {
+      "method_name": "getUserDefaultAvatar",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 9,
+      "line_end": 11,
+      "body": "    public static String getUserDefaultAvatar() {\n        return ConfigContext.me().selectConfigByKey(\"sys.user.default.avatar\");\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ConfigExpander.selectConfigByKey",
+        "ConfigExpander.me",
+        "ConfigContext.me",
+        "ConfigExpander.getUserDefaultAvatar"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getFileProfile": {
+      "method_name": "getFileProfile",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 16,
+      "line_end": 29,
+      "body": "    public static String getFileProfile() {\n\n        String osName = System.getProperty(\"os.name\").toLowerCase();\n        if (osName.contains(\"win\")) {\n            return ConfigContext.me().selectConfigByKey(\"sys.local.profile.win\", String.class, \"D:\\\\uploadPath\");\n        }\n        if (osName.contains(\"mac\")) {\n            return ConfigContext.me().selectConfigByKey(\"sys.local.profile.mac\", String.class, \"~/uploadPath\");\n        }\n        if (osName.contains(\"linux\")) {\n            return ConfigContext.me().selectConfigByKey(\"sys.local.profile.linux\", String.class, \"/data/uploadPath\");\n        }\n        return null;\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ConfigExpander.contains",
+        "ConfigExpander.toLowerCase",
+        "System.getProperty",
+        "ConfigExpander.getFileProfile",
+        "ConfigContext.me",
+        "ConfigExpander.getProperty",
+        "ConfigExpander.selectConfigByKey",
+        "ConfigExpander.me",
+        "osName.contains"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getAvatarPath": {
+      "method_name": "getAvatarPath",
+      "return_type": "String",
+      "parameters": [],
+      "line_start": 34,
+      "line_end": 36,
+      "body": "    public static String getAvatarPath() {\n        return getFileProfile() + \"/avatar\";\n    }",
+      "annotations": [],
+      "called_methods": [
+        "ConfigExpander.getAvatarPath",
+        "ConfigExpander.getFileProfile"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    },
+    "getGlobalControllerOpenFlag": {
+      "method_name": "getGlobalControllerOpenFlag",
+      "return_type": "Boolean",
+      "parameters": [],
+      "line_start": 42,
+      "line_end": 47,
+      "body": "    public static Boolean getGlobalControllerOpenFlag() {\n        String flag = ConfigContext.me().selectConfigByKey(\"sys.log.global.flag\", String.class, \"false\");\n\n        return Convert.toBool(flag);\n\n    }",
+      "annotations": [],
+      "called_methods": [
+        "Convert.toBool",
+        "ConfigExpander.getGlobalControllerOpenFlag",
+        "ConfigContext.me",
+        "ConfigExpander.selectConfigByKey",
+        "ConfigExpander.me",
+        "ConfigExpander.toBool"
+      ],
+      "used_fields": [],
+      "is_api": false,
+      "api_path": null,
+      "http_method": null
+    }
+  },
+  "annotations": [],
+  "is_controller": false,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 5,
+  "line_end": 50
+}

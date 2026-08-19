@@ -1,0 +1,277 @@
+{
+  "file_path": "campus-admin\\src\\main\\java\\com\\oddfar\\campus\\admin\\controller\\system\\SysDictTypeController.java",
+  "package_name": "com.oddfar.campus.admin.controller.system",
+  "class_name": "SysDictTypeController",
+  "imports": [
+    "com.oddfar.campus.common.annotation.ApiResource",
+    "com.oddfar.campus.common.domain.PageResult",
+    "com.oddfar.campus.common.domain.R",
+    "com.oddfar.campus.common.domain.entity.SysDictTypeEntity",
+    "com.oddfar.campus.common.enums.ResBizTypeEnum",
+    "com.oddfar.campus.framework.service.SysDictTypeService",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "org.springframework.security.access.prepost.PreAuthorize",
+    "org.springframework.validation.annotation.Validated",
+    "java.util.List"
+  ],
+  "extends": null,
+  "implements": [],
+  "fields": {
+    "dictTypeService": {
+      "field_name": "dictTypeService",
+      "field_type": "SysDictTypeService",
+      "line_number": 22,
+      "annotations": [
+        "RestController",
+        "RequestMapping",
+        "ApiResource"
+      ]
+    }
+  },
+  "methods": {
+    "list": {
+      "method_name": "list",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysDictTypeEntity",
+          "name": "sysDictTypeEntity",
+          "annotations": []
+        }
+      ],
+      "line_start": 25,
+      "line_end": 30,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:dict:list')\")\n    @GetMapping(value = \"/list\", name = \"字典类型管理-分页\")\n    public R list(SysDictTypeEntity sysDictTypeEntity) {\n        PageResult<SysDictTypeEntity> page = dictTypeService.page(sysDictTypeEntity);\n        return R.ok().put(page);\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysDictTypeService.page",
+        "SysDictTypeController.hasPermi",
+        "ss.hasPermi",
+        "SysDictTypeController.ok",
+        "R.ok",
+        "SysDictTypeController.page",
+        "SysDictTypeController.put",
+        "SysDictTypeController.list",
+        "SysDictTypeController.PreAuthorize",
+        "SysDictTypeController.GetMapping"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/list",
+      "http_method": "GET"
+    },
+    "getInfo": {
+      "method_name": "getInfo",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long",
+          "name": "dictId",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 35,
+      "line_end": 36,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:dict:query')\")\n    @GetMapping(value = \"/{dictId}\", name = \"字典类型管理-查询\")",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysDictTypeController.hasPermi",
+        "SysDictTypeController.PreAuthorize",
+        "SysDictTypeController.GetMapping",
+        "ss.hasPermi"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/{dictId}",
+      "http_method": "GET"
+    },
+    "add": {
+      "method_name": "add",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysDictTypeEntity",
+          "name": "dict",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 44,
+      "line_end": 52,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:dict:add')\")\n    @PostMapping(name = \"字典类型管理-新增\")\n    public R add(@Validated @RequestBody SysDictTypeEntity dict) {\n        if (!dictTypeService.checkDictTypeUnique(dict)) {\n            return R.error(\"新增字典'\" + dict.getDictName() + \"'失败，字典类型已存在\");\n        }\n\n        return R.ok(dictTypeService.insertDictType(dict));\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PostMapping"
+      ],
+      "called_methods": [
+        "SysDictTypeController.insertDictType",
+        "R.error",
+        "SysDictTypeController.PostMapping",
+        "SysDictTypeController.hasPermi",
+        "SysDictTypeController.add",
+        "SysDictTypeController.getDictName",
+        "SysDictTypeService.insertDictType",
+        "ss.hasPermi",
+        "SysDictTypeController.ok",
+        "SysDictTypeService.checkDictTypeUnique",
+        "SysDictTypeController.error",
+        "R.ok",
+        "dict.getDictName",
+        "SysDictTypeController.checkDictTypeUnique",
+        "SysDictTypeController.PreAuthorize"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/dict/type",
+      "http_method": "POST"
+    },
+    "edit": {
+      "method_name": "edit",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "SysDictTypeEntity",
+          "name": "dict",
+          "annotations": [
+            "@Validated",
+            "@RequestBody"
+          ]
+        }
+      ],
+      "line_start": 57,
+      "line_end": 64,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:dict:edit')\")\n    @PutMapping(name = \"字典类型管理-修改\")\n    public R edit(@Validated @RequestBody SysDictTypeEntity dict) {\n        if (!dictTypeService.checkDictTypeUnique(dict)) {\n            return R.error(\"修改字典'\" + dict.getDictName() + \"'失败，字典类型已存在\");\n        }\n        return R.ok(dictTypeService.updateDictType(dict));\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "PutMapping"
+      ],
+      "called_methods": [
+        "R.error",
+        "SysDictTypeController.getDictName",
+        "SysDictTypeController.hasPermi",
+        "SysDictTypeController.updateDictType",
+        "ss.hasPermi",
+        "SysDictTypeController.ok",
+        "SysDictTypeService.checkDictTypeUnique",
+        "SysDictTypeController.error",
+        "R.ok",
+        "SysDictTypeController.PutMapping",
+        "SysDictTypeController.edit",
+        "dict.getDictName",
+        "SysDictTypeService.updateDictType",
+        "SysDictTypeController.checkDictTypeUnique",
+        "SysDictTypeController.PreAuthorize"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/system/dict/type",
+      "http_method": "PUT"
+    },
+    "remove": {
+      "method_name": "remove",
+      "return_type": "R",
+      "parameters": [
+        {
+          "type": "Long[]",
+          "name": "dictIds",
+          "annotations": [
+            "@PathVariable"
+          ]
+        }
+      ],
+      "line_start": 69,
+      "line_end": 70,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:dict:remove')\")\n    @DeleteMapping(value = \"/{dictIds}\", name = \"字典类型管理-删除\")",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "DeleteMapping"
+      ],
+      "called_methods": [
+        "SysDictTypeController.DeleteMapping",
+        "SysDictTypeController.hasPermi",
+        "SysDictTypeController.PreAuthorize",
+        "ss.hasPermi"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/{dictIds}",
+      "http_method": "DELETE"
+    },
+    "refreshCache": {
+      "method_name": "refreshCache",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 79,
+      "line_end": 84,
+      "body": "    @PreAuthorize(\"@ss.hasPermi('system:dict:remove')\")\n    @DeleteMapping(value = \"/refreshCache\", name = \"字典类型管理-刷新\")\n    public R refreshCache() {\n        dictTypeService.resetDictCache();\n        return R.ok();\n    }",
+      "annotations": [
+        "PreAuthorize",
+        "ss",
+        "DeleteMapping"
+      ],
+      "called_methods": [
+        "SysDictTypeController.resetDictCache",
+        "SysDictTypeController.hasPermi",
+        "ss.hasPermi",
+        "SysDictTypeController.ok",
+        "R.ok",
+        "SysDictTypeService.resetDictCache",
+        "SysDictTypeController.refreshCache",
+        "SysDictTypeController.DeleteMapping",
+        "SysDictTypeController.PreAuthorize"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/refreshCache",
+      "http_method": "DELETE"
+    },
+    "optionselect": {
+      "method_name": "optionselect",
+      "return_type": "R",
+      "parameters": [],
+      "line_start": 89,
+      "line_end": 93,
+      "body": "    @GetMapping(value = \"/optionselect\", name = \"字典类型管理-获取字典选择框列表\")\n    public R optionselect() {\n        List<SysDictTypeEntity> dictTypes = dictTypeService.selectDictTypeAll();\n        return R.ok(dictTypes);\n    }",
+      "annotations": [
+        "GetMapping"
+      ],
+      "called_methods": [
+        "SysDictTypeController.optionselect",
+        "SysDictTypeService.selectDictTypeAll",
+        "SysDictTypeController.ok",
+        "R.ok",
+        "SysDictTypeController.selectDictTypeAll",
+        "SysDictTypeController.GetMapping"
+      ],
+      "used_fields": [],
+      "is_api": true,
+      "api_path": "/optionselect",
+      "http_method": "GET"
+    }
+  },
+  "annotations": [
+    "RestController",
+    "RequestMapping",
+    "ApiResource"
+  ],
+  "is_controller": true,
+  "is_service": false,
+  "is_repository": false,
+  "line_start": 20,
+  "line_end": 96
+}
