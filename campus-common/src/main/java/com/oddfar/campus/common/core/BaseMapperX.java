@@ -75,6 +75,34 @@ public interface BaseMapperX<T> extends BaseMapper<T> {
         return selectList(new LambdaQueryWrapper<T>().in(field, values));
     }
 
+    default List<T> selectList(String field1, Object value1, String field2, Object value2) {
+        return selectList(new QueryWrapper<T>().eq(field1, value1).eq(field2, value2));
+    }
+
+    default List<T> selectList(SFunction<T, ?> field1, Object value1, SFunction<T, ?> field2, Object value2) {
+        return selectList(new LambdaQueryWrapper<T>().eq(field1, value1).eq(field2, value2));
+    }
+
+    default List<T> selectList(String field, Object value, String orderField, boolean isAsc) {
+        QueryWrapper<T> wrapper = new QueryWrapper<T>().eq(field, value);
+        if (isAsc) {
+            wrapper.orderByAsc(orderField);
+        } else {
+            wrapper.orderByDesc(orderField);
+        }
+        return selectList(wrapper);
+    }
+
+    default List<T> selectList(SFunction<T, ?> field, Object value, SFunction<T, ?> orderField, boolean isAsc) {
+        LambdaQueryWrapper<T> wrapper = new LambdaQueryWrapper<T>().eq(field, value);
+        if (isAsc) {
+            wrapper.orderByAsc(orderField);
+        } else {
+            wrapper.orderByDesc(orderField);
+        }
+        return selectList(wrapper);
+    }
+
     /**
      * 逐条插入，适合少量数据插入，或者对性能要求不高的场景
      * <p>
@@ -88,6 +116,38 @@ public interface BaseMapperX<T> extends BaseMapper<T> {
 
     default void updateBatch(T update) {
         update(update, new QueryWrapper<>());
+    }
+
+    default int delete(String field, Object value) {
+        return delete(new QueryWrapper<T>().eq(field, value));
+    }
+
+    default int delete(SFunction<T, ?> field, Object value) {
+        return delete(new LambdaQueryWrapper<T>().eq(field, value));
+    }
+
+    default int delete(String field, Collection<?> values) {
+        return delete(new QueryWrapper<T>().in(field, values));
+    }
+
+    default int delete(SFunction<T, ?> field, Collection<?> values) {
+        return delete(new LambdaQueryWrapper<T>().in(field, values));
+    }
+
+    default boolean exists(String field, Object value) {
+        return selectCount(field, value) > 0;
+    }
+
+    default boolean exists(SFunction<T, ?> field, Object value) {
+        return selectCount(field, value) > 0;
+    }
+
+    default boolean exists(String field1, Object value1, String field2, Object value2) {
+        return selectCount(new QueryWrapper<T>().eq(field1, value1).eq(field2, value2)) > 0;
+    }
+
+    default boolean exists(SFunction<T, ?> field1, Object value1, SFunction<T, ?> field2, Object value2) {
+        return selectCount(new LambdaQueryWrapper<T>().eq(field1, value1).eq(field2, value2)) > 0;
     }
 
 }

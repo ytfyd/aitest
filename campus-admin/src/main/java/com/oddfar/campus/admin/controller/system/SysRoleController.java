@@ -91,7 +91,7 @@ public class SysRoleController {
             permissionService.resetLoginUserRoleCache(role.getRoleId());
             return R.ok();
         }
-        return R.error("修改角色'" + role.getRoleName() + "'失败，请联系管理员");
+        return R.error("修改角色'" + role.getRoleName() + "'失败，请联系管理员.");
     }
 
     /**

@@ -2,23 +2,17 @@ package com.oddfar.campus.framework.web.service;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import com.oddfar.campus.common.constant.CacheConstants;
 import com.oddfar.campus.common.constant.Constants;
-import com.oddfar.campus.common.core.RedisCache;
 import com.oddfar.campus.common.domain.entity.SysUserEntity;
 import com.oddfar.campus.common.domain.event.LogininforEvent;
 import com.oddfar.campus.common.domain.model.LoginUser;
 import com.oddfar.campus.common.exception.ServiceException;
-import com.oddfar.campus.common.exception.user.CaptchaException;
-import com.oddfar.campus.common.exception.user.CaptchaExpireException;
 import com.oddfar.campus.common.exception.user.UserPasswordNotMatchException;
 import com.oddfar.campus.common.utils.MessageUtils;
 import com.oddfar.campus.common.utils.ServletUtils;
-import com.oddfar.campus.common.utils.StringUtils;
 import com.oddfar.campus.common.utils.ip.IpUtils;
 import com.oddfar.campus.common.utils.web.WebFrameworkUtils;
 import com.oddfar.campus.framework.security.context.AuthenticationContextHolder;
-import com.oddfar.campus.framework.service.SysConfigService;
 import com.oddfar.campus.framework.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,29 +37,16 @@ public class SysLoginService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private RedisCache redisCache;
-
-    @Autowired
     private SysUserService userService;
-
-    @Autowired
-    private SysConfigService configService;
 
     /**
      * 登录验证
      *
      * @param username 用户名
      * @param password 密码
-     * @param code     验证码
-     * @param uuid     唯一标识
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid) {
-        boolean captchaEnabled = configService.selectCaptchaEnabled();
-        // 验证码开关
-        if (captchaEnabled) {
-            validateCaptcha(username, code, uuid);
-        }
+    public String login(String username, String password) {
         // 用户验证
         Authentication authentication = null;
         try {
@@ -104,29 +85,6 @@ public class SysLoginService {
         recordLoginInfo(username, loginUser.getUserId(), Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success"));
         // 生成token
         return tokenService.createToken(loginUser);
-    }
-
-    /**
-     * 校验验证码
-     *
-     * @param username 用户名
-     * @param code     验证码
-     * @param uuid     唯一标识
-     * @return 结果
-     */
-    public void validateCaptcha(String username, String code, String uuid) {
-        if ("6666".equals(code)) {
-            return;
-        }
-        String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
-        String captcha = redisCache.getCacheObject(verifyKey);
-        redisCache.deleteObject(verifyKey);
-        if (captcha == null) {
-            throw new CaptchaExpireException();
-        }
-        if (!code.equalsIgnoreCase(captcha)) {
-            throw new CaptchaException();
-        }
     }
 
     /**

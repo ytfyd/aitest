@@ -47,13 +47,6 @@ public interface SysConfigService {
 
 
     /**
-     * 获取验证码开关
-     *
-     * @return true开启，false关闭
-     */
-    boolean selectCaptchaEnabled();
-
-    /**
      * 新增参数配置
      *
      * @param config 参数配置信息

@@ -11,13 +11,6 @@ public class ConfigExpander {
     }
 
     /**
-     * 验证码类型
-     */
-    public static String getLoginCaptchaType() {
-        return ConfigContext.me().selectConfigByKey("sys.login.captchaType", String.class, "math");
-    }
-
-    /**
      * 获取文件保存目录
      */
     public static String getFileProfile() {

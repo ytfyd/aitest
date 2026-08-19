@@ -72,11 +72,6 @@ public class Constants {
     public static final String LOGIN_FAIL = "Error";
 
     /**
-     * 验证码有效期（分钟）
-     */
-    public static final Integer CAPTCHA_EXPIRATION = 2;
-
-    /**
      * 令牌
      */
     public static final String TOKEN = "token";
