@@ -109,19 +109,21 @@ public class DictUtils {
         StringBuilder propertyString = new StringBuilder();
         List<SysDictDataEntity> datas = getDictCache(dictType);
 
-        if (StringUtils.containsAny(separator, dictLabel) && StringUtils.isNotEmpty(datas)) {
-            for (SysDictDataEntity dict : datas) {
-                for (String label : dictLabel.split(separator)) {
-                    if (label.equals(dict.getDictLabel())) {
-                        propertyString.append(dict.getDictValue()).append(separator);
-                        break;
+        if (StringUtils.isNotNull(datas)) {
+            if (StringUtils.containsAny(separator, dictLabel)) {
+                for (SysDictDataEntity dict : datas) {
+                    for (String label : dictLabel.split(separator)) {
+                        if (label.equals(dict.getDictLabel())) {
+                            propertyString.append(dict.getDictValue()).append(separator);
+                            break;
+                        }
                     }
                 }
-            }
-        } else {
-            for (SysDictDataEntity dict : datas) {
-                if (dictLabel.equals(dict.getDictLabel())) {
-                    return dict.getDictValue();
+            } else {
+                for (SysDictDataEntity dict : datas) {
+                    if (dictLabel.equals(dict.getDictLabel())) {
+                        return dict.getDictValue();
+                    }
                 }
             }
         }
